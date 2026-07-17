@@ -79,7 +79,8 @@ h2{font-family:var(--display);font-weight:700;font-size:clamp(28px,4vw,48px);lin
 .ledger .lh{display:flex;align-items:center;gap:9px;padding:12px 16px;border-bottom:1px solid var(--line);color:var(--mut);font-size:11.5px}
 .ledger .lh .dot{width:11px;height:11px;border-radius:50%}.d1{background:#ff5f57}.d2{background:#febc2e}.d3{background:#28c840}
 .ledger .lh .path{margin-left:8px;color:var(--soft)}
-.commit{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--line);position:relative}
+.commit{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--line);position:relative;opacity:0;transform:translateX(-12px);transition:opacity .5s cubic-bezier(.2,.7,.3,1),transform .5s cubic-bezier(.2,.7,.3,1)}
+.commit.in{opacity:1;transform:none}
 .commit:last-child{border-bottom:0}
 .graph{width:14px;display:flex;justify-content:center;position:relative;align-self:stretch}
 .graph::before{content:"";position:absolute;top:0;bottom:0;width:2px;background:var(--teal-dim)}
@@ -269,5 +270,9 @@ footer .disc{max-width:60ch;line-height:1.6}
 <script>
 const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.12});
 document.querySelectorAll('.rv').forEach((el,i)=>{ el.style.transitionDelay=(Math.min(i,6)*0.06)+'s'; io.observe(el); });
+// the commit ledger writes itself, newest-first, when it scrolls into view
+const commits=[...document.querySelectorAll('.ledger .commit')];
+const lio=new IntersectionObserver((es)=>es.forEach(e=>{ if(e.isIntersecting){ commits.forEach((c,i)=>setTimeout(()=>c.classList.add('in'),140+i*130)); lio.disconnect(); } }),{threshold:.25});
+if(commits.length)lio.observe(document.querySelector('.ledger'));
 </script>
 </body></html>
