@@ -74,6 +74,40 @@ background-image:radial-gradient(1000px 560px at 82% -12%,rgba(51,201,176,.07),t
 .gates{display:grid;grid-template-columns:1fr 1fr;gap:5px}.gates .node{margin:0}
 .log{border-top:1px solid var(--line);flex:1;overflow:auto;padding:10px 14px;font-size:11px;line-height:1.6;background:#060a0f;min-height:90px}
 .log .ln{white-space:pre-wrap;word-break:break-word}.log .cmd{color:var(--teal-br)}.log .ok{color:#a7e8d8}.log .bad{color:#ff989c}.log .warn{color:var(--amber)}.log .accept{color:var(--teal-br);font-weight:600}
+#howbtn{font-family:var(--mono);font-size:12.5px;color:var(--soft);background:var(--panel);border:1px solid var(--line2);border-radius:9px;padding:9px 14px;cursor:pointer;transition:.2s}
+#howbtn:hover{border-color:var(--teal);color:#fff}
+/* dialog-based architecture explainer overlay */
+#how{position:fixed;inset:0;z-index:60;background:radial-gradient(1200px 800px at 50% -5%,rgba(51,201,176,.08),transparent 60%),rgba(6,10,15,.97);backdrop-filter:blur(6px);display:none;flex-direction:column}
+#how.show{display:flex;animation:fade .35s ease}@keyframes fade{from{opacity:0}to{opacity:1}}
+#how .hh{display:flex;align-items:center;gap:14px;padding:18px 30px;border-bottom:1px solid var(--line2)}
+#how .hh .t{font-family:var(--display);font-weight:700;font-size:22px}#how .hh .t .d{color:var(--teal-br)}
+#how .hh .sub{font-size:12px;color:var(--mut);letter-spacing:.02em}
+#how .close{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--soft);background:transparent;border:1px solid var(--line2);border-radius:9px;padding:9px 14px;cursor:pointer}
+#how .close:hover{border-color:var(--red);color:#fff}
+#how .body{flex:1;display:grid;grid-template-columns:1.35fr .9fr;gap:0;min-height:0}
+#how .chat{padding:30px clamp(24px,4vw,60px);overflow:auto;display:flex;flex-direction:column;gap:20px;justify-content:flex-end}
+.turn{display:flex;gap:14px;max-width:80%;opacity:0;transform:translateY(16px);transition:opacity .5s cubic-bezier(.2,.7,.3,1),transform .5s cubic-bezier(.2,.7,.3,1)}
+.turn.in{opacity:1;transform:none}
+.turn .av{width:42px;height:42px;border-radius:12px;flex:none;display:grid;place-items:center;font-size:19px}
+.turn .bub{border-radius:14px;padding:14px 18px;font-size:15px;line-height:1.55}
+.turn.judge{align-self:flex-start}.turn.judge .av{background:#221a0e;color:var(--amber)}.turn.judge .bub{background:var(--panel);border:1px solid var(--line);color:var(--soft)}
+.turn.mend{align-self:flex-end;flex-direction:row-reverse}.turn.mend .av{background:var(--teal-dim);color:var(--teal-br)}.turn.mend .bub{background:linear-gradient(180deg,rgba(51,201,176,.12),rgba(51,201,176,.05));border:1px solid var(--teal-dim);color:#eafffb}
+.turn .who{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin-bottom:5px}
+.turn.mend .bub b{color:var(--teal-br)}
+/* mini architecture that highlights per turn */
+#how .diagram{border-left:1px solid var(--line2);padding:26px 26px;display:flex;flex-direction:column;gap:9px;overflow:auto;background:rgba(10,16,22,.5)}
+#how .dg-lane{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--mut);margin:6px 0 2px}
+#how .dn{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-size:13px;display:flex;align-items:center;gap:9px;transition:.3s;opacity:.4}
+#how .dn .dot{width:8px;height:8px;border-radius:50%;background:var(--mut);flex:none;transition:.3s}
+#how .dn small{color:var(--mut);margin-left:auto;font-size:11px}
+#how .dn.lit{opacity:1;border-color:var(--teal);box-shadow:0 0 0 1px var(--teal-dim),0 0 20px rgba(51,201,176,.12)}#how .dn.lit .dot{background:var(--teal-br);box-shadow:0 0 8px var(--teal-br)}
+#how .dn.red{opacity:1;border-color:var(--red-deep);background:rgba(192,53,59,.1)}#how .dn.red .dot{background:var(--red);box-shadow:0 0 8px var(--red)}
+#how .dg-arrow{text-align:center;color:var(--mut);font-size:12px;margin:-2px 0}
+#how .foot{display:flex;align-items:center;gap:14px;padding:16px 30px;border-top:1px solid var(--line2)}
+#how .foot .prog{flex:1;height:4px;background:var(--panel);border-radius:99px;overflow:hidden}#how .foot .prog i{display:block;height:100%;background:var(--teal-br);width:0;transition:width .4s}
+#how .foot button{font-family:var(--mono);font-size:13px;border-radius:10px;padding:11px 20px;cursor:pointer;border:1px solid var(--line2);background:var(--panel);color:var(--soft)}
+#how .foot button.pri{background:var(--teal-br);color:#03231e;border:0;font-weight:600}
+@media(max-width:900px){#how .body{grid-template-columns:1fr}#how .diagram{display:none}}
 </style></head>
 <body>
 <div class="top">
@@ -83,6 +117,7 @@ background-image:radial-gradient(1000px 560px at 82% -12%,rgba(51,201,176,.07),t
     <div class="stat ac"><span class="n" id="s-ac">0</span><span class="l">source patches</span></div>
     <div class="stat rv"><span class="n" id="s-rv">0</span><span class="l">cheats blocked</span></div>
   </div>
+  <button id="howbtn">▷ How it works</button>
 </div>
 <div class="bar">
   <span class="lab">Analyze a repo</span>
@@ -99,7 +134,7 @@ background-image:radial-gradient(1000px 560px at 82% -12%,rgba(51,201,176,.07),t
   <div class="pane sr">
     <div class="srbar" id="srbar">🔊 <b id="srtitle">What a screen reader announces</b><span class="live"><span class="dot"></span><span id="srstate">idle</span></span></div>
     <div class="srlist" id="srlist"><div class="emptysr">This shows what a blind or low-vision person actually experiences — before and after Mend heals the page. The robotic voice is the point: it's their real experience.</div></div>
-    <div class="srhint">real browser accessibility tree · <button id="replay">↻ hear again</button><button id="voicetoggle">🔊 voice on</button></div>
+    <div class="srhint">real browser accessibility tree · <button id="replay">▶ play as a screen reader</button><button id="voicetoggle">auto-voice off</button></div>
   </div>
   <div class="pane">
     <div class="hd">Diagnosis &amp; proof</div>
@@ -121,12 +156,69 @@ background-image:radial-gradient(1000px 560px at 82% -12%,rgba(51,201,176,.07),t
     <div class="log" id="log"></div>
   </div>
 </div>
+<!-- dialog-based architecture explainer -->
+<div id="how">
+  <div class="hh"><span class="t">How Mend works<span class="d">.</span></span><span class="sub">a two-minute conversation · the objections, answered</span><button class="close" id="howclose">✕ close</button></div>
+  <div class="body">
+    <div class="chat" id="chat"></div>
+    <div class="diagram">
+      <div class="dg-lane">Act</div>
+      <div class="dn" data-k="scan"><span class="dot"></span>axe scan<small>find</small></div><div class="dg-arrow">↓</div>
+      <div class="dn" data-k="map"><span class="dot"></span>source mapper<small>DOM→line</small></div><div class="dg-arrow">↓</div>
+      <div class="dn" data-k="patch"><span class="dot"></span>fixer · patch source<small>Claude</small></div>
+      <div class="dg-lane">Verify — all must pass</div>
+      <div class="dn" data-k="g1"><span class="dot"></span>gate 1 · axe<small>gone</small></div>
+      <div class="dn" data-k="g2"><span class="dot"></span>gate 2 · pixels<small>0 moved</small></div>
+      <div class="dn" data-k="g3"><span class="dot"></span>gate 3 · no suppression<small>anti-cheat</small></div>
+      <div class="dn" data-k="g4"><span class="dot"></span>gate 4 · IBM Equal Access<small>independent</small></div>
+      <div class="dn" data-k="critic"><span class="dot"></span>critic · Akash<small>different model</small></div>
+      <div class="dg-lane">Prove</div>
+      <div class="dn" data-k="receipt"><span class="dot"></span>commit + receipt<small>every fix</small></div>
+    </div>
+  </div>
+  <div class="foot"><div class="prog"><i id="howprog"></i></div><button id="howback">← back</button><button class="pri" id="hownext">next →</button></div>
+</div>
 <script>
 const $=(id)=>document.getElementById(id);
-const frame=$('frame'); let ws, voiceOn=true, srVoice=null, lastItems=null;
+const frame=$('frame'); let ws, voiceOn=false, srVoice=null, lastItems=null;
+
+// ---- dialog-based architecture explainer ----
+const DIALOG=[
+  {who:'judge',t:"You say you fix accessibility. So does every overlay widget. Why are you different?",lit:[]},
+  {who:'mend',t:"An overlay injects a script that hides problems at <b>runtime</b>. I fix your <b>source code</b> — a real commit — and then I refuse to believe myself.",lit:['scan','map','patch']},
+  {who:'judge',t:"“Refuse to believe yourself.” Meaning what, exactly?",lit:[]},
+  {who:'mend',t:"Every fix has to survive <b>four gates</b>. If any one fails, I revert it and write down why.",lit:['g1','g2','g3','g4']},
+  {who:'judge',t:"Fine — what are the gates?",lit:['g1','g2','g3','g4']},
+  {who:'mend',t:"<b>Gate 1</b>: the violation is actually gone. <b>Gate 2</b>: not a single pixel moved — your design is untouched. <b>Gate 3</b>: no suppression tricks. <b>Gate 4</b>: an independent engine, IBM Equal Access, agrees.",lit:['g1','g2','g3','g4']},
+  {who:'judge',t:"Couldn't your agent just add aria-hidden and make the scanner stop complaining?",lit:['g3']},
+  {who:'mend',t:"That's exactly what <b>gate 3</b> is for. Hiding content from a screen reader makes the site <b>worse</b>, not better — so that “fix” gets <b>rejected and reverted</b>.",lit:['g3','receipt'],red:'g3'},
+  {who:'judge',t:"And alt-text — who decides the description is actually true?",lit:['critic']},
+  {who:'mend',t:"A <b>critic</b> on a <b>different model family, different provider</b> — running on Akash. The writer never grades its own homework. Two axes of independence: engine and model.",lit:['critic','g4']},
+  {who:'judge',t:"Say I believe you. What do I actually walk away with?",lit:['receipt']},
+  {who:'mend',t:"A <b>repository</b>. A <b>commit and a receipt</b> for every fix — accepts and reverts both. Evidence a screen-reader user benefits from, and your lawyer can read.",lit:['receipt']},
+  {who:'judge',t:"…okay. That's not a widget. That's a paper trail.",lit:['receipt']},
+  {who:'mend',t:"That's the whole idea. We fix verified violations, and we hand you the evidence.",lit:['scan','map','patch','g1','g2','g3','g4','critic','receipt']},
+];
+let di=0;
+function renderDialog(upto){
+  const chat=$('chat');chat.innerHTML='';
+  for(let i=0;i<=upto&&i<DIALOG.length;i++){const d=DIALOG[i];const el=document.createElement('div');el.className='turn '+d.who;
+    el.innerHTML='<div class="av">'+(d.who==='judge'?'🧑‍⚖️':'✦')+'</div><div><div class="who">'+(d.who==='judge'?'A skeptical judge':'Mend')+'</div><div class="bub">'+d.t+'</div></div>';
+    chat.appendChild(el);setTimeout(()=>el.classList.add('in'),i===upto?40:0);}
+  chat.scrollTop=chat.scrollHeight;
+  const cur=DIALOG[Math.min(upto,DIALOG.length-1)];
+  document.querySelectorAll('#how .dn').forEach(n=>{n.classList.remove('lit','red');const k=n.dataset.k;if(cur.lit.includes(k))n.classList.add('lit');if(cur.red===k)n.classList.add('red');});
+  $('howprog').style.width=((upto+1)/DIALOG.length*100)+'%';
+  $('hownext').textContent=upto>=DIALOG.length-1?'restart ↻':'next →';
+}
+$('howbtn').addEventListener('click',()=>{$('how').classList.add('show');di=0;renderDialog(0);});
+$('howclose').addEventListener('click',()=>$('how').classList.remove('show'));
+$('hownext').addEventListener('click',()=>{di=di>=DIALOG.length-1?0:di+1;renderDialog(di);});
+$('howback').addEventListener('click',()=>{di=Math.max(0,di-1);renderDialog(di);});
+addEventListener('keydown',e=>{if(!$('how').classList.contains('show'))return;if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();$('hownext').click();}if(e.key==='ArrowLeft')$('howback').click();if(e.key==='Escape')$('howclose').click();});
 function pickVoice(){const vs=speechSynthesis.getVoices();srVoice=vs.find(v=>/Zarvox|Trinoids|Albert|Google US English|en-US/.test(v.name+v.lang))||vs.find(v=>/^en/.test(v.lang))||vs[0]||null;}
 speechSynthesis.onvoiceschanged=pickVoice;pickVoice();
-function speakSeq(items){if(!voiceOn||!('speechSynthesis'in window))return;speechSynthesis.cancel();$('srbar').classList.add('speaking');$('srstate').textContent='reading…';let i=0;const go=()=>{if(i>=items.length){$('srbar').classList.remove('speaking');$('srstate').textContent='done';return;}const u=new SpeechSynthesisUtterance(items[i].text.replace(/[“”]/g,''));if(srVoice)u.voice=srVoice;u.rate=1.06;u.onend=()=>{i++;go();};speechSynthesis.speak(u);};go();}
+function speakSeq(items,force){if((!voiceOn&&!force)||!('speechSynthesis'in window))return;speechSynthesis.cancel();$('srbar').classList.add('speaking');$('srstate').textContent='reading…';let i=0;const go=()=>{if(i>=items.length){$('srbar').classList.remove('speaking');$('srstate').textContent='done';return;}const u=new SpeechSynthesisUtterance(items[i].text.replace(/[“”]/g,''));if(srVoice)u.voice=srVoice;u.rate=1.06;u.onend=()=>{i++;go();};speechSynthesis.speak(u);};go();}
 function node(id){return $('n-'+id);}
 function setNode(id,state,sub){const n=node(id);if(!n)return;n.classList.remove('run','pass','fail');if(state)n.classList.add(state);if(sub!=null)n.querySelector('.sub').textContent=sub;}
 function logLine(t,cls){const d=document.createElement('div');d.className='ln '+(cls||'');d.textContent=(cls==='cmd'?'':'  ')+t;$('log').appendChild(d);$('log').scrollTop=$('log').scrollHeight;}
@@ -158,8 +250,8 @@ function analyze(){const repo=$('repo').value.trim();if(!repo)return;$('go').dis
 $('go').addEventListener('click',analyze);
 $('repo').addEventListener('keydown',e=>{if(e.key==='Enter')analyze();});
 document.querySelectorAll('.samples button').forEach(b=>b.addEventListener('click',()=>{$('repo').value=b.dataset.r;analyze();}));
-$('replay').addEventListener('click',()=>{if(lastItems)speakSeq(lastItems);});
-$('voicetoggle').addEventListener('click',()=>{voiceOn=!voiceOn;$('voicetoggle').textContent=voiceOn?'🔊 voice on':'🔇 voice off';if(!voiceOn)speechSynthesis.cancel();});
+$('replay').addEventListener('click',()=>{if(lastItems)speakSeq(lastItems,true);});
+$('voicetoggle').addEventListener('click',()=>{voiceOn=!voiceOn;$('voicetoggle').textContent=voiceOn?'auto-voice on':'auto-voice off';if(!voiceOn)speechSynthesis.cancel();});
 connect();
 </script>
 </body></html>
