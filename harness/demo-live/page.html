@@ -11,7 +11,9 @@
 --txt:#eaf0f7;--soft:#c3cedd;--mut:#7a8598;--display:'Fraunces',Georgia,serif;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--ink);color:var(--txt);font-family:var(--mono);height:100vh;overflow:hidden;-webkit-font-smoothing:antialiased;
+display:flex;flex-direction:column;
 background-image:radial-gradient(1000px 560px at 82% -12%,rgba(51,201,176,.07),transparent 58%),linear-gradient(rgba(180,205,235,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(180,205,235,.02) 1px,transparent 1px);background-size:100% 100%,46px 46px,46px 46px;}
+.top,.bar,.explain{flex:none}
 .top{display:flex;align-items:center;gap:16px;padding:13px 24px;border-bottom:1px solid var(--line)}
 .mark{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:-.02em}.mark .d{color:var(--teal-br)}
 .kick{font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--mut)}
@@ -38,8 +40,9 @@ background-image:radial-gradient(1000px 560px at 82% -12%,rgba(51,201,176,.07),t
 .explain.warn{background:linear-gradient(180deg,rgba(234,166,63,.08),transparent)}.explain.warn h2{color:var(--amber)}
 .explain.bad{background:linear-gradient(180deg,rgba(192,53,59,.1),transparent)}.explain.bad h2{color:#ff989c}
 .explain.good{background:linear-gradient(180deg,rgba(51,201,176,.1),transparent)}.explain.good h2{color:var(--teal-br)}
-.grid{display:grid;grid-template-columns:1fr 1.1fr .95fr;height:calc(100vh - 52px - 74px - 96px)}
-.pane{border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}.pane:last-child{border-right:0}
+.grid{display:grid;grid-template-columns:1fr 1.1fr .95fr;flex:1;min-height:0;overflow:hidden}
+.pane{border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0;overflow:hidden}.pane:last-child{border-right:0}
+.diag{flex:none}.pipe{flex:none}
 .hd{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut);padding:11px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
 .hd .badge{margin-left:auto;font-size:9px;padding:3px 8px;border-radius:6px;letter-spacing:.06em}.badge.before{background:var(--red-deep);color:#fff}.badge.after{background:var(--teal-dim);color:var(--teal-br)}
 .sitewrap{flex:1;position:relative;background:#fff;overflow:hidden}#frame{width:200%;height:200%;border:0;transform:scale(.5);transform-origin:0 0}
