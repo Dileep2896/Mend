@@ -3,166 +3,331 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mend — live</title>
+<title>Mend — live theatre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0D1520; --bg2:#121E2D; --panel:#16243689; --line:rgba(255,255,255,.09);
-    --teal:#2FBFA9; --teal-br:#5EEAD4; --teal-dim:#17564D; --amber:#E8A13D;
-    --red:#E5484D; --txt:#E8EDF4; --mut:#8B98AB;
-    --serif:Georgia,'Times New Roman',serif;
-    --sans:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
-    --mono:ui-monospace,'SF Mono','Cascadia Code',Menlo,Consolas,monospace;
+    --ink:#080c11; --ink2:#0d131a; --panel:#101822; --panel2:#0b1119;
+    --line:rgba(180,205,235,.08); --line2:rgba(180,205,235,.14);
+    --teal:#33c9b0; --teal-br:#74f0d8; --teal-dim:#123f39;
+    --amber:#eaa63f; --amber-dim:#3a2a10;
+    --red:#ff5b62; --red-deep:#c0353b; --red-dim:#3a1417;
+    --paper:#f2ecdd; --paper2:#e8e0cd; --paper-ink:#221d15; --paper-mut:#6b6250; --paper-line:#cfc4ad;
+    --txt:#e9eff7; --soft:#c3cedd; --mut:#78859a;
+    --display:'Fraunces',Georgia,'Times New Roman',serif;
+    --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,monospace;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--txt);font-family:var(--sans);min-height:100vh;padding:24px 32px}
-  header{display:flex;align-items:baseline;gap:16px;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:22px}
-  header .brand{font-family:var(--serif);font-weight:700;font-size:26px;letter-spacing:.04em}
-  header .tag{font-family:var(--mono);font-size:12px;color:var(--teal);letter-spacing:.16em;text-transform:uppercase}
-  header .live{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--mut);display:flex;align-items:center;gap:7px}
-  .dot{width:9px;height:9px;border-radius:50%;background:var(--red)}
-  .dot.on{background:var(--teal-br);box-shadow:0 0 10px var(--teal-br)}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--ink); color:var(--txt); font-family:var(--mono);
+    min-height:100vh; overflow-x:hidden; -webkit-font-smoothing:antialiased;
+    background-image:
+      radial-gradient(1100px 620px at 78% -8%, rgba(51,201,176,.09), transparent 60%),
+      radial-gradient(900px 520px at 8% 108%, rgba(234,166,63,.06), transparent 55%),
+      linear-gradient(rgba(180,205,235,.028) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(180,205,235,.028) 1px, transparent 1px);
+    background-size:100% 100%, 100% 100%, 46px 46px, 46px 46px;
+  }
+  /* grain overlay */
+  body::before{
+    content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.5;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.028'/%3E%3C/svg%3E");
+  }
+  .wrap{position:relative; z-index:1; max-width:1500px; margin:0 auto; padding:30px clamp(20px,3.4vw,52px) 60px}
 
-  .top{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
-  .stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 18px}
-  .stat .n{font-family:var(--mono);font-weight:700;font-size:clamp(38px,6vw,72px);color:var(--teal-br);
-    letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1}
-  .stat.warn .n{color:var(--amber)} .stat.rev .n{color:var(--red)}
-  .stat p{margin-top:10px;font-size:13px;color:#C4CDDA;line-height:1.4}
-  .stat .src{display:block;margin-top:6px;font-family:var(--mono);font-size:10.5px;color:var(--mut)}
+  /* ---------------- header ---------------- */
+  header{display:flex; align-items:flex-end; gap:20px; padding-bottom:20px;
+    border-bottom:1px solid var(--line2); margin-bottom:30px}
+  .mark{font-family:var(--display); font-weight:700; font-size:clamp(30px,3.6vw,46px);
+    letter-spacing:-.02em; line-height:.9; font-optical-sizing:auto}
+  .mark .dotdot{color:var(--teal-br)}
+  .kicker{font-size:11px; letter-spacing:.34em; text-transform:uppercase; color:var(--mut);
+    margin-bottom:9px}
+  .flow{display:flex; align-items:center; gap:8px; margin-left:6px; font-size:12px; color:var(--soft);
+    letter-spacing:.06em}
+  .flow b{color:var(--teal-br); font-weight:600}
+  .flow .arw{color:var(--mut)}
+  .pulse{margin-left:auto; display:flex; align-items:center; gap:10px; font-size:12px;
+    color:var(--mut); letter-spacing:.14em; text-transform:uppercase}
+  .beat{width:10px; height:10px; border-radius:50%; background:var(--red)}
+  .beat.on{background:var(--teal-br); animation:beat 1.5s ease-in-out infinite}
+  @keyframes beat{0%,100%{box-shadow:0 0 0 0 rgba(116,240,216,.55)}50%{box-shadow:0 0 0 8px rgba(116,240,216,0)}}
 
-  .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:22px;align-items:start}
-  h2{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--mut);margin-bottom:12px}
+  /* ---------------- vitals ---------------- */
+  .vitals{display:grid; grid-template-columns:1.5fr 1fr 1fr 1fr; gap:16px; margin-bottom:34px}
+  .vital{position:relative; background:linear-gradient(180deg,var(--panel),var(--panel2));
+    border:1px solid var(--line); border-radius:16px; padding:22px 22px 20px; overflow:hidden}
+  .vital .lbl{font-size:10.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--mut)}
+  .vital .num{font-family:var(--display); font-weight:600; font-size:clamp(46px,6.6vw,90px);
+    line-height:.92; letter-spacing:-.03em; font-variant-numeric:tabular-nums; margin-top:6px;
+    color:var(--teal-br)}
+  .vital .cap{margin-top:8px; font-size:11.5px; color:var(--soft); line-height:1.4}
+  .vital .cap b{color:#dbe4ef; font-weight:600}
+  .vital.hero{grid-row:span 1}
+  .vital.hero::after{content:""; position:absolute; inset:0; pointer-events:none;
+    background:radial-gradient(420px 200px at 90% 120%, rgba(51,201,176,.14), transparent 60%)}
+  .vital.rev .num{color:var(--red)} .vital.seed .num{color:var(--amber)}
+  .vital.rev .stamp-mini{position:absolute; top:16px; right:16px; font-size:9.5px; letter-spacing:.18em;
+    color:var(--red); border:1px solid var(--red-deep); border-radius:5px; padding:3px 7px; transform:rotate(4deg)}
+  /* EKG line in hero */
+  .ekg{position:absolute; left:0; right:0; bottom:0; height:46px; width:100%; opacity:.9}
+  .ekg path{fill:none; stroke:var(--teal); stroke-width:1.6; stroke-linecap:round;
+    filter:drop-shadow(0 0 5px rgba(51,201,176,.5))}
+  .ekg .sweep{stroke:var(--teal-br); stroke-width:2.4}
 
-  .round{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px;
-    cursor:pointer;transition:border-color .2s,transform .15s}
-  .round:hover{border-color:var(--teal);transform:translateX(2px)}
-  .round.rev{border-left:4px solid var(--red)}
-  .round.acc{border-left:4px solid var(--teal)}
-  .round .r1{display:flex;align-items:center;gap:10px;font-size:15px}
-  .round .seq{font-family:var(--mono);color:var(--mut);font-size:13px}
-  .round .rule{font-family:var(--mono);font-weight:600}
-  .round .verdict{margin-left:auto;font-family:var(--mono);font-size:12px;padding:2px 9px;border-radius:99px}
-  .verdict.acc{background:var(--teal-dim);color:var(--teal-br)}
-  .verdict.rev{background:#3a1414;color:#ff9a9d}
-  .round .r2{margin-top:8px;font-size:12.5px;color:var(--mut);font-family:var(--mono)}
-  .gates{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
-  .g{font-family:var(--mono);font-size:11px;padding:3px 8px;border-radius:6px;border:1px solid var(--line)}
-  .g.ok{background:var(--teal-dim);color:var(--teal-br);border-color:#2FBFA944}
-  .g.no{background:#3a1414;color:#ff9a9d;border-color:#E5484D44}
-  .critic{margin-top:9px;font-size:12.5px;color:#C4CDDA;font-style:italic;line-height:1.4}
-  .critic b{color:var(--teal-br);font-style:normal;font-family:var(--mono)}
+  /* ---------------- layout ---------------- */
+  .cols{display:grid; grid-template-columns:1.05fr .95fr; gap:30px; align-items:start}
+  .sect-h{font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:var(--mut);
+    margin-bottom:16px; display:flex; align-items:center; gap:10px}
+  .sect-h::after{content:""; flex:1; height:1px; background:var(--line)}
 
-  #detail{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;position:sticky;top:16px}
-  #detail .imgs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
-  #detail figure{margin:0} #detail figcaption{font-family:var(--mono);font-size:11px;color:var(--mut);margin-bottom:5px}
-  #detail img{width:100%;border:1px solid var(--line);border-radius:8px;background:#fff}
-  #detail .empty{color:var(--mut);font-size:13px;padding:30px 0;text-align:center}
-  pre{background:#0A101B;border:1px solid var(--line);border-radius:8px;padding:12px;overflow:auto;
-    font-family:var(--mono);font-size:11.5px;line-height:1.5;max-height:280px;color:#C4CDDA}
-  pre .add{color:#5EEAD4} pre .del{color:#ff9a9d}
-  .lang{margin-top:16px;font-size:12px;color:var(--mut);border-top:1px solid var(--line);padding-top:12px;line-height:1.5}
-  .lang b{color:#C4CDDA}
+  /* round log — case entries */
+  .entry{position:relative; background:var(--panel); border:1px solid var(--line);
+    border-left:3px solid var(--teal); border-radius:12px; padding:15px 17px; margin-bottom:13px;
+    cursor:pointer; transition:transform .18s cubic-bezier(.3,1.4,.5,1), border-color .2s, background .2s}
+  .entry:hover{transform:translateX(4px); border-color:var(--line2); background:#121b26}
+  .entry.rev{border-left-color:var(--red)}
+  .entry.sel{background:#13202c; border-color:var(--teal-dim)}
+  .entry.rev.sel{border-color:var(--red-dim)}
+  .e-top{display:flex; align-items:center; gap:11px}
+  .e-seq{font-size:12px; color:var(--mut)}
+  .e-rule{font-family:var(--display); font-size:19px; font-weight:600; letter-spacing:-.01em}
+  .e-verdict{margin-left:auto; font-size:10px; letter-spacing:.14em; padding:4px 10px; border-radius:99px;
+    text-transform:uppercase}
+  .e-verdict.acc{background:var(--teal-dim); color:var(--teal-br)}
+  .e-verdict.rev{background:var(--red-dim); color:#ff989c}
+  .e-meta{margin-top:7px; font-size:11.5px; color:var(--mut); word-break:break-all}
+  .e-meta .delta{color:var(--teal-br)} .entry.rev .e-meta .delta{color:#ff989c}
+  .diag{display:flex; gap:6px; margin-top:12px; flex-wrap:wrap}
+  .lamp{display:flex; align-items:center; gap:5px; font-size:10px; letter-spacing:.06em;
+    padding:4px 9px; border-radius:6px; border:1px solid var(--line); color:var(--mut); text-transform:uppercase}
+  .lamp .led{width:6px; height:6px; border-radius:50%; background:var(--mut)}
+  .lamp.ok{color:var(--teal-br); border-color:rgba(51,201,176,.28); background:rgba(51,201,176,.07)}
+  .lamp.ok .led{background:var(--teal-br); box-shadow:0 0 7px var(--teal-br)}
+  .lamp.no{color:#ff989c; border-color:rgba(192,53,59,.4); background:rgba(192,53,59,.1)}
+  .lamp.no .led{background:var(--red); box-shadow:0 0 7px var(--red)}
+  .e-critic{margin-top:11px; font-size:11.5px; color:var(--soft); line-height:1.45;
+    border-top:1px dashed var(--line2); padding-top:9px}
+  .e-critic b{color:var(--teal-br)}
+
+  /* ---------------- the receipt: physical paper ---------------- */
+  .receipt-stage{position:sticky; top:24px}
+  .receipt{position:relative; background:var(--paper); color:var(--paper-ink);
+    border-radius:3px; padding:30px 30px 26px; box-shadow:0 30px 60px -18px rgba(0,0,0,.7), 0 4px 14px rgba(0,0,0,.4);
+    transform:rotate(-.5deg); font-family:var(--mono);
+    background-image:
+      linear-gradient(var(--paper), var(--paper2)),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='.04'/%3E%3C/svg%3E");
+  }
+  /* perforated top + bottom edges */
+  .receipt::before, .receipt::after{content:""; position:absolute; left:0; right:0; height:12px;
+    background:radial-gradient(circle at 8px -2px, transparent 0 7px, var(--paper) 7px);
+    background-size:16px 12px; background-repeat:repeat-x}
+  .receipt::before{top:-11px; transform:scaleY(-1)}
+  .receipt::after{bottom:-11px}
+  .rc-head{display:flex; justify-content:space-between; align-items:baseline;
+    border-bottom:2px solid var(--paper-ink); padding-bottom:12px}
+  .rc-head .rc-title{font-family:var(--display); font-weight:700; font-size:19px; letter-spacing:.02em}
+  .rc-head .rc-no{font-size:11px; color:var(--paper-mut); letter-spacing:.1em}
+  .rc-sub{font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; color:var(--paper-mut);
+    margin:9px 0 18px}
+  .stamp{position:absolute; top:74px; right:26px; font-family:var(--display); font-weight:700;
+    font-size:15px; letter-spacing:.06em; padding:7px 13px; border:2.5px solid var(--teal-dim);
+    color:#1c6b5f; border-radius:6px; transform:rotate(-9deg); text-transform:uppercase;
+    box-shadow:inset 0 0 0 1px rgba(28,107,95,.25); opacity:.92; mix-blend-mode:multiply;
+    animation:slam .4s cubic-bezier(.2,1.6,.4,1) both}
+  .stamp.rev{border-color:var(--red-deep); color:#b23238}
+  @keyframes slam{0%{transform:rotate(-9deg) scale(2.4); opacity:0}60%{opacity:.92}100%{transform:rotate(-9deg) scale(1); opacity:.92}}
+  .rc-rows{margin:4px 0 16px}
+  .rc-row{display:flex; justify-content:space-between; gap:12px; font-size:12px; padding:5px 0;
+    border-bottom:1px dotted var(--paper-line)}
+  .rc-row .k{color:var(--paper-mut); letter-spacing:.04em}
+  .rc-row .v{text-align:right; font-weight:500; word-break:break-all}
+  .rc-imgs{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:16px 0}
+  .rc-imgs figure{margin:0}
+  .rc-imgs figcaption{font-size:9.5px; letter-spacing:.18em; text-transform:uppercase; color:var(--paper-mut); margin-bottom:5px}
+  .rc-imgs img{width:100%; border:1px solid var(--paper-line); border-radius:3px; display:block}
+  .rc-gates{display:flex; flex-wrap:wrap; gap:6px; margin:14px 0}
+  .rc-gate{font-size:10px; letter-spacing:.05em; padding:4px 8px; border-radius:4px; text-transform:uppercase}
+  .rc-gate.ok{background:#d7ead4; color:#25612a; border:1px solid #b6d3b0}
+  .rc-gate.no{background:#f0d3d1; color:#a02b30; border:1px solid #ddb0ad}
+  .rc-patch{background:#1a1712; color:#d9cdb6; border-radius:5px; padding:13px 14px; overflow:auto;
+    font-size:11px; line-height:1.6; max-height:220px; margin:6px 0 14px}
+  .rc-patch .add{color:#74f0d8} .rc-patch .del{color:#ff9a9d} .rc-patch .hdr{color:#8a8266}
+  .rc-note{font-size:11.5px; line-height:1.6; color:#3a342a; border-top:1px dashed var(--paper-line); padding-top:12px}
+  .rc-note b{color:var(--paper-ink)}
+  .rc-foot{margin-top:16px; padding-top:12px; border-top:2px solid var(--paper-ink);
+    display:flex; justify-content:space-between; font-size:9.5px; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--paper-mut)}
+  .barcode{height:26px; width:150px; align-self:center;
+    background:repeating-linear-gradient(90deg, var(--paper-ink) 0 1px, transparent 1px 2px,
+      var(--paper-ink) 2px 4px, transparent 4px 5px, var(--paper-ink) 5px 8px, transparent 8px 10px)}
+  .empty-r{background:var(--panel); border:1px dashed var(--line2); border-radius:12px;
+    padding:60px 24px; text-align:center; color:var(--mut); font-size:13px; line-height:1.6}
+  .empty-r .big{font-family:var(--display); font-size:22px; color:var(--soft); display:block; margin-bottom:8px}
+
+  /* entrance */
+  .rise{opacity:0; transform:translateY(14px); animation:rise .6s cubic-bezier(.2,.7,.3,1) forwards}
+  @keyframes rise{to{opacity:1; transform:none}}
+  .v0{animation-delay:.02s}.v1{animation-delay:.1s}.v2{animation-delay:.18s}.v3{animation-delay:.26s}
+  .v4{animation-delay:.36s}.v5{animation-delay:.44s}
+
+  @media (max-width:960px){
+    .vitals{grid-template-columns:1fr 1fr} .cols{grid-template-columns:1fr}
+    .receipt-stage{position:static} .vital.hero{grid-column:span 2}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+  ::selection{background:var(--teal-dim); color:#eafff9}
+  .rc-patch::-webkit-scrollbar{height:8px;width:8px}.rc-patch::-webkit-scrollbar-thumb{background:#3a342a;border-radius:8px}
 </style>
 </head>
 <body>
-<header>
-  <span class="brand">Mend</span>
-  <span class="tag">live · fix → verify → receipt</span>
-  <span class="live"><span class="dot" id="dot"></span><span id="livetxt">connecting…</span></span>
-</header>
+<div class="wrap">
+  <header class="rise v0">
+    <div>
+      <div class="kicker">Mend · self-verifying repair loop</div>
+      <div class="mark">Mend<span class="dotdot">.</span></div>
+    </div>
+    <div class="flow"><b>fix</b><span class="arw">→</span><b>verify</b><span class="arw">→</span><b>receipt</b></div>
+    <div class="pulse"><span class="beat" id="beat"></span><span id="livetxt">connecting</span></div>
+  </header>
 
-<div class="top">
-  <div class="stat"><div class="n" id="fixed">0</div><p>violation nodes fixed <b>&amp; verified</b><span class="src">accepted through all gates + critic</span></p></div>
-  <div class="stat"><div class="n" id="accepts">0</div><p>fixes accepted<span class="src">committed with a receipt</span></p></div>
-  <div class="stat rev"><div class="n" id="reverts">0</div><p>caught &amp; reverted<span class="src">the revert is the product</span></p></div>
-  <div class="stat warn"><div class="n" id="seed">—</div><p>seed violation nodes (axe)<span class="src" id="engines">axe-core + IBM Equal Access</span></p></div>
-</div>
+  <section class="vitals">
+    <div class="vital hero rise v1">
+      <div class="lbl">Violation nodes fixed &amp; verified</div>
+      <div class="num" id="fixed">0</div>
+      <div class="cap">accepted through <b>all four gates</b> + the isolated critic</div>
+      <svg class="ekg" id="ekg" viewBox="0 0 600 46" preserveAspectRatio="none" aria-hidden="true"></svg>
+    </div>
+    <div class="vital rise v2"><div class="lbl">Fixes accepted</div><div class="num" id="accepts">0</div>
+      <div class="cap">each committed with a <b>receipt</b></div></div>
+    <div class="vital rev rise v3"><span class="stamp-mini">CAUGHT</span><div class="lbl">Caught &amp; reverted</div>
+      <div class="num" id="reverts">0</div><div class="cap">the revert <b>is</b> the product</div></div>
+    <div class="vital seed rise v4"><div class="lbl">Seed violations (axe)</div><div class="num" id="seed">—</div>
+      <div class="cap" id="engines">axe-core + IBM Equal Access</div></div>
+  </section>
 
-<div class="grid">
-  <section>
-    <h2>Round log — accepts and reverts</h2>
-    <div id="rounds"></div>
-  </section>
-  <section>
-    <h2>Receipt</h2>
-    <div id="detail"><div class="empty">Select a round to open its receipt.</div></div>
-  </section>
+  <div class="cols">
+    <section class="rise v5">
+      <div class="sect-h">Round log — accepts &amp; reverts</div>
+      <div id="rounds"></div>
+    </section>
+    <section class="rise v5">
+      <div class="sect-h">Evidence receipt</div>
+      <div class="receipt-stage" id="stage">
+        <div class="empty-r"><span class="big">Select a round</span>Every fix — accepted or reverted — prints a receipt you could hand to a lawyer.</div>
+      </div>
+    </section>
+  </div>
 </div>
 
 <script>
-  let state = null, selected = null;
-  const $ = (id) => document.getElementById(id);
+  let state=null, selected=null;
+  const $=(id)=>document.getElementById(id);
+  const esc=(s)=>String(s).replace(/[&<>]/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  const short=(m)=>(m||"").split(".").pop();
+
+  // ---- animated EKG that beats once per accepted fix (a healing heartbeat)
+  function drawEkg(){
+    const svg=$("ekg"); if(!svg) return;
+    const W=600,H=46,mid=H*0.62; let d=`M0,${mid}`;
+    for(let x=0;x<=W;x+=60){
+      d+=` L${x+18},${mid}`;
+      d+=` L${x+24},${mid-1} L${x+30},${mid+13} L${x+36},${mid-22} L${x+42},${mid} L${x+60},${mid}`;
+    }
+    svg.innerHTML=`<path d="${d}"/><path class="sweep" d="${d}" style="stroke-dasharray:120 1200"/>`;
+    const sweep=svg.querySelector('.sweep'); let off=0;
+    (function loop(){ off=(off+2.4)%1320; sweep.style.strokeDashoffset=-off; requestAnimationFrame(loop); })();
+  }
 
   function connect(){
-    const ws = new WebSocket(`ws://${location.host}`);
-    ws.onopen = () => { $("dot").classList.add("on"); $("livetxt").textContent = "live"; };
-    ws.onclose = () => { $("dot").classList.remove("on"); $("livetxt").textContent = "reconnecting…"; setTimeout(connect, 1200); };
-    ws.onmessage = (e) => { const m = JSON.parse(e.data); if (m.type === "state"){ state = m.state; render(); } };
+    const ws=new WebSocket(`ws://${location.host}`);
+    ws.onopen=()=>{$("beat").classList.add("on");$("livetxt").textContent="live";};
+    ws.onclose=()=>{$("beat").classList.remove("on");$("livetxt").textContent="reconnecting";setTimeout(connect,1200);};
+    ws.onmessage=(e)=>{const m=JSON.parse(e.data); if(m.type==="state"){state=m.state; render();}};
   }
 
   function render(){
     if(!state) return;
-    animate($("fixed"), state.fixed);
-    animate($("accepts"), state.accepts);
-    animate($("reverts"), state.reverts);
-    $("seed").textContent = state.seedTotal ?? "—";
-    $("engines").textContent = `${state.engines.primary} + ${state.engines.second}`;
-    const rounds = $("rounds"); rounds.innerHTML = "";
-    [...state.receipts].reverse().forEach((r) => rounds.appendChild(roundCard(r)));
-    if (selected){ const r = state.receipts.find((x) => x.dir === selected); if (r) showDetail(r); }
+    countTo($("fixed"),state.fixed); countTo($("accepts"),state.accepts); countTo($("reverts"),state.reverts);
+    $("seed").textContent=state.seedTotal??"—";
+    $("engines").textContent=`${state.engines.primary} + ${state.engines.second}`;
+    const box=$("rounds"); box.innerHTML="";
+    [...state.receipts].reverse().forEach((r)=>box.appendChild(entry(r)));
+    if(selected){const r=state.receipts.find(x=>x.dir===selected); if(r) drawReceipt(r);}
   }
 
-  function roundCard(r){
-    const el = document.createElement("div");
-    el.className = "round " + (r.decision === "accept" ? "acc" : "rev");
-    const gates = (r.gates||[]).map((g) => `<span class="g ${g.pass?'ok':'no'}">${g.name.replace(/^gate/,'').replace(/-/g,' ')} ${g.pass?'✓':'✗'}</span>`).join("");
-    const critic = r.critic ? `<div class="critic"><b>critic ${r.critic.verdict}</b> — ${r.critic.reason||''}</div>` : "";
-    const delta = (r.beforeCount!=null&&r.afterCount!=null) ? `${r.beforeCount}→${r.afterCount}` : "";
-    el.innerHTML = `<div class="r1"><span class="seq">#${String(r.seq).padStart(2,'0')}</span>
-      <span class="rule">${r.ruleId}</span>
-      <span class="verdict ${r.decision==='accept'?'acc':'rev'}">${r.decision==='accept'?'ACCEPTED':'REVERTED'}</span></div>
-      <div class="r2">${r.source?.file||''} · ${r.selector||''} ${delta?'· '+delta:''}</div>
-      <div class="gates">${gates}</div>${critic}`;
-    el.onclick = () => { selected = r.dir; showDetail(r); };
+  function entry(r){
+    const el=document.createElement("div");
+    el.className="entry "+(r.decision==="accept"?"acc":"rev")+(selected===r.dir?" sel":"");
+    const gnames={"gate1-axe":"axe","gate2-pixel":"pixel","gate2b-contrast":"contrast","gate3-patterns":"patterns","gate4-engine2":"engine2"};
+    const lamps=(r.gates||[]).map(g=>`<span class="lamp ${g.pass?'ok':'no'}"><span class="led"></span>${gnames[g.name]||g.name}</span>`).join("");
+    const critic=r.critic?`<span class="lamp ${r.critic.verdict==='PASS'?'ok':'no'}"><span class="led"></span>critic</span>`:"";
+    const criticLine=r.critic?`<div class="e-critic"><b>critic ${r.critic.verdict}</b> — ${esc(r.critic.reason||'')}</div>`:"";
+    const delta=(r.beforeCount!=null&&r.afterCount!=null)?`<span class="delta">${r.beforeCount}→${r.afterCount}</span>`:"";
+    el.innerHTML=`<div class="e-top"><span class="e-seq">#${String(r.seq).padStart(2,'0')}</span>
+      <span class="e-rule">${esc(r.ruleId)}</span>
+      <span class="e-verdict ${r.decision==='accept'?'acc':'rev'}">${r.decision==='accept'?'accepted':'reverted'}</span></div>
+      <div class="e-meta">${esc(r.source?.file||'')} · ${esc(r.selector||'')} ${delta}</div>
+      <div class="diag">${lamps}${critic}</div>${criticLine}`;
+    el.onclick=()=>{selected=r.dir; render(); drawReceipt(r); $("stage").scrollIntoView({block:"nearest"});};
     return el;
   }
 
-  async function showDetail(r){
-    const d = $("detail");
-    const base = `/receipts/${r.dir}`;
-    const imgs = [];
-    if (r.hasBefore) imgs.push(`<figure><figcaption>before</figcaption><img src="${base}/before.png"></figure>`);
-    if (r.hasAfter) imgs.push(`<figure><figcaption>after</figcaption><img src="${base}/after.png"></figure>`);
-    let patch = "";
-    try { patch = await (await fetch(`${base}/patch.diff`)).text(); } catch {}
-    const patchHtml = patch.split("\n").slice(0,60).map((l) =>
-      l.startsWith("+")&&!l.startsWith("+++") ? `<span class="add">${esc(l)}</span>` :
-      l.startsWith("-")&&!l.startsWith("---") ? `<span class="del">${esc(l)}</span>` : esc(l)
-    ).join("\n");
-    let notes = "";
-    try { notes = await (await fetch(`${base}/notes.md`)).text(); } catch {}
-    d.innerHTML = `
-      <div class="r1" style="display:flex;gap:10px;align-items:center;font-size:16px">
-        <span class="rule" style="font-family:var(--mono);font-weight:600">#${String(r.seq).padStart(2,'0')} ${r.ruleId}</span>
-        <span class="verdict ${r.decision==='accept'?'acc':'rev'}">${r.decision==='accept'?'ACCEPTED':'REVERTED, CAUGHT'}</span>
-      </div>
-      <div class="r2" style="font-family:var(--mono);font-size:12px;color:var(--mut);margin-top:6px">
-        ${r.source?.file||''}:${r.source?.lineStart||''} · commit ${r.commit||'—'} ${r.models?'· fixer '+short(r.models.fixer)+' / critic '+short(r.models.critic):''}</div>
-      ${imgs.length?`<div class="imgs">${imgs.join("")}</div>`:""}
-      <pre>${patchHtml||'(no patch)'}</pre>
-      <div class="lang">${esc(firstPara(notes))}</div>`;
+  async function drawReceipt(r){
+    const base=`/receipts/${r.dir}`;
+    let patch="",notes="";
+    try{patch=await (await fetch(`${base}/patch.diff`)).text();}catch{}
+    try{notes=await (await fetch(`${base}/notes.md`)).text();}catch{}
+    const acc=r.decision==="accept";
+    const patchHtml=patch.split("\n").slice(0,70).map(l=>
+      l.startsWith("@@")||l.startsWith("#")||l.startsWith("diff")?`<span class="hdr">${esc(l)}</span>`:
+      l.startsWith("+")&&!l.startsWith("+++")?`<span class="add">${esc(l)}</span>`:
+      l.startsWith("-")&&!l.startsWith("---")?`<span class="del">${esc(l)}</span>`:esc(l)).join("\n");
+    const imgs=[];
+    if(r.hasBefore) imgs.push(`<figure><figcaption>before</figcaption><img src="${base}/before.png" loading="lazy"></figure>`);
+    if(r.hasAfter) imgs.push(`<figure><figcaption>after</figcaption><img src="${base}/after.png" loading="lazy"></figure>`);
+    const note=(notes||"").split("\n").filter(l=>l&&!l.startsWith("#")).slice(0,4).join(" ");
+    const row=(k,v)=>v?`<div class="rc-row"><span class="k">${k}</span><span class="v">${esc(v)}</span></div>`:"";
+    const gates=(r.gates||[]).map(g=>`<span class="rc-gate ${g.pass?'ok':'no'}">${g.name.replace('gate','g').replace(/-/g,' ')} ${g.pass?'✓':'✗'}</span>`).join("");
+    $("stage").innerHTML=`
+      <div class="receipt">
+        <div class="stamp ${acc?'':'rev'}">${acc?'Verified':'Reverted'}</div>
+        <div class="rc-head">
+          <span class="rc-title">Mend</span>
+          <span class="rc-no">RECEIPT #${String(r.seq).padStart(3,'0')}</span>
+        </div>
+        <div class="rc-sub">Verification receipt · ${acc?'fixed and verified':'reverted, caught by a gate'}</div>
+        <div class="rc-rows">
+          ${row("Rule", r.ruleId)}
+          ${row("Impact", r.impact)}
+          ${row("Source", (r.source?.file||'')+':'+(r.source?.lineStart||''))}
+          ${row("Selector", r.selector)}
+          ${row("axe (rule)", r.beforeCount!=null?`${r.beforeCount} → ${r.afterCount}`:null)}
+          ${row("Fixer", r.models?short(r.models.fixer):null)}
+          ${row("Critic", r.models?short(r.models.critic):null)}
+          ${row("Commit", r.commit)}
+        </div>
+        ${imgs.length?`<div class="rc-imgs">${imgs.join("")}</div>`:""}
+        <div class="rc-gates">${gates}${r.critic?`<span class="rc-gate ${r.critic.verdict==='PASS'?'ok':'no'}">critic ${r.critic.verdict==='PASS'?'✓':'✗'}</span>`:""}</div>
+        <div class="rc-patch">${patchHtml||'(no patch)'}</div>
+        <div class="rc-note">${esc(note)}</div>
+        <div class="rc-foot"><span>${acc?'ACCEPTED':'REVERTED · EVIDENCE'}</span><span class="barcode"></span><span>MEND ✓</span></div>
+      </div>`;
   }
-  const short = (m) => (m||"").split(".").pop();
-  const esc = (s) => s.replace(/[&<>]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
-  const firstPara = (md) => (md||"").split("\n").filter((l)=>l && !l.startsWith("#")).slice(0,3).join(" ");
 
-  function animate(el, to){
-    const from = Number(el.textContent)||0; if(from===to){el.textContent=to;return;}
-    const t0=performance.now(), dur=500;
-    (function tick(t){const p=Math.min(1,(t-t0)/dur);el.textContent=Math.round(from+(to-from)*p);if(p<1)requestAnimationFrame(tick);})(t0);
+  function countTo(el,to){
+    to=Number(to)||0; const from=Number(el.textContent.replace(/\D/g,''))||0;
+    if(from===to){el.textContent=to;return;}
+    const t0=performance.now(),dur=560;
+    (function tick(t){const p=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-p,3);
+      el.textContent=Math.round(from+(to-from)*e); if(p<1)requestAnimationFrame(tick);})(t0);
   }
 
-  connect();
+  drawEkg(); connect();
 </script>
 </body>
 </html>
