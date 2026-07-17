@@ -1,0 +1,59 @@
+{
+  "seq": 5,
+  "round": "r5",
+  "ruleId": "label-title-only",
+  "impact": "serious",
+  "selector": "#exampleInputEmail",
+  "source": {
+    "file": "target/forgot-password.html",
+    "lineStart": 48,
+    "lineEnd": 51
+  },
+  "attempt": 1,
+  "decision": "accept",
+  "gates": [
+    {
+      "name": "gate1-axe",
+      "pass": true,
+      "detail": "axe 7 → 6; newRules=[]; target 'label-title-only' 1→0 (reduced)"
+    },
+    {
+      "name": "gate2-pixel",
+      "pass": true,
+      "detail": "changed px = 0"
+    },
+    {
+      "name": "gate3-patterns",
+      "pass": true,
+      "detail": "no banned patterns"
+    },
+    {
+      "name": "gate4-engine2",
+      "pass": true,
+      "detail": "engine2 total = 4 (baseline 4)"
+    }
+  ],
+  "verifyPass": true,
+  "critic": {
+    "verdict": "PASS",
+    "reason": "'Email address' tells a screen-reader user the field expects an email; consistent with the visible placeholder."
+  },
+  "models": {
+    "fixer": "us.anthropic.claude-sonnet-4-6",
+    "critic": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+  },
+  "tokens": {
+    "in": null,
+    "out": null
+  },
+  "estCostUsd": null,
+  "commit": "58e4e50",
+  "evidence": [
+    "before.png",
+    "after.png",
+    "diff.png"
+  ],
+  "timestamps": {
+    "written": "2026-07-17T19:26:04.200Z"
+  }
+}

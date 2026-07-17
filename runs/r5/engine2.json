@@ -1,0 +1,15 @@
+{
+  "gate": "engine2",
+  "engine": "IBM Equal Access",
+  "round": "r5",
+  "total": 4,
+  "baseline": 4,
+  "pass": true,
+  "perRoute": [
+    {
+      "route": "forgot-password.html",
+      "violation": 4,
+      "potentialviolation": 8
+    }
+  ]
+}

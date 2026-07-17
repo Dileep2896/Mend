@@ -1,0 +1,12 @@
+diff --git a/target/forgot-password.html b/target/forgot-password.html
+index 5f198c1..4f50791 100644
+--- a/target/forgot-password.html
++++ b/target/forgot-password.html
+@@ -47,6 +47,7 @@
+                                         <div class="form-group">
+                                             <input type="email" class="form-control form-control-user"
+                                                 id="exampleInputEmail" aria-describedby="emailHelp"
++                                                aria-label="Email address"
+                                                 placeholder="Enter Email Address...">
+                                         </div>
+                                         <a href="login.html" class="btn btn-primary btn-user btn-block">

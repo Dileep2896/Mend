@@ -1,0 +1,103 @@
+{
+  "scannedAt": "2026-07-17T19:25:20.931Z",
+  "base": "http://127.0.0.1:52324",
+  "routes": [
+    {
+      "route": "forgot-password.html",
+      "violationCount": 7,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": [
+                "p"
+              ],
+              "html": "<p class=\"mb-4\">We get it, stuff happens. Just enter your email address below\n                                            and we'll send you a link to reset your password!</p>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.55 (foreground color: #858796, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".btn"
+              ],
+              "html": "<a href=\"login.html\" class=\"btn btn-primary btn-user btn-block\">\n                                            Reset Password\n                                        </a>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.33 (foreground color: #ffffff, background color: #4e73df, font size: 9.6pt (12.8px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "a[href$=\"register.html\"]"
+              ],
+              "html": "<a class=\"small\" href=\"register.html\">Create an Account!</a>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.33 (foreground color: #4e73df, background color: #ffffff, font size: 9.6pt (12.8px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".small[href$=\"login.html\"]"
+              ],
+              "html": "<a class=\"small\" href=\"login.html\">Already have an account? Login!</a>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.33 (foreground color: #4e73df, background color: #ffffff, font size: 9.6pt (12.8px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        },
+        {
+          "id": "label-title-only",
+          "impact": "serious",
+          "help": "Form elements should have a visible label",
+          "nodes": [
+            {
+              "target": [
+                "#exampleInputEmail"
+              ],
+              "html": "<input type=\"email\" class=\"form-control form-control-user\" id=\"exampleInputEmail\" aria-describedby=\"emailHelp\" placeholder=\"Enter Email Address...\">",
+              "failureSummary": "Fix all of the following:\n  Only title used to generate label for form element"
+            }
+          ]
+        },
+        {
+          "id": "landmark-one-main",
+          "impact": "moderate",
+          "help": "Document should have one main landmark",
+          "nodes": [
+            {
+              "target": [
+                "html"
+              ],
+              "html": "<html lang=\"en\">",
+              "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
+            }
+          ]
+        },
+        {
+          "id": "region",
+          "impact": "moderate",
+          "help": "All page content should be contained by landmarks",
+          "nodes": [
+            {
+              "target": [
+                ".container"
+              ],
+              "html": "<div class=\"container\">",
+              "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "violations": 7,
+    "ruleClasses": 4,
+    "byRule": {
+      "color-contrast": 4,
+      "label-title-only": 1,
+      "landmark-one-main": 1,
+      "region": 1
+    },
+    "byImpact": {
+      "serious": 5,
+      "moderate": 2
+    }
+  }
+}
