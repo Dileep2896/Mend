@@ -121,8 +121,12 @@ Act 2. No sponsor integration ever sits on the critical path of Act 2.
       suppression on a copy drops axe 4->2 while deleting buttons + hiding controls;
       Mend gate 3 REJECTS (interactive-deleted, display-none-added). Evidence +
       before/after screenshots in receipts/naive-baseline/. Act 1.
-- [ ] Zero: agent deploys the healed site to a shareable link as the loop's final
-      act. Capture the link + the moment for the demo.
+- [x] Zero: agent deploys the healed site to a shareable link as the loop's final
+      act (harness/deploy-zero.mjs / `npm run deploy`). VERIFIED LIVE + FREE:
+      https://sites.withzero.ai/mend-healed-login-demo (paid 0 USDC, --max-pay 0
+      hard cap). Self-contained healed page (<500KB) with a "Healed by Mend" badge;
+      URL flows into runs/deploy.json and the dashboard header ("↗ healed site is
+      live"). Anonymous agent wallet, no funding, no human sign-in.
 - [ ] (Amendment 1 §3, verification-gated — Zero email = YES) Extended final act:
       after the Zero deploy, the agent emails the receipt bundle (zip of receipts/
       + dashboard link) to a stakeholder address via a Zero registry email service

@@ -100,3 +100,15 @@ MONEY: only paid call is the Akash critic (bounded max_tokens + 90s timeout + 3M
 no Zero/email/wallet code wired anywhere. Session Akash spend ~$0.001. Deferred M2/M4 (gate3
 element-context) need rendered-element inspection — out of weekend scope, our fixes don't trigger
 them. | next: commit, keep spend ~$0.
+
+2026-07-17 late | Zero closing act — agent self-deploys healed site (FREE) | built
+harness/deploy-zero.mjs (npm run deploy): inline CSS → self-contained <500KB healed page +
+"Healed by Mend" badge → `zero fetch host.withzero.ai/run --max-pay 0`; registered anonymous
+agent wallet; wired deploy URL into dashboard | verified LIVE via Playwright | DECISIONS:
+Zero deploy is $0 — the free host-site x402 challenge is amount 0, and --max-pay 0 is a HARD cap
+so accidental spend is impossible. Healed login LIVE at sites.withzero.ai/mend-healed-login-demo
+(14-day TTL) with the real verified fixes (aria-labels + role=main). Free host takes ONE HTML
+≤500KB, so we deploy a self-contained healed PAGE (not the 23MB multi-page site) — honest framing:
+"the agent ships the cured patient to a shareable link, itself, no keys, $0." Money: no wallet
+funding, no email (email would be $0.02 — NOT done, left as an opt-in per user's no-spend rule).
+| next: 2nd-audit findings, then keep spend $0.

@@ -19,7 +19,8 @@
     "naive": "node harness/naive-baseline.mjs",
     "critic": "node harness/critic-akash.mjs",
     "rebaseline": "node harness/baseline.mjs --dir target",
-    "demo": "node harness/demo.mjs"
+    "demo": "node harness/demo.mjs",
+    "deploy": "node harness/deploy-zero.mjs"
   },
   "keywords": [],
   "author": "",

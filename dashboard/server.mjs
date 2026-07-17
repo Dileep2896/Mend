@@ -51,12 +51,15 @@ function buildState() {
   // violation nodes fixed & verified = sum(before-after) over accepted receipts
   const fixed = accepts.reduce((n, r) => n + Math.max(0, (r.beforeCount ?? 0) - (r.afterCount ?? 0)), 0);
 
+  const deploy = readJSON(resolve(ROOT, "runs/deploy.json")); // Zero closing act (if run)
+
   return {
     seedTotal,
     fixed,
     accepts: accepts.length,
     reverts: reverts.length,
     engines: { primary: "axe-core", second: "IBM Equal Access" },
+    deploy: deploy ? { url: deploy.url, paidUsdc: deploy.paidUsdc, via: deploy.deployedVia } : null,
     receipts,
     updatedAt: new Date().toISOString(),
   };

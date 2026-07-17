@@ -192,6 +192,7 @@
       <div class="mark">Mend<span class="dotdot">.</span></div>
     </div>
     <div class="flow"><b>fix</b><span class="arw">→</span><b>verify</b><span class="arw">→</span><b>receipt</b></div>
+    <a id="deploylink" href="#" target="_blank" rel="noopener" style="display:none;margin-left:auto;font-size:12px;font-family:var(--mono);color:var(--teal-br);text-decoration:none;border:1px solid var(--teal-dim);border-radius:8px;padding:7px 12px">↗ healed site is live</a>
     <div class="pulse"><span class="beat" id="beat"></span><span id="livetxt">connecting</span></div>
   </header>
 
@@ -255,6 +256,9 @@
     countTo($("fixed"),state.fixed); countTo($("accepts"),state.accepts); countTo($("reverts"),state.reverts);
     $("seed").textContent=state.seedTotal??"—";
     $("engines").textContent=`${state.engines.primary} + ${state.engines.second}`;
+    const dl=$("deploylink");
+    if(state.deploy?.url){dl.href=state.deploy.url;dl.style.display="inline-block";dl.title=`deployed via Zero · paid ${state.deploy.paidUsdc} USDC`;}
+    else dl.style.display="none";
     const box=$("rounds"); box.innerHTML="";
     [...state.receipts].reverse().forEach((r)=>box.appendChild(entry(r)));
     if(selected){const r=state.receipts.find(x=>x.dir===selected); if(r) drawReceipt(r);}

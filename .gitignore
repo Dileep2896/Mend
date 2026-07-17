@@ -11,3 +11,5 @@ runs/naive-copy/
 .env.*
 *.secret
 harness/.secrets
+runs/zero-payload.json
+runs/deploy.json

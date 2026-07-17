@@ -163,6 +163,17 @@ Verified against zero.xyz live site + install.md + LIVE CLI runs (`npx -y @zerox
   - Registry churns: ALWAYS re-run `zero search`/`zero get` before calling; use `--max-pay`.
 - Cost: $5 welcome credit advertised; a demo deploy is $0 (free tier). No hackathon
   credit amount verifiable beyond the Luma blurb.
+- EMPIRICAL (Jul 17): the closing act WORKS and is FREE. Flow verified end-to-end:
+  `npx -y @zeroxyz/cli@latest auth agent register` (anonymous empty wallet
+  0xcbeeb8…) → `zero fetch https://host.withzero.ai/run -X POST -d @payload
+  --max-pay 0 --json` → `"amount":"0"`, `Paid 0 USDC`, HTTP 200. The host-site
+  challenge is x402 amount 0, so `--max-pay 0` (a hard $0 cap) allows it while
+  making any accidental spend impossible. Healed page LIVE at
+  https://sites.withzero.ai/mend-healed-login-demo (TTL 14 days), confirmed via
+  Playwright to contain the verified fixes (aria-labels + role=main) + a "Healed
+  by Mend" badge. Implemented as `harness/deploy-zero.mjs` / `npm run deploy`
+  (inlines CSS to a <500KB self-contained page — the free host takes one HTML
+  ≤500KB, not the 23MB multi-page site). PUT /sites/<slug> edits, DELETE removes.
 
 ## npm packages (EMPIRICAL: `npm view` Jul 17, 2026)
 
