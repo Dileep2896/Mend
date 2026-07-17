@@ -21,7 +21,8 @@
     "rebaseline": "node harness/baseline.mjs --dir target",
     "demo": "node harness/demo.mjs",
     "deploy": "node harness/deploy-zero.mjs",
-    "demo:video": "node harness/demo-video/build.mjs"
+    "demo:video": "node harness/demo-video/build.mjs",
+    "present": "node harness/demo-video/present.mjs && node dashboard/server.mjs"
   },
   "keywords": [],
   "author": "",
