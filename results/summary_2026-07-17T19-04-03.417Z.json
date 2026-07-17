@@ -1,0 +1,241 @@
+{
+    "counts": {
+        "ignored": 0,
+        "violation": 508,
+        "recommendation": 93,
+        "pass": 8821,
+        "potentialviolation": 270,
+        "potentialrecommendation": 31,
+        "manual": 42,
+        "elements": 610,
+        "elementsViolation": 382,
+        "elementsViolationReview": 571
+    },
+    "startReport": 1784315043417,
+    "endReport": 1784315048905,
+    "toolID": "accessibility-checker-v4.0.29",
+    "policies": [
+        "IBM_Accessibility"
+    ],
+    "reportLevels": [
+        "violation",
+        "potentialviolation"
+    ],
+    "failLevels": [
+        "violation",
+        "potentialviolation"
+    ],
+    "scanID": "83cc628e-c09c-4c52-ad14-753ea809d1a2",
+    "pageScanSummary": [
+        {
+            "label": "404.html",
+            "counts": {
+                "ignored": 0,
+                "elements": 30,
+                "elementsViolation": 11,
+                "elementsViolationReview": 27,
+                "violation": 12,
+                "potentialviolation": 20,
+                "recommendation": 8,
+                "potentialrecommendation": 2,
+                "manual": 2,
+                "pass": 528
+            }
+        },
+        {
+            "label": "blank.html",
+            "counts": {
+                "ignored": 0,
+                "elements": 27,
+                "elementsViolation": 9,
+                "elementsViolationReview": 24,
+                "violation": 10,
+                "potentialviolation": 18,
+                "recommendation": 8,
+                "potentialrecommendation": 2,
+                "manual": 2,
+                "pass": 512
+            }
+        },
+        {
+            "label": "buttons.html",
+            "counts": {
+                "ignored": 0,
+                "elements": 65,
+                "elementsViolation": 48,
+                "elementsViolationReview": 62,
+                "violation": 55,
+                "potentialviolation": 20,
+                "recommendation": 8,
+                "potentialrecommendation": 2,
+                "manual": 2,
+                "pass": 1026
+            }
+        },
+        {
+            "label": "cards.html",
+            "counts": {
+                "ignored": 0,
+                "elements": 46,
+                "elementsViolation": 25,
+                "elementsViolationReview": 43,
+                "violation": 28,
+                "potentialviolation": 26,
+                "recommendation": 8,
+                "potentialrecommendation": 2,
+                "manual": 2,
+                "pass": 748
+            }
+        },
+        {
+            "label": "charts.html",
+            "counts": {
+                "ignored": 0,
+                "elements": 37,
+                "elementsViolation": 19,
+                "elementsViolationReview": 34,
+                "violation": 23,
+                "potentialviolation": 16,
+                "recommendation": 8,
+                "potentialrecommendation": 3,
+                "manual": 5,
+                "pass": 571
+            }
+        },
+        {
+            "label": "forgot-password.html",
+            "counts": {
+                "ignored": 0,
+                "elements": 10,
+                "elementsViolation": 4,
+                "elementsViolationReview": 9,
+                "violation": 4,
+                "potentialviolation": 8,
+                "recommendation": 1,
+                "potentialrecommendation": 0,
+                "manual": 2,
+                "pass": 133
+            }
+        },
+        {
+            "label": "index.html",
+            "counts": {
+                "ignored": 0,
+                "elements": 80,
+                "elementsViolation": 59,
+                "elementsViolationReview": 77,
+                "violation": 67,
+                "potentialviolation": 24,
+                "recommendation": 8,
+                "potentialrecommendation": 4,
+                "manual": 4,
+                "pass": 1129
+            }
+        },
+        {
+            "label": "login.html",
+            "counts": {
+                "ignored": 0,
+                "elements": 10,
+                "elementsViolation": 4,
+                "elementsViolationReview": 9,
+                "violation": 4,
+                "potentialviolation": 7,
+                "recommendation": 1,
+                "potentialrecommendation": 0,
+                "manual": 2,
+                "pass": 214
+            }
+        },
+        {
+            "label": "register.html",
+            "counts": {
+                "ignored": 0,
+                "elements": 14,
+                "elementsViolation": 3,
+                "elementsViolationReview": 11,
+                "violation": 3,
+                "potentialviolation": 9,
+                "recommendation": 1,
+                "potentialrecommendation": 4,
+                "manual": 2,
+                "pass": 232
+            }
+        },
+        {
+            "label": "tables.html",
+            "counts": {
+                "ignored": 0,
+                "elements": 107,
+                "elementsViolation": 92,
+                "elementsViolationReview": 103,
+                "violation": 168,
+                "potentialviolation": 24,
+                "recommendation": 10,
+                "potentialrecommendation": 4,
+                "manual": 3,
+                "pass": 1117
+            }
+        },
+        {
+            "label": "utilities-animation.html",
+            "counts": {
+                "ignored": 0,
+                "elements": 43,
+                "elementsViolation": 26,
+                "elementsViolationReview": 40,
+                "violation": 36,
+                "potentialviolation": 19,
+                "recommendation": 8,
+                "potentialrecommendation": 2,
+                "manual": 2,
+                "pass": 683
+            }
+        },
+        {
+            "label": "utilities-border.html",
+            "counts": {
+                "ignored": 0,
+                "elements": 42,
+                "elementsViolation": 25,
+                "elementsViolationReview": 39,
+                "violation": 27,
+                "potentialviolation": 32,
+                "recommendation": 8,
+                "potentialrecommendation": 2,
+                "manual": 2,
+                "pass": 596
+            }
+        },
+        {
+            "label": "utilities-color.html",
+            "counts": {
+                "ignored": 0,
+                "elements": 52,
+                "elementsViolation": 27,
+                "elementsViolationReview": 49,
+                "violation": 34,
+                "potentialviolation": 27,
+                "recommendation": 8,
+                "potentialrecommendation": 2,
+                "manual": 10,
+                "pass": 665
+            }
+        },
+        {
+            "label": "utilities-other.html",
+            "counts": {
+                "ignored": 0,
+                "elements": 47,
+                "elementsViolation": 30,
+                "elementsViolationReview": 44,
+                "violation": 37,
+                "potentialviolation": 20,
+                "recommendation": 8,
+                "potentialrecommendation": 2,
+                "manual": 2,
+                "pass": 667
+            }
+        }
+    ]
+}

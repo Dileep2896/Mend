@@ -26,3 +26,18 @@ HARD GATE: PASSED early (Fri night), 96% >> 80% threshold — no target swap / a
 needed. Lone miss is an honestly-ambiguous repeated `<td>Tokyo</td>` that the mapper BLOCKS rather
 than guessing (correct behavior per prime directive: verify, don't trust). | next: M2 — determinism
 pass + baselines, then gates 2/3/4 and the receipts writer.
+
+2026-07-17 ~22:00 | M2 scorers + gates | built harness/{lib,baseline,diff,gate-patterns,
+gate-engine2,verify,receipt}.mjs + achecker.js + mask.json; npm scripts scan/baseline/diff/
+gate:patterns/gate:engine2/verify wired | determinism 3x = 0px PASS; gate:patterns self-test
+fires all 4 detectors; verify 4/4 on login.html; engine2 seed = 508 | DECISIONS: (1) Determinism
+via injected FREEZE_CSS + Playwright screenshot mask option (flat magenta over Chart.js canvases
+in BOTH baseline and diff → 0 phantom px). R4 mitigated with the required 3-consecutive-run
+acceptance. (2) Gate 3 operates on `git diff` of target/ with added-line + removed-line detectors
+and a forbidden-path check (editing harness/mask/rubric = auto-fail = anti-laundering). Exposed
+scanDiff() + --self-test so the "one fix gets CAUGHT" demo beat is provable. (3) Gate 4 counts IBM
+Equal Access `violation` level; independent of axe (508 vs 561). (4) verify.mjs shells the four
+gate scripts, fail-fast but records every gate to runs/<round>/verify.json. (5) Receipts pull
+gates from verify.json, screenshots from baseline/shot/diff, axe filtered per-rule, patch from
+git — accept and revert both first-class. | next: M3 — loop.sh/LOOP_PROMPT already drafted;
+add contrast gate 2b, wire critic subagent, then run real fix rounds on 2 pages.

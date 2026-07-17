@@ -46,27 +46,30 @@ to JOURNAL.md, move on. Do not spend the afternoon on the mapper.
 
 ## M2 — Scorers and gates (Sat afternoon)
 
-- [ ] Scaffold npm project + Playwright. Serve target locally.
-- [ ] `npm run scan` (axe) writing runs/<round>/axe.json with violation objects:
-      rule id, impact, selector, snippet, mapped source location.
-- [ ] Determinism pass BEFORE baselines: freeze animations/transitions via injected
-      test stylesheet, wait for fonts.ready and network idle, fixed viewport,
-      fixed timezone/locale, mask dynamic regions (list in harness/mask.json).
-      Acceptance: two consecutive `npm run diff` runs with zero code changes
-      produce 0 changed pixels on every route, 3 times in a row.
-- [ ] `npm run baseline` and `npm run diff` (pixelmatch), per-route threshold
-      config; diff images saved to runs/<round>/diff/.
-- [ ] `npm run gate:patterns`: reject diffs that add aria-hidden to previously
-      visible content, alt="" on non-decorative imgs, display:none/visibility:hidden
-      on interactive elements, tabindex="-1" on focusables, role="presentation" on
-      semantic elements, or delete elements containing text. Full list: RUBRIC.md s4.
-- [ ] `npm run gate:engine2`: IBM Equal Access scan, compare violation count vs
-      round start; must be non-increasing.
-- [ ] `npm run verify`: scan → diff → patterns → engine2, fail-fast, machine-readable
-      summary json + human line per gate.
-- [ ] Receipts writer: on every accept AND revert, write receipts/<n>-<rule>/
-      per schema in RUBRIC.md s6 (before/after axe, screenshots, diff, source diff,
-      gate results, critic verdict).
+- [x] Scaffold npm project + Playwright. Serve target locally (harness/lib.mjs
+      startServer + express static). Node 22, ESM, deps installed.
+- [x] `npm run scan` (axe) → runs/latest/axe.json with rule id, impact, selector,
+      snippet, node html. harness/scan.mjs.
+- [x] Determinism pass (harness/lib.mjs: FREEZE_CSS, fonts.ready, networkidle,
+      fixed viewport/locale/timezone, reducedMotion, mask.json). Acceptance: 3
+      consecutive `npm run diff` runs = 0 changed pixels on every route. PASSED.
+      Masks: index.html + charts.html Chart.js <canvas> (reasons in mask.json).
+- [x] `npm run baseline` + `npm run diff` (pixelmatch, threshold 0.1), diff pngs
+      → runs/<round>/diff/. Dimension-change detection included.
+- [x] `npm run gate:patterns` (harness/gate-patterns.mjs): aria-hidden, alt="",
+      display:none/visibility:hidden/opacity:0/off-screen, tabindex="-1",
+      role=presentation/none, interactive/text deletions, forbidden-path edits
+      (harness/mask/rubric). `--self-test` proves all detectors bite.
+- [x] `npm run gate:engine2` (harness/gate-engine2.mjs): IBM Equal Access,
+      counts violation-level, --baseline for non-increasing check. Seed = 508
+      violations across 14 routes (axe found 561 nodes — genuinely different engines).
+- [x] `npm run verify` (harness/verify.mjs): gate1 axe → gate2 pixel → gate3
+      patterns → gate4 engine2, fail-fast, runs/<round>/verify.json + human line
+      per gate. Verified 4/4 on clean login.html.
+- [x] Receipts writer (harness/receipt.mjs): accept AND revert, full RUBRIC s6
+      schema (receipt.json, before/after/diff png, axe-before/after filtered to
+      rule, patch.diff, notes.md). Honest language: "fixed and verified" /
+      "reverted, caught by <gate>". Smoke-tested.
 
 ## M3 — The loop itself (Sat evening)
 

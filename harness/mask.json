@@ -1,0 +1,13 @@
+{
+  "_comment": "Dynamic regions masked for gate 2 (pixel diff). Each entry needs a reason (RUBRIC gate 2). Masks are painted flat magenta in baseline AND diff, so they contribute zero changed pixels. Adding a mask requires a JOURNAL entry. Populated empirically by the determinism acceptance test.",
+  "routes": {
+    "index.html": {
+      "selectors": ["#myAreaChart", "#myPieChart"],
+      "reason": "Chart.js <canvas> elements render with sub-pixel/antialiasing variance between runs (determinism test showed 13 changed px here). Charts are not accessibility-fixable content; masking them isolates gate 2 to real layout."
+    },
+    "charts.html": {
+      "selectors": ["#myAreaChart", "#myBarChart", "#myPieChart"],
+      "reason": "Chart.js <canvas> elements render with sub-pixel/antialiasing variance between runs (determinism test showed 119 changed px here). Same rationale as index.html."
+    }
+  }
+}

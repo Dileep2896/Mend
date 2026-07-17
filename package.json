@@ -9,7 +9,12 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "scan": "node harness/scan.mjs --dir target --out runs/latest/axe.json",
-    "map:test": "node harness/mapper-acceptance.mjs --scan runs/000-before/axe.json --targetDir target --n 25"
+    "map:test": "node harness/mapper-acceptance.mjs --scan runs/000-before/axe.json --targetDir target --n 25",
+    "baseline": "node harness/baseline.mjs --dir target",
+    "diff": "node harness/diff.mjs --dir target",
+    "gate:patterns": "node harness/gate-patterns.mjs",
+    "gate:engine2": "node harness/gate-engine2.mjs --dir target",
+    "verify": "node harness/verify.mjs"
   },
   "keywords": [],
   "author": "",
