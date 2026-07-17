@@ -15,3 +15,8 @@ runs/zero-payload.json
 runs/deploy.json
 .env.pomerium
 docker/pomerium-config.yaml
+.env.butterbase
+runs/demo-video/audio/
+runs/demo-video/scenes/
+runs/demo-video/clips/
+runs/demo-video/timeline.json

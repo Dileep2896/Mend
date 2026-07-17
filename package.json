@@ -20,7 +20,8 @@
     "critic": "node harness/critic-akash.mjs",
     "rebaseline": "node harness/baseline.mjs --dir target",
     "demo": "node harness/demo.mjs",
-    "deploy": "node harness/deploy-zero.mjs"
+    "deploy": "node harness/deploy-zero.mjs",
+    "demo:video": "node harness/demo-video/build.mjs"
   },
   "keywords": [],
   "author": "",

@@ -1,0 +1,79 @@
+{
+  "_comment": "3-minute demo narration. Each segment: id, act, text (spoken), caption (on-screen), scene (what the recorder shows), diagram (optional architecture-diagram pop-up). Timings are derived from the generated audio, not hardcoded.",
+  "title": "Mend — the accessibility healer",
+  "maxSeconds": 180,
+  "segments": [
+    {
+      "id": "hook",
+      "act": "open",
+      "text": "This is Mend. It repairs website accessibility in the source code, and it refuses to believe itself.",
+      "caption": "Mend — the accessibility healer",
+      "scene": "title"
+    },
+    {
+      "id": "villain",
+      "act": "1",
+      "text": "Hand a naive agent a page and tell it to fix accessibility, and this is what you get. The violation counter drops, but watch: it just deleted the login buttons and hid the label. The counter lies.",
+      "caption": "Act 1 — the naive loop games the counter",
+      "scene": "naive"
+    },
+    {
+      "id": "thesis",
+      "act": "1",
+      "text": "Claude can write the fix. Only a harness can prove it. We built the proof.",
+      "caption": "The model is the commodity. The harness is the product.",
+      "scene": "diagram",
+      "diagram": true
+    },
+    {
+      "id": "loop",
+      "act": "2",
+      "text": "Mend scans with axe, maps each violation back to the exact source line, patches the source, and then every fix must survive four gates before it counts.",
+      "caption": "scan → map → patch → verify",
+      "scene": "dashboard"
+    },
+    {
+      "id": "gates",
+      "act": "2",
+      "text": "Gate one: the violation is gone and none were introduced. Gate two: not a single pixel moved, so the design is untouched. Gate three: no suppression tricks. Gate four: an independent second engine agrees.",
+      "caption": "4 gates · axe · pixel-diff · banned-patterns · IBM Equal Access",
+      "scene": "gates"
+    },
+    {
+      "id": "critic",
+      "act": "2",
+      "text": "For anything semantic, like alt text or a label, an independent critic on Akash judges whether the fix is actually true. A different model family, on different hardware, so the fixer can never grade its own homework.",
+      "caption": "Independent critic — open model on Akash",
+      "scene": "critic"
+    },
+    {
+      "id": "revert",
+      "act": "2",
+      "text": "And here is the moment that matters. A fix tries to hide a violation instead of fixing it. The harness catches it and reverts it, live. That revert is the product.",
+      "caption": "Caught & reverted — the revert is the product",
+      "scene": "revert"
+    },
+    {
+      "id": "receipt",
+      "act": "3",
+      "text": "Every fix, accepted or reverted, ships a receipt: the before and after, the exact patch, all four gate results, and the critic's verdict.",
+      "caption": "Every fix ships a receipt",
+      "scene": "receipt"
+    },
+    {
+      "id": "deploy",
+      "act": "3",
+      "text": "Then the agent deploys the healed site itself, to a live link, through Zero, paying nothing. The cured patient ships itself.",
+      "caption": "Agent self-deploys via Zero — live, $0",
+      "scene": "deploy"
+    },
+    {
+      "id": "close",
+      "act": "close",
+      "text": "We fix verified violations, and we hand you the evidence. Mend.",
+      "caption": "We fix verified violations. We hand you the evidence.",
+      "scene": "close",
+      "diagram": true
+    }
+  ]
+}
