@@ -1,0 +1,47 @@
+{
+  "seq": 2,
+  "round": "r2",
+  "ruleId": "landmark-one-main",
+  "impact": "moderate",
+  "selector": ".container",
+  "source": {
+    "file": "target/login.html",
+    "lineStart": 27,
+    "lineEnd": 27
+  },
+  "attempt": 1,
+  "decision": "accept",
+  "gates": [
+    {
+      "name": "gate1-axe",
+      "pass": true,
+      "detail": "axe 7 → 5; newRules=[]; target 'landmark-one-main' gone"
+    },
+    {
+      "name": "gate2-pixel",
+      "pass": true,
+      "detail": "changed px = 0"
+    },
+    {
+      "name": "gate3-patterns",
+      "pass": true,
+      "detail": "no banned patterns"
+    },
+    {
+      "name": "gate4-engine2",
+      "pass": true,
+      "detail": "engine2 total = 1 (baseline 4)"
+    }
+  ],
+  "verifyPass": true,
+  "critic": null,
+  "commit": "cab965a",
+  "evidence": [
+    "before.png",
+    "after.png",
+    "diff.png"
+  ],
+  "timestamps": {
+    "written": "2026-07-17T19:11:30.132Z"
+  }
+}
