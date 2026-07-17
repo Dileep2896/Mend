@@ -78,7 +78,7 @@
 
   /* ---------- title slide ---------- */
   .titleWrap{flex:1;display:grid;grid-template-columns:1.2fr .8fr;gap:5vw;align-items:center;min-height:0}
-  .brand{font-family:var(--serif);font-size:clamp(74px,12vw,178px);font-weight:900;
+  .brand{font-family:var(--serif);font-size:clamp(52px,min(11.5vw,18vh),178px);font-weight:900;
     letter-spacing:-.02em;line-height:.9;font-variation-settings:'SOFT' 0,'WONK' 0,'opsz' 144;
     background:linear-gradient(178deg,#FBFEFD 12%,#B7D6CF 96%);-webkit-background-clip:text;
     background-clip:text;color:transparent;position:relative}
@@ -90,7 +90,7 @@
   .stage b{color:#fff;font-style:italic;font-weight:600}
   .stage .q{color:var(--teal);font-style:normal}
 
-  .instr{position:relative;width:min(30vw,360px);aspect-ratio:1;margin-inline:auto}
+  .instr{position:relative;width:min(30vw,40vh,360px);flex:none;aspect-ratio:1;margin-inline:auto}
   .ring::before,.ring::after{content:"";position:absolute;border-radius:50%}
   .ring::before{inset:0;background:conic-gradient(from -8deg,
       var(--teal) 0 23%,rgba(111,242,219,.12) 23% 33%,
