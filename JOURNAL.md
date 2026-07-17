@@ -61,3 +61,13 @@ determinism (DONE) precedes Pomerium, no sponsor on Act 2's critical path. (§6)
 surgical slide (normalizes axe + Equal Access schemas into one queryable data product), build
 nothing. (§7) wall rule reaffirmed: sponsor order after live convergence = 3, 1, 5-slice, stop.
 | next: resume TASKS order — finish M3 (2nd page + note overnight), then M5 dashboard.
+
+2026-07-17 ~23:55 | M3 second page + M5 dashboard | rounds 5-6 on forgot-password.html
+(label-title-only aria-label, landmark role=main); built dashboard/{server.mjs,index.html} |
+r5 4/4 (fixed a placeholder-baseline gate4 slip by capturing true engine2 before via git stash),
+r6 4/4; dashboard verified rendering (screenshot) | DECISIONS: M3 loop proven on 2 pages —
+login 8->4, forgot-password 7->4, 6 receipts (5 accept + 1 caught revert #003). Overnight run
+DEFERRED (time-based; runner ready). Dashboard reads runs/+receipts/, ws-pushes on fs change,
+big-number counters + gate lights + critic verdicts + click-through receipt browser (before/after
++ patch + notes). Pushed to github.com/Dileep2896/Mend. | next: M5 Act-1 naive A/B baseline +
+demo mode; M4 Pomerium + Zero live-deploy are external-dependency sponsor tracks (wall rule).
