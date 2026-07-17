@@ -1,0 +1,49 @@
+{
+  "ruleId": "color-contrast",
+  "count": 5,
+  "items": [
+    {
+      "route": "login.html",
+      "id": "color-contrast",
+      "impact": "serious",
+      "help": "Elements must meet minimum color contrast ratio thresholds",
+      "nodes": [
+        {
+          "target": [
+            "label"
+          ],
+          "html": "<label class=\"custom-control-label\" for=\"customCheck\">Remember\n                                                    Me</label>",
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.55 (foreground color: #858796, background color: #ffffff, font size: 9.6pt (12.8px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "target": [
+            ".btn-primary"
+          ],
+          "html": "<a href=\"index.html\" class=\"btn btn-primary btn-user btn-block\">\n                                            Login\n                                        </a>",
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.33 (foreground color: #ffffff, background color: #4e73df, font size: 9.6pt (12.8px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "target": [
+            ".btn-google"
+          ],
+          "html": "<a href=\"index.html\" class=\"btn btn-google btn-user btn-block\">\n                                            <i class=\"fab fa-google fa-fw\"></i> Login with Google\n                                        </a>",
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.92 (foreground color: #ffffff, background color: #ea4335, font size: 9.6pt (12.8px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "target": [
+            "a[href$=\"forgot-password.html\"]"
+          ],
+          "html": "<a class=\"small\" href=\"forgot-password.html\">Forgot Password?</a>",
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.33 (foreground color: #4e73df, background color: #ffffff, font size: 9.6pt (12.8px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "target": [
+            "a[href$=\"register.html\"]"
+          ],
+          "html": "<a class=\"small\" href=\"register.html\">Create an Account!</a>",
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.33 (foreground color: #4e73df, background color: #ffffff, font size: 9.6pt (12.8px), font weight: normal). Expected contrast ratio of 4.5:1"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "gate": "contrast-2b",
+  "route": "login.html",
+  "selector": ".btn-google",
+  "round": "r4-measure",
+  "ratio": 3.92,
+  "ratioPass": false,
+  "geometryStable": true,
+  "movedBoxes": 0,
+  "movedSample": [],
+  "color": "rgb(255, 255, 255)",
+  "background": "rgb(234, 67, 53)",
+  "pass": false
+}

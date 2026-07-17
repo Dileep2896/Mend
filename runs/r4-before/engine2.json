@@ -1,0 +1,15 @@
+{
+  "gate": "engine2",
+  "engine": "IBM Equal Access",
+  "round": "r4-before",
+  "total": 1,
+  "baseline": null,
+  "pass": true,
+  "perRoute": [
+    {
+      "route": "login.html",
+      "violation": 1,
+      "potentialviolation": 7
+    }
+  ]
+}

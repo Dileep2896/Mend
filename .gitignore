@@ -5,3 +5,4 @@ runs/latest/
 runs/*/screenshots/
 runs/engine2-report/
 harness/.scratch/
+results/

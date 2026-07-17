@@ -10,7 +10,7 @@
                 "dom": "/html[1]/head[1]/link[1]",
                 "aria": "/document[1]"
             },
-            "ruleTime": 3,
+            "ruleTime": 2,
             "reasonId": "Potential_1",
             "message": "Verify color is not used as the only visual means of conveying information",
             "messageArgs": [],
@@ -66,7 +66,7 @@
                 "dom": "/html[1]/body[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]/form[1]/div[1]/input[1]",
                 "aria": "/document[1]/main[1]/form[1]/textbox[1]"
             },
-            "ruleTime": 1,
+            "ruleTime": 0,
             "reasonId": "Fail_1",
             "message": "The 'id' \"emailHelp\" specified for the ARIA property 'aria-describedby' value is not valid",
             "messageArgs": [
@@ -190,7 +190,7 @@
                 "dom": "/html[1]/body[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[2]/a[1]",
                 "aria": "/document[1]/main[1]/link[1]"
             },
-            "ruleTime": 1,
+            "ruleTime": 0,
             "reasonId": "potential_graphic_background",
             "message": "Verify the contrast ratio of the text against the lightest and the darkest colors of the background meets the WCAG AA minimum requirements for text of size 12.8px and weight of 400",
             "messageArgs": [
@@ -245,8 +245,8 @@
             "help": "https://able.ibm.com/rules/archives/2026.05.19/doc/en-US/text_contrast_sufficient.html#%7B%22message%22%3A%22Verify%20the%20contrast%20ratio%20of%20the%20text%20against%20the%20lightest%20and%20the%20darkest%20colors%20of%20the%20background%20meets%20the%20WCAG%20AA%20minimum%20requirements%20for%20text%20of%20size%2012.8px%20and%20weight%20of%20400%22%2C%22snippet%22%3A%22%3Ca%20href%3D%5C%22register.html%5C%22%20class%3D%5C%22small%5C%22%3E%22%2C%22value%22%3A%5B%22VIOLATION%22%2C%22POTENTIAL%22%5D%2C%22reasonId%22%3A%22potential_graphic_background%22%2C%22ruleId%22%3A%22text_contrast_sufficient%22%2C%22msgArgs%22%3A%5B%224.34%22%2C12.8%2C400%5D%7D"
         }
     ],
-    "numExecuted": 239,
-    "ruleTime": 108,
+    "numExecuted": 244,
+    "ruleTime": 102,
     "nls": {
         "style_color_misuse": {
             "0": "Combine color and descriptive markup to convey information",
@@ -280,9 +280,9 @@
             "recommendation": 1,
             "potentialrecommendation": 0,
             "manual": 2,
-            "pass": 228
+            "pass": 233
         },
-        "scanTime": 136,
+        "scanTime": 127,
         "ruleArchive": "Latest Deployment (latest)",
         "policies": [
             "IBM_Accessibility"
@@ -291,10 +291,10 @@
             "violation",
             "potentialviolation"
         ],
-        "startScan": 1784315478790,
-        "URL": "http://127.0.0.1:51639/login.html"
+        "startScan": 1784315897064,
+        "URL": "http://127.0.0.1:52026/login.html"
     },
-    "scanID": "803c0e39-7351-4c96-ab50-d0fa066fbbc7",
+    "scanID": "7bcde496-584f-4b77-93a6-31e8f25a0ef2",
     "toolID": "accessibility-checker-v4.0.29",
     "label": "login.html"
 }

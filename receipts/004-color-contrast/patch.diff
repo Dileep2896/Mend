@@ -1,0 +1,14 @@
+diff --git a/target/login.html b/target/login.html
+index 061529d..bea181e 100644
+--- a/target/login.html
++++ b/target/login.html
+@@ -56,7 +56,8 @@
+                                         <div class="form-group">
+                                             <div class="custom-control custom-checkbox small">
+                                                 <input type="checkbox" class="custom-control-input" id="customCheck">
+-                                                <label class="custom-control-label" for="customCheck">Remember
++                                                <label class="custom-control-label" for="customCheck"
++                                                    style="color: #565869;">Remember
+                                                     Me</label>
+                                             </div>
+                                         </div>
