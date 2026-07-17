@@ -43,5 +43,9 @@
   ],
   "timestamps": {
     "written": "2026-07-17T19:11:30.132Z"
+  },
+  "models": {
+    "fixer": "claude (Claude Code subscription)",
+    "critic": "deepseek/DeepSeek-V4-Flash + Qwen3.6-35B vision (Akash)"
   }
 }

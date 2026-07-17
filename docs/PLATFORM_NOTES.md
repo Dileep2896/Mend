@@ -72,25 +72,31 @@ after the use-case form is accepted (Bedrock is the sponsor story for the pitch 
 "Bedrock is the brain" — so flip it before demo day if at all possible).
 loop.sh defaults to subscription auth; set CLAUDE_CODE_USE_BEDROCK=1 to opt in.
 
-## Critic model separation (Amendment 1 §1)
+## Critic model separation — Akash (Amendment 1 §1, revised)
 
-- Fixer model = `us.anthropic.claude-sonnet-4-6`. Critic model =
-  `us.anthropic.claude-haiku-4-5-20251001-v1:0` (set in .claude/agents/critic.md
-  frontmatter `model:`). Different weights than the fixer (mirrors gate 4's
-  independent engine), and vision-capable (required for alt-text judging).
-- Vision smoke test — capability CONFIRMED (Jul 17): an isolated critic agent read
-  runs/baseline/login.png and accurately described it ("Welcome Back!" heading,
-  email/password/remember-me controls, Login/Google/Facebook buttons, Forgot-
-  Password/Create-Account links) via the loop's current subscription-auth path.
-- Bedrock-specific vision test = BLOCKED by the same account use-case-form gate as
-  all Bedrock streaming (see the ONE BLOCKER above). Both non-streaming CLI
-  `converse` and the SDK now return "use case details have not been submitted."
-  Once the form is accepted, confirm Haiku-4.5 vision on Bedrock with:
-  ```bash
-  aws bedrock-runtime converse --profile default --region us-east-1 \
-    --model-id us.anthropic.claude-haiku-4-5-20251001-v1:0 \
-    --messages file://<msg-with-image>.json --inference-config '{"maxTokens":120}'
-  ```
+DECISION (Jul 17): the critic runs on **Akash**, NOT Bedrock — no Bedrock spend,
+and a stronger independence story (different model FAMILY + provider than the
+Claude fixer, mirroring gate 4's independent engine). Two axes of independence:
+ENGINE (IBM Equal Access vs axe) and MODEL (open model on Akash vs Claude).
+
+- Provider: AkashML, `https://api.akashml.com/v1` (OpenAI-compatible, decentralized
+  compute). Auth: `Authorization: Bearer $AKASH_API_KEY`. Key lives in `.env.akash`
+  (gitignored, chmod 600) — NEVER commit or echo it. EMPIRICAL: key works (Jul 17).
+- Fixer = Claude (Claude Code subscription, $0 incremental). Critic models:
+  - text fixes (label / link-name / button-name / heading) → `deepseek-ai/DeepSeek-V4-Flash`
+  - image-alt fixes → `Qwen/Qwen3.6-35B-A3B` (vision: input_modalities include image)
+- Implementation: `harness/critic-akash.mjs` (`critique({rule, context, imagePath})`).
+- Vision smoke test — CONFIRMED (Jul 17): Qwen3.6 read runs/baseline/login.png and
+  accurately identified the login page, "Welcome Back!", email/password/remember-me
+  controls, and Login/Google/Facebook buttons. Text critic (DeepSeek) returns clean
+  `VERDICT: PASS/FAIL` + reason.
+- COST (real, but tiny): DeepSeek $0.14/$0.28 per Mtok; Qwen $0.14/$1.00 per Mtok.
+  A text verdict ≈ 300–400 tok ≈ $0.00006; a vision verdict ≈ 1700 tok ≈ $0.0004.
+  The entire weekend's critic calls are well under $0.05. NOTE: Qwen/DeepSeek here
+  are reasoning models — give ≥500 (text) / ≥900 (vision) max_tokens or the final
+  VERDICT lands in `reasoning_content` (critic-akash.mjs parses both).
+- Bedrock: NOT used (streaming still gated by the account use-case form; and we chose
+  Akash to avoid spend). loop.sh keeps CLAUDE_CODE_USE_BEDROCK as opt-in only.
 
 ## Zero — sending email (Amendment 1 §3): YES (via registry, pay-per-call)
 

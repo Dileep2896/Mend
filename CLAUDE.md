@@ -49,8 +49,12 @@ Dashboard tails state over WebSocket. Zero deploys the healed site at the end.
   Lighthouse is NOT a valid second opinion: it runs axe under the hood. Never cite it
   as independent. It may appear once in the pitch as a "familiar score" only.
 - pixelmatch + pngjs — visual regression (gate 2), with masking + animation freeze.
-- Claude via AWS Bedrock. Claude Code runs with CLAUDE_CODE_USE_BEDROCK=1 (verify
-  exact env vars against real docs in M0 — see docs/PLATFORM_NOTES.md).
+- Fixer: Claude via Claude Code (subscription; Bedrock is opt-in via
+  CLAUDE_CODE_USE_BEDROCK=1 but OFF by default — no cloud brain bill). Critic: an
+  INDEPENDENT open model on Akash (harness/critic-akash.mjs — DeepSeek V4 for text,
+  Qwen3.6-35B vision for alt-text). Different model family + provider than the fixer
+  = the model-independence axis, mirroring gate 4's engine independence. Key in
+  .env.akash (gitignored). See docs/PLATFORM_NOTES.md.
 - express + ws for the live dashboard. Plain HTML/JS dashboard, no build step.
 - Pomerium (docker compose) in front of the target site — agent reaches the patient
   through an identity-aware policy, never raw credentials. M4, timeboxed.

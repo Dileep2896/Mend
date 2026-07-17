@@ -95,9 +95,12 @@ const receipt = {
   verifyPass,
   critic: arg("critic-verdict") ? { verdict: arg("critic-verdict"), reason: arg("critic-reason", null) } : null,
   // Amendment 1 §2 — receipts carry cost. Additive; older receipts omit these.
+  // The fixer is Claude (via Claude Code subscription); the critic runs on a
+  // DIFFERENT model family + provider (open model on Akash) — two axes of
+  // independence (engine via gate 4, model via the critic).
   models: {
-    fixer: arg("fixer-model", "us.anthropic.claude-sonnet-4-6"),
-    critic: arg("critic-model", "us.anthropic.claude-haiku-4-5-20251001-v1:0"),
+    fixer: arg("fixer-model", "claude (Claude Code subscription)"),
+    critic: arg("critic-model", "deepseek/DeepSeek-V4-Flash + Qwen3.6-35B vision (Akash)"),
   },
   tokens: { in: arg("tokens-in") ? Number(arg("tokens-in")) : null, out: arg("tokens-out") ? Number(arg("tokens-out")) : null },
   estCostUsd: arg("cost-usd") ? Number(arg("cost-usd")) : null,

@@ -36,8 +36,8 @@
   "verifyPass": true,
   "critic": null,
   "models": {
-    "fixer": "us.anthropic.claude-sonnet-4-6",
-    "critic": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    "fixer": "claude (Claude Code subscription)",
+    "critic": "deepseek/DeepSeek-V4-Flash + Qwen3.6-35B vision (Akash)"
   },
   "tokens": {
     "in": null,

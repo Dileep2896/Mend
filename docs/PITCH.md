@@ -78,7 +78,15 @@ line.
 
 ## Sponsor mapping (one per loop stage — say it this way)
 
-- Bedrock is the brain: fixer and critic both run Claude through it.
+- The brain is split, on purpose. Claude (via Claude Code) is the CODER — it writes
+  the fix. An independent open model on Akash (DeepSeek for text, Qwen3.6 vision for
+  alt-text) is the JUDGE — it decides whether the fix is semantically true. Different
+  model family, different provider, different network: the judge cannot share the
+  coder's weights, exactly as gate 4's second engine cannot share axe's rules. Two
+  axes of independence — engine AND model. (Akash is load-bearing here, not a
+  fallback slide; its decentralized compute runs the verification the whole thesis
+  turns on.) We run the fixer on the Claude Code subscription and the critic on
+  Akash for pennies — no per-token cloud brain bill.
 - Pomerium is how the agent safely touches a CUSTOMER'S live site: least-privilege,
   time-boxed, fully audited access with no raw credentials — and the audit log
   lands in the receipts. This is the production story (an agent operating on a site
@@ -101,10 +109,11 @@ Overclaiming compliance is literally what the FTC fined accessiBe for.
 "Why not Lighthouse as your second opinion?" — Because Lighthouse's a11y audit IS
 axe. Our second engine is IBM Equal Access, a genuinely different ruleset.
 "Isn't the critic just the fixer grading itself?" — No. The critic runs on a
-separate model, in an isolated context, and sees the image itself. Say "separate
-model, isolated context" — never "different mind." It mirrors gate 4: the judge
-should not share the worker's weights any more than the second scanner should
-share axe's rules.
+different model FAMILY (open-source DeepSeek/Qwen) on a different PROVIDER (Akash,
+decentralized), in an isolated context, and sees the image itself. Say "separate
+model, separate provider, isolated context" — never "different mind." It mirrors
+gate 4: the judge should not share the worker's weights any more than the second
+scanner should share axe's rules. Two axes of independence — engine and model.
 
 ## After the weekend (one slide, max)
 

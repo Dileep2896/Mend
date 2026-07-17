@@ -36,15 +36,17 @@
   "verifyPass": true,
   "critic": {
     "verdict": "PASS",
-    "reason": "'Email address' tells a screen-reader user the field expects an email; consistent with the visible placeholder."
+    "reason": "The aria-label \"Email address\" provides a clear, meaningful accessible name for the email input, which a screen-reader user can understand without relying on the placeholder alone.",
+    "model": "deepseek-ai/DeepSeek-V4-Flash",
+    "provider": "akash"
   },
   "models": {
-    "fixer": "us.anthropic.claude-sonnet-4-6",
-    "critic": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+    "fixer": "claude (Claude Code subscription)",
+    "critic": "deepseek/DeepSeek-V4-Flash + Qwen3.6-35B vision (Akash)"
   },
   "tokens": {
-    "in": null,
-    "out": null
+    "in": 292,
+    "out": 44
   },
   "estCostUsd": null,
   "commit": "58e4e50",

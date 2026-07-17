@@ -71,3 +71,14 @@ DEFERRED (time-based; runner ready). Dashboard reads runs/+receipts/, ws-pushes 
 big-number counters + gate lights + critic verdicts + click-through receipt browser (before/after
 + patch + notes). Pushed to github.com/Dileep2896/Mend. | next: M5 Act-1 naive A/B baseline +
 demo mode; M4 Pomerium + Zero live-deploy are external-dependency sponsor tracks (wall rule).
+
+2026-07-17 late | Akash critic (replaces Bedrock for the "brain") | built harness/critic-akash.mjs
+(AkashML OpenAI-compatible, DeepSeek V4 text + Qwen3.6-35B vision); verified key, text verdict,
+vision description; corrected 6 receipts' model attribution + re-ran 001/005 critics on Akash;
+updated critic.md/PLATFORM_NOTES/PITCH/CLAUDE.md | n/a | DECISIONS: critic now runs on Akash — a
+DIFFERENT model family (open DeepSeek/Qwen) on a DIFFERENT provider (decentralized) than the Claude
+fixer. Stronger independence than the Bedrock-Claude critic: two axes now (ENGINE via gate 4, MODEL
+via critic). No Bedrock spend; Akash cost is fractions of a cent per verdict (<$0.05 all weekend).
+Fixed a real overclaim: receipts had hardcoded Bedrock model IDs that never ran — now truthful
+(Claude fixer subscription + Akash critic). Key stored in .env.akash (gitignored, 600); NEVER
+committed. | next: audit everything, loop-fix, keep spend ~$0.
