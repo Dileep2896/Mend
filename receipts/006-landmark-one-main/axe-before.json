@@ -1,0 +1,21 @@
+{
+  "ruleId": "landmark-one-main",
+  "count": 1,
+  "items": [
+    {
+      "route": "forgot-password.html",
+      "id": "landmark-one-main",
+      "impact": "moderate",
+      "help": "Document should have one main landmark",
+      "nodes": [
+        {
+          "target": [
+            "html"
+          ],
+          "html": "<html lang=\"en\">",
+          "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
+        }
+      ]
+    }
+  ]
+}

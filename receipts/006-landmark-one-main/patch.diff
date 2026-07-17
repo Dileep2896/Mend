@@ -1,0 +1,13 @@
+diff --git a/target/forgot-password.html b/target/forgot-password.html
+index 4f50791..e85ceda 100644
+--- a/target/forgot-password.html
++++ b/target/forgot-password.html
+@@ -24,7 +24,7 @@
+ 
+ <body class="bg-gradient-primary">
+ 
+-    <div class="container">
++    <div class="container" role="main">
+ 
+         <!-- Outer Row -->
+         <div class="row justify-content-center">

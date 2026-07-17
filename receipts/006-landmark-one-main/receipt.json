@@ -1,0 +1,56 @@
+{
+  "seq": 6,
+  "round": "r6",
+  "ruleId": "landmark-one-main",
+  "impact": "moderate",
+  "selector": ".container",
+  "source": {
+    "file": "target/forgot-password.html",
+    "lineStart": 27,
+    "lineEnd": 27
+  },
+  "attempt": 1,
+  "decision": "accept",
+  "gates": [
+    {
+      "name": "gate1-axe",
+      "pass": true,
+      "detail": "axe 6 → 4; newRules=[]; target 'landmark-one-main' 1→0 (reduced)"
+    },
+    {
+      "name": "gate2-pixel",
+      "pass": true,
+      "detail": "changed px = 0"
+    },
+    {
+      "name": "gate3-patterns",
+      "pass": true,
+      "detail": "no banned patterns"
+    },
+    {
+      "name": "gate4-engine2",
+      "pass": true,
+      "detail": "engine2 total = 1 (baseline 4)"
+    }
+  ],
+  "verifyPass": true,
+  "critic": null,
+  "models": {
+    "fixer": "us.anthropic.claude-sonnet-4-6",
+    "critic": "us.anthropic.claude-haiku-4-5-20251001-v1:0"
+  },
+  "tokens": {
+    "in": null,
+    "out": null
+  },
+  "estCostUsd": null,
+  "commit": "50c6711",
+  "evidence": [
+    "before.png",
+    "after.png",
+    "diff.png"
+  ],
+  "timestamps": {
+    "written": "2026-07-17T19:26:39.491Z"
+  }
+}
