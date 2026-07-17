@@ -43,8 +43,24 @@ app.get("/site-before/login.html", (_q, res) => res.type("html").send(unhealed))
 app.get("/site-after/login.html", (_q, res) => res.type("html").send(healed));
 app.use("/site-before", express.static(resolve(ROOT, "target")));
 app.use("/site-after", express.static(resolve(ROOT, "target")));
-const server = app.listen(PORT, () => console.log(`Mend LIVE demo → http://localhost:${PORT}`));
-const wss = new WebSocketServer({ server });
+
+// Robust listen: if the port is busy (a stale server), roll to the next one
+// instead of crashing with EADDRINUSE. runLoop() reads the actual bound port.
+let boundPort = Number(PORT);
+let server, wss;
+function listen(port, tries = 0) {
+  const s = app.listen(port);
+  s.once("listening", () => {
+    boundPort = port; server = s; wss = new WebSocketServer({ server: s });
+    wss.on("error", (e) => console.error("ws error:", e.message));
+    wireWss();
+    console.log(`Mend LIVE demo → http://localhost:${port}`);
+  });
+  s.once("error", (e) => {
+    if (e.code === "EADDRINUSE" && tries < 12) { console.error(`port ${port} busy — trying ${port + 1}…`); listen(port + 1, tries + 1); }
+    else { console.error(`could not start: ${e.message}`); process.exit(1); }
+  });
+}
 
 const send = (ws, msg) => { if (ws.readyState === 1) ws.send(JSON.stringify(msg)); };
 
@@ -78,7 +94,7 @@ async function shot(url, out) {
 
 async function runLoop(ws) {
   try {
-    const base = `http://127.0.0.1:${PORT}`;
+    const base = `http://127.0.0.1:${boundPort}`;
     const stage = (id, state, data = {}) => send(ws, { type: "stage", id, state, ...data });
     const log = (t, cls) => send(ws, { type: "log", t, cls });
 
@@ -186,9 +202,12 @@ async function runLoop(ws) {
   }
 }
 
-wss.on("connection", (ws) => {
-  ws.on("message", (m) => { try { if (JSON.parse(m).run) runLoop(ws); } catch {} });
-  send(ws, { type: "reset", before: `http://127.0.0.1:${PORT}/site-before/login.html` });
-});
+function wireWss() {
+  wss.on("connection", (ws) => {
+    ws.on("message", (m) => { try { if (JSON.parse(m).run) runLoop(ws); } catch {} });
+    send(ws, { type: "reset", before: `http://127.0.0.1:${boundPort}/site-before/login.html` });
+  });
+}
 
+listen(Number(PORT));
 process.on("SIGINT", async () => { try { await closeEA(); } catch {}; try { await browser?.close(); } catch {}; process.exit(0); });
