@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mend — the accessibility healer</title>
+<style>
+  :root{
+    --bg:#0D1520; --bg2:#121E2D; --panel:#16243689;
+    --paper:#F7F4EE; --paper2:#EFEAE0; --ink:#1B2536; --ink2:#4B5568;
+    --teal:#2FBFA9; --teal-br:#5EEAD4; --teal-dim:#17564D;
+    --amber:#E8A13D; --amber-deep:#C05621; --red:#E5484D; --upvote:#FF5A1F;
+    --line:rgba(255,255,255,.09); --txt:#E8EDF4; --mut:#8B98AB;
+    --serif:Georgia,'Times New Roman',serif;
+    --sans:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,'SF Mono','Cascadia Code',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:var(--bg);color:var(--txt);font-family:var(--sans);overflow:hidden}
+  ::selection{background:var(--teal-dim)}
+
+  #deck{position:relative;width:100vw;height:100vh}
+  .slide{position:absolute;inset:0;padding:clamp(24px,4.5vh,56px) clamp(28px,5vw,84px);
+    display:flex;flex-direction:column;opacity:0;visibility:hidden;
+    transform:translateY(14px);transition:opacity .45s ease,transform .45s ease,visibility .45s}
+  .slide.active{opacity:1;visibility:visible;transform:none;z-index:2}
+
+  /* entrance choreography */
+  .r{opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .5s ease}
+  .active .r{opacity:1;transform:none}
+  .active .d1{transition-delay:.08s}.active .d2{transition-delay:.18s}
+  .active .d3{transition-delay:.28s}.active .d4{transition-delay:.38s}
+  .active .d5{transition-delay:.5s}.active .d6{transition-delay:.62s}
+  .active .d7{transition-delay:.74s}
+
+  .eyebrow{font-family:var(--mono);font-size:clamp(11px,1.2vw,13px);letter-spacing:.22em;
+    text-transform:uppercase;color:var(--teal);margin-bottom:1.2vh}
+  h1{font-family:var(--serif);font-weight:700;font-size:clamp(30px,4.6vw,58px);
+    line-height:1.06;letter-spacing:-.01em}
+  h1 .hl{color:var(--teal-br)}
+  .sub{color:var(--mut);font-size:clamp(14px,1.5vw,18px);max-width:62ch;margin-top:1.4vh;line-height:1.55}
+  .foot{margin-top:auto;padding-top:2vh;font-size:clamp(10px,1vw,12px);color:var(--mut);
+    font-family:var(--mono);letter-spacing:.02em}
+  .foot b{color:#B9C4D4;font-weight:600}
+
+  /* ---------- title slide ---------- */
+  .titleWrap{margin:auto 0;display:grid;grid-template-columns:1.25fr .75fr;gap:4vw;align-items:center}
+  .brand{font-family:var(--serif);font-size:clamp(64px,10.5vw,148px);font-weight:700;
+    letter-spacing:.02em;line-height:.95}
+  .brand small{display:block;font-family:var(--mono);font-weight:400;letter-spacing:.34em;
+    font-size:clamp(12px,1.4vw,16px);color:var(--teal-br);margin-top:2.2vh;text-transform:uppercase}
+  .stage{margin-top:4.2vh;font-family:var(--serif);font-style:italic;
+    font-size:clamp(16px,2vw,24px);line-height:1.5;color:#D7DEE9;max-width:34ch}
+  .stage b{color:#fff;font-style:italic}
+  .ring{position:relative;width:min(30vw,340px);aspect-ratio:1;margin-inline:auto}
+  .ring::before{content:"";position:absolute;inset:0;border-radius:50%;
+    background:conic-gradient(from 0deg,var(--teal) 0 25%,transparent 25% 33%,
+      var(--teal) 33% 58%,transparent 58% 66%,var(--amber) 66% 74%,transparent 74% 82%,
+      var(--teal) 82% 100%);
+    -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 14px),#000 calc(100% - 13px));
+    mask:radial-gradient(farthest-side,transparent calc(100% - 14px),#000 calc(100% - 13px));
+    animation:spin 14s linear infinite}
+  .ring .core{position:absolute;inset:0;display:grid;place-items:center;text-align:center;
+    font-family:var(--mono);font-size:clamp(11px,1.2vw,14px);color:var(--mut);line-height:2.1}
+  .ring .core b{color:var(--teal-br);font-weight:600}
+  @keyframes spin{to{transform:rotate(1turn)}}
+
+  /* ---------- exhibit (reddit) cards ---------- */
+  .exGrid{display:grid;grid-template-columns:1.15fr .85fr;gap:1.6vw;margin-top:2.2vh;min-height:0;flex:1}
+  .exCol{display:flex;flex-direction:column;gap:1.6vh;min-height:0}
+  .card{background:var(--paper);color:var(--ink);border-radius:10px;padding:1.8vh 1.4vw;
+    position:relative;box-shadow:0 18px 40px rgba(0,0,0,.45)}
+  .tag{position:absolute;top:-11px;left:16px;font-family:var(--mono);font-size:11px;
+    letter-spacing:.14em;background:var(--amber);color:#231303;font-weight:700;
+    padding:3px 10px;border-radius:3px;transform:rotate(-1.6deg);box-shadow:0 3px 8px rgba(0,0,0,.35)}
+  .tag.t{background:var(--teal);color:#03231E}
+  .rHead{display:flex;align-items:center;gap:.55em;font-size:clamp(11px,1.1vw,13px);color:var(--ink2)}
+  .rHead .sr{font-weight:700;color:#D7300F}
+  .rHead .dot::before{content:"·";margin:0 .1em}
+  .fresh{font-family:var(--mono);font-size:.86em;background:#FDEBD2;color:#8C4A00;
+    padding:1px 7px;border-radius:99px;font-weight:600}
+  .rTitle{font-family:var(--serif);font-weight:700;font-size:clamp(15px,1.75vw,22px);
+    line-height:1.25;margin:.55em 0 .4em}
+  .rBody{font-size:clamp(12px,1.25vw,15px);line-height:1.5;color:#333E52}
+  .rBody b{color:var(--ink)}
+  .rQuote{font-family:var(--serif);font-style:italic;font-size:clamp(13px,1.4vw,17px);
+    color:var(--ink);border-left:3px solid var(--upvote);padding-left:.7em;margin-top:.6em}
+  .rMeta{display:flex;gap:1.1em;margin-top:.75em;font-family:var(--mono);
+    font-size:clamp(11px,1.05vw,12.5px);color:var(--ink2)}
+  .up{color:var(--upvote);font-weight:700}
+  .chips{display:flex;flex-wrap:wrap;gap:.5em;margin-top:.7em}
+  .chip{font-family:var(--mono);font-size:clamp(10px,1vw,12px);background:var(--paper2);
+    border:1px solid #DED7C8;color:#5A5040;padding:3px 9px;border-radius:99px}
+  .kicker{background:linear-gradient(90deg,#2A1606,#1B1208);border:1px solid #6b3d1244;
+    border-left:4px solid var(--amber);border-radius:8px;padding:1.5vh 1.3vw;
+    font-size:clamp(12.5px,1.35vw,16px);line-height:1.5;color:#F3E4CD}
+  .kicker b{color:var(--amber)}
+
+  /* ---------- stat counters ---------- */
+  .statGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.4vw;margin-top:3.4vh}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:2.6vh 1.3vw 2.2vh}
+  .stat .n{font-family:var(--mono);font-weight:700;font-size:clamp(34px,4.4vw,62px);
+    color:var(--teal-br);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+  .stat .n .sfx{font-size:.55em;color:var(--teal)}
+  .stat.warn .n{color:var(--amber)}
+  .stat p{margin-top:1.1vh;font-size:clamp(12px,1.2vw,14.5px);color:#C4CDDA;line-height:1.45}
+  .stat .src{display:block;margin-top:1vh;font-family:var(--mono);font-size:10.5px;color:var(--mut)}
+
+  /* ---------- icon rows / cards ---------- */
+  .rowList{display:flex;flex-direction:column;gap:2.2vh;margin-top:3vh;max-width:100ch}
+  .row{display:grid;grid-template-columns:56px 1fr;gap:1.4vw;align-items:start}
+  .glyph{width:52px;height:52px;border-radius:12px;display:grid;place-items:center;
+    font-size:24px;background:var(--teal-dim);color:var(--teal-br);flex:none}
+  .glyph.a{background:#3A2008;color:var(--amber)}
+  .row h3{font-size:clamp(16px,1.9vw,23px);font-weight:650;letter-spacing:-.01em}
+  .row p{margin-top:.45vh;color:#B9C4D4;font-size:clamp(12.5px,1.3vw,16px);line-height:1.55;max-width:88ch}
+  .row p q{font-family:var(--serif);font-style:italic;color:#EADFCB;quotes:"“" "”"}
+  .row p .who{font-family:var(--mono);font-size:.82em;color:var(--mut)}
+
+  /* ---------- loop steps ---------- */
+  .loopRow{display:grid;grid-template-columns:repeat(6,1fr);gap:.9vw;margin-top:3.4vh}
+  .step{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:2vh 1vw;text-align:center;position:relative;transition:border-color .3s,transform .3s}
+  .step .num{font-family:var(--mono);color:var(--teal);font-size:clamp(13px,1.4vw,17px)}
+  .step h4{font-size:clamp(15px,1.7vw,21px);margin:.5vh 0 .6vh;font-weight:650}
+  .step p{font-size:clamp(10.5px,1.05vw,13px);color:var(--mut);line-height:1.45}
+  .step.pulse{border-color:var(--teal);transform:translateY(-4px);
+    box-shadow:0 0 0 1px var(--teal),0 14px 30px rgba(47,191,169,.15)}
+  .step.pulse .num{color:var(--teal-br)}
+  .gateStrip{display:grid;grid-template-columns:repeat(2,1fr);gap:1vh 1.4vw;margin-top:3vh}
+  .gate{background:var(--bg2);border:1px solid var(--line);border-radius:10px;
+    padding:1.3vh 1.1vw;font-size:clamp(11.5px,1.15vw,14px);color:#C4CDDA;line-height:1.45}
+  .gate b{color:var(--teal-br);font-family:var(--mono);font-weight:600}
+
+  /* ---------- architecture lanes ---------- */
+  .arch{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:1.4vw;margin-top:2.6vh;flex:1;min-height:0}
+  .lane{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:1.6vh 1vw;display:flex;flex-direction:column;gap:1.1vh;min-height:0}
+  .lane h5{font-family:var(--mono);letter-spacing:.24em;font-size:11.5px;color:var(--mut);
+    text-transform:uppercase;padding-left:.2em}
+  .node{border-radius:9px;padding:1.15vh .9vw;font-size:clamp(11px,1.12vw,14px);
+    line-height:1.35;background:var(--teal-dim);color:#D8F6F0;border:1px solid #2FBFA933}
+  .node b{color:#fff;font-weight:650}
+  .node.deep{background:#0E3A34}
+  .node.dark{background:#0A101B;border-color:var(--line);color:#C4CDDA}
+  .node.warn{background:#3A2008;border-color:#E8A13D44;color:#F3DCB8}
+  .node small{display:block;color:inherit;opacity:.75;font-size:.86em;margin-top:.2em}
+  .dn{align-self:center;color:var(--mut);font-size:14px;line-height:1;font-family:var(--mono)}
+
+  /* ---------- versus ---------- */
+  .vs{display:grid;grid-template-columns:1fr 1fr;gap:1.6vw;margin-top:3vh;flex:1;min-height:0}
+  .vCard{border-radius:14px;padding:2.4vh 1.5vw;border:1px solid var(--line);display:flex;flex-direction:column}
+  .vCard.bad{background:linear-gradient(180deg,#241608,#1A1208)}
+  .vCard.good{background:linear-gradient(180deg,#0E2C28,#0C1F1D)}
+  .vCard h3{font-family:var(--mono);font-size:clamp(15px,1.6vw,20px);letter-spacing:.02em}
+  .vCard.bad h3{color:var(--amber)} .vCard.good h3{color:var(--teal-br)}
+  .vCard ul{list-style:none;margin-top:2vh;display:flex;flex-direction:column;gap:1.6vh}
+  .vCard li{display:grid;grid-template-columns:22px 1fr;gap:.7em;
+    font-size:clamp(12.5px,1.3vw,16px);line-height:1.5;color:#D8DFE9}
+  .vCard.bad li::before{content:"✕";color:var(--amber);font-weight:700}
+  .vCard.good li::before{content:"✓";color:var(--teal-br);font-weight:700}
+  .vCard li b{color:#fff}
+  .thesis{margin-top:2.6vh;font-family:var(--serif);font-style:italic;
+    font-size:clamp(15px,1.8vw,22px);color:#EDF2F8}
+  .thesis b{color:var(--teal-br)}
+
+  /* ---------- demo slide ---------- */
+  .demoWrap{display:grid;grid-template-columns:.95fr 1.05fr;gap:2vw;margin-top:2.6vh;flex:1;min-height:0}
+  .acts{display:flex;flex-direction:column;gap:1.5vh}
+  .act{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1.6vh 1.2vw}
+  .act.hot{border-color:var(--teal);box-shadow:0 0 0 1px var(--teal-dim)}
+  .act h4{font-family:var(--mono);font-size:clamp(12.5px,1.25vw,15px);color:var(--teal-br)}
+  .act p{margin-top:.5vh;font-size:clamp(12px,1.2vw,14.5px);color:#C4CDDA;line-height:1.5}
+  .chart{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:2vh 1.4vw;display:flex;flex-direction:column;min-height:0}
+  .chart h4{font-size:clamp(13px,1.3vw,16px);color:#C4CDDA;font-weight:600}
+  .liveN{font-family:var(--mono);font-size:clamp(40px,5vw,68px);font-weight:700;
+    color:var(--teal-br);font-variant-numeric:tabular-nums;line-height:1;margin-top:.6vh}
+  .liveN .lab{font-size:.24em;color:var(--mut);font-weight:400;letter-spacing:.14em;
+    text-transform:uppercase;margin-left:1em}
+  .chart svg{width:100%;height:100%;flex:1;min-height:120px;margin-top:1vh}
+  .axis{stroke:var(--line);stroke-width:1}
+  .gridl{stroke:rgba(255,255,255,.05);stroke-width:1}
+  .convPath{fill:none;stroke:var(--teal-br);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+  .convFill{fill:url(#gradFill);opacity:.35}
+  .pt{fill:var(--bg);stroke:var(--teal-br);stroke-width:2.5}
+  .ptLab{font-family:var(--mono);font-size:12px;fill:#BFE9E2}
+  .axLab{font-family:var(--mono);font-size:11px;fill:var(--mut)}
+  .revertFlag{font-family:var(--mono);font-size:11px;fill:var(--amber)}
+
+  /* ---------- close ---------- */
+  .closeWrap{margin:auto 0}
+  .proof{font-family:var(--serif);font-weight:700;font-size:clamp(44px,7.4vw,104px);
+    letter-spacing:-.015em;line-height:1.05}
+  .proof .stampline{display:inline-block;position:relative}
+  .stamp{display:inline-block;font-family:var(--mono);font-size:clamp(11px,1.2vw,14px);
+    letter-spacing:.2em;color:var(--teal-br);border:2px solid var(--teal);
+    border-radius:6px;padding:.35em .8em;transform:rotate(-3deg) translateY(-1.2em);
+    margin-left:.4em;vertical-align:middle}
+  .roadRow{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4vw;margin-top:5vh;max-width:1100px}
+  .road{border-top:2px solid var(--teal-dim);padding-top:1.4vh}
+  .road h4{font-size:clamp(13.5px,1.4vw,17px);font-weight:650}
+  .road p{margin-top:.5vh;font-size:clamp(11.5px,1.15vw,14px);color:var(--mut);line-height:1.5}
+
+  /* ---------- chrome ---------- */
+  #bar{position:fixed;top:0;left:0;height:3px;background:var(--teal-br);width:0;z-index:50;
+    transition:width .35s ease}
+  #hud{position:fixed;bottom:16px;right:22px;z-index:50;display:flex;align-items:center;gap:14px;
+    font-family:var(--mono);font-size:12px;color:var(--mut);user-select:none}
+  #dots{display:flex;gap:7px}
+  #dots button{width:8px;height:8px;border-radius:50%;border:0;background:#3A4658;cursor:pointer;padding:0}
+  #dots button.on{background:var(--teal-br)}
+  #hint{position:fixed;bottom:16px;left:22px;z-index:50;font-family:var(--mono);
+    font-size:11.5px;color:#5E6B7E;user-select:none}
+  .navzone{position:fixed;top:0;bottom:0;width:18vw;z-index:40;cursor:pointer}
+  .navzone.prev{left:0}.navzone.next{right:0}
+  button:focus-visible{outline:2px solid var(--teal-br);outline-offset:3px}
+
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+    .r{opacity:1;transform:none}
+  }
+  @media (max-width:900px){
+    .titleWrap,.exGrid,.vs,.demoWrap{grid-template-columns:1fr}
+    .statGrid{grid-template-columns:repeat(2,1fr)}
+    .loopRow{grid-template-columns:repeat(3,1fr)}
+    .arch{grid-template-columns:1fr}
+    .ring{display:none}
+    body{overflow:auto}
+    .slide{position:relative;opacity:1;visibility:visible;transform:none;min-height:100vh}
+    #hud,#hint,.navzone,#bar{display:none}
+  }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div id="deck">
+
+<!-- 1 · TITLE -->
+<section class="slide active" aria-label="Title">
+  <div class="titleWrap">
+    <div>
+      <div class="eyebrow r">Loop Engineering Hackathon · tokens& · SF · July 2026</div>
+      <div class="brand r d1">MEND<small>The accessibility healer</small></div>
+      <p class="stage r d3">“Claude can write the fix. Only the harness can prove it. <b>We built the proof.</b>”</p>
+    </div>
+    <div class="ring r d4"><div class="core"><span><b>fix</b> → verify</span><span>verify → <b>receipt</b></span><span>receipt → repeat</span></div></div>
+  </div>
+  <div class="foot r d5">A self-verifying repair loop for website accessibility · patches source, never runtime · every fix ships with evidence</div>
+</section>
+
+<!-- 2 · EXHIBITS (REAL REDDIT) -->
+<section class="slide" aria-label="Real Reddit evidence">
+  <div class="eyebrow r">Exhibit files · scraped live via BrightData · July 17, 2026</div>
+  <h1 class="r d1">This happened to a real owner <span class="hl">four days ago</span></h1>
+  <div class="exGrid">
+    <div class="exCol">
+      <article class="card r d2">
+        <span class="tag">EXHIBIT A · THE POST</span>
+        <div class="rHead"><span class="sr">r/smallbusiness</span><span class="dot"></span><span>u/TheTruth730</span><span class="dot"></span><span>July 13, 2026</span><span class="fresh">4 days ago</span></div>
+        <h3 class="rTitle">“Served lawsuit for website not being accessible for blind people…”</h3>
+        <p class="rBody">The suit was <b>taped to the shop door</b> when his wife opened their retail store. Federal case, Western District of North Carolina. A friend hit months earlier is settling for <b>$15,000</b> plus ongoing remediation costs. They run a standard Shopify store and had no idea they were exposed.</p>
+        <p class="rQuote">“We’re so distressed and torn up over this.”</p>
+        <div class="rMeta"><span class="up">▲ 260</span><span>💬 202 comments</span></div>
+        <div class="chips"><span class="chip">suit taped to the door</span><span class="chip">federal case, W.D.N.C.</span><span class="chip">$15k settlement pressure</span></div>
+      </article>
+      <div class="kicker r d5"><b>And inside this same thread,</b> a commenter recommends accessiBe as the fix — the overlay vendor the FTC fined <b>$1M</b> for false advertising. The market’s default answer to this man’s worst week is the villain.</div>
+    </div>
+    <div class="exCol">
+      <article class="card r d3">
+        <span class="tag t">EXHIBIT B · THE MOOD</span>
+        <div class="rHead"><span class="sr">r/smallbusiness</span><span class="dot"></span><span>u/keineskeines123</span><span class="dot"></span><span>top reply</span></div>
+        <p class="rQuote" style="margin-top:.7em">“It is basically extortion.”</p>
+        <p class="rBody" style="margin-top:.55em">…and advises that fighting costs more in legal fees than settling. Lawyers alone run another $10–20k.</p>
+      </article>
+      <article class="card r d4">
+        <span class="tag t">EXHIBIT C · THE PRO</span>
+        <div class="rHead"><span class="sr">r/smallbusiness</span><span class="dot"></span><span>remediation specialist since 2019</span></div>
+        <p class="rBody" style="margin-top:.7em">Reports client settlements from <b>under $10k to nearly $100k</b> — one New York client paid <b>$82,500</b>. Describes professional plaintiffs; one Florida filer has sued <b>175+ businesses</b>. Asked whether a little widget can fix a site:</p>
+        <p class="rQuote">“No, not really.”</p>
+      </article>
+    </div>
+  </div>
+  <div class="foot r d6">Source: reddit.com/r/smallbusiness · post 1uvn0ix, pulled with comment data via BrightData MCP on presentation day</div>
+</section>
+
+<!-- 3 · THE NUMBERS -->
+<section class="slide" aria-label="Market numbers">
+  <div class="eyebrow r">The scale · freshest data available</div>
+  <h1 class="r d1">He isn’t unlucky. He’s the <span class="hl">trend line</span>.</h1>
+  <div class="statGrid">
+    <div class="stat r d2"><div class="n"><span data-count="6000">0</span><span class="sfx">+</span></div>
+      <p>lawsuits projected for 2026 across state and federal courts</p><span class="src">UsableNet midyear · released Jul 8, 2026</span></div>
+    <div class="stat r d3"><div class="n"><span data-count="1427">0</span></div>
+      <p>of 2025’s suits hit companies that had already been sued before</p><span class="src">UsableNet 2025 year-end report</span></div>
+    <div class="stat warn r d4"><div class="n"><span data-count="95.9" data-dec="1">0</span><span class="sfx">%</span></div>
+      <p>of the top 1M home pages fail WCAG checks — worsening for the first time in years</p><span class="src">WebAIM Million 2026 · Mar 2026</span></div>
+    <div class="stat r d5"><div class="n"><span data-count="1.3" data-dec="1">0</span><span class="sfx">B</span></div>
+      <p>people worldwide live with disabilities</p><span class="src">WHO</span></div>
+  </div>
+  <div class="foot r d6">Repeat defendants are the tell: <b>one-time audits don’t stick.</b> A loop that lives in CI does.</div>
+</section>
+
+<!-- 4 · THE VILLAIN -->
+<section class="slide" aria-label="The overlay problem">
+  <div class="eyebrow r">The incumbent</div>
+  <h1 class="r d1">The default “fix” makes you a <span style="color:var(--amber)">bigger target</span></h1>
+  <div class="rowList">
+    <div class="row r d2"><div class="glyph a">$</div><div><h3>$1M FTC fine</h3>
+      <p>accessiBe, the biggest overlay vendor, fined for false advertising and fake customer reviews. Overlays inject a script that hides issues at runtime — the broken source ships untouched.</p></div></div>
+    <div class="row r d3"><div class="glyph a">✍</div><div><h3>1,000+ signatures against overlays</h3>
+      <p>The community’s Overlay Fact Sheet open letter started with ~400 experts in 2021 and has crossed 1,000. On r/accessibility: <q>As far as I know it is a garbage</q> <span class="who">— u/Komaniu00</span> · <q>Check out the overlay fact sheet</q> <span class="who">— u/_mothdust, top comment</span></p></div></div>
+    <div class="row r d4"><div class="glyph a">⌖</div><div><h3>Overlays now attract lawsuits</h3>
+      <p>456 suits in the first half of 2025 — 22.6% of all filings — targeted sites that <b>had a widget installed</b>. The badge in the corner reads as an admission, not a shield.</p></div></div>
+  </div>
+  <div class="foot r d5">Sources: FTC case 2223156 · overlayfactsheet.com · r/accessibility · UsableNet H1-2025 data via rev.com</div>
+</section>
+
+<!-- 5 · WHY NOW -->
+<section class="slide" aria-label="Why now">
+  <div class="eyebrow r">Timing</div>
+  <h1 class="r d1">Why now</h1>
+  <div class="rowList">
+    <div class="row r d2"><div class="glyph">⚖</div><div><h3>The law arrived</h3>
+      <p>European Accessibility Act enforcement went live June 28, 2025, and covers non-EU companies selling into the EU. US federal filings rose 27% the same year.</p></div></div>
+    <div class="row r d3"><div class="glyph">✓</div><div><h3>The approach is proven</h3>
+      <p>At Axe-con 2026, Meta reported 2,500 AI-assisted accessibility fixes shipped at a 90% solve rate, with 5,000 more queued. AI fixing accessibility at scale is no longer a hypothesis.</p></div></div>
+    <div class="row r d4"><div class="glyph">◉</div><div><h3>The ceiling is real — and it’s our opening</h3>
+      <p>Automated scanners catch roughly 30 to 40% of issues (Deque, GDS). Rules can check that alt text <b>exists</b>. Only something that can see the image can check that it’s <b>true</b>. That’s our critic.</p></div></div>
+  </div>
+  <div class="foot r d5">Sources: EU Commission · Axe-con 2026 coverage · Deque automated coverage research · UK GDS audit</div>
+</section>
+
+<!-- 6 · THE LOOP -->
+<section class="slide" aria-label="The loop">
+  <div class="eyebrow r">The system</div>
+  <h1 class="r d1">The loop: fix, then <span class="hl">prove it</span></h1>
+  <div class="loopRow r d2" id="loopSteps">
+    <div class="step"><div class="num">01</div><h4>Scan</h4><p>axe-core via Playwright</p></div>
+    <div class="step"><div class="num">02</div><h4>Map</h4><p>DOM node → source file:line</p></div>
+    <div class="step"><div class="num">03</div><h4>Patch</h4><p>source only, never runtime</p></div>
+    <div class="step"><div class="num">04</div><h4>Verify</h4><p>four gates · any fail = revert</p></div>
+    <div class="step"><div class="num">05</div><h4>Judge</h4><p>isolated critic · semantic truth</p></div>
+    <div class="step"><div class="num">06</div><h4>Receipt</h4><p>accept or revert, always logged</p></div>
+  </div>
+  <div class="gateStrip">
+    <div class="gate r d3"><b>GATE 1</b> · axe re-scan — the violation is gone, none introduced</div>
+    <div class="gate r d4"><b>GATE 2</b> · pixel diff — zero changed pixels outside masks; the design is untouched</div>
+    <div class="gate r d5"><b>GATE 3</b> · banned patterns — no aria-hidden, alt="", display:none suppression tricks</div>
+    <div class="gate r d6"><b>GATE 4</b> · IBM Equal Access — an independent engine agrees (not Lighthouse: that’s axe again)</div>
+  </div>
+  <div class="foot r d7">The fixer never grades its own homework.</div>
+</section>
+
+<!-- 7 · ARCHITECTURE -->
+<section class="slide" aria-label="Architecture">
+  <div class="eyebrow r">Architecture</div>
+  <h1 class="r d1">Act · Verify · Prove</h1>
+  <div class="arch">
+    <div class="lane r d2"><h5>Act</h5>
+      <div class="node"><b>axe scan</b><small>Playwright renders the patient</small></div><div class="dn">↓</div>
+      <div class="node"><b>source mapper</b><small>violation → file : line</small></div><div class="dn">↓</div>
+      <div class="node deep"><b>fixer · Claude on Bedrock</b><small>patches source only</small></div><div class="dn">↓ rebuild</div>
+      <div class="node dark"><b>target site behind Pomerium</b><small>identity-aware policy · agent holds no credentials</small></div>
+    </div>
+    <div class="lane r d3"><h5>Verify — all must pass</h5>
+      <div class="node">Gate 1 · axe re-scan</div>
+      <div class="node">Gate 2 · pixel diff, masked + frozen</div>
+      <div class="node">Gate 3 · banned-pattern check</div>
+      <div class="node">Gate 4 · IBM Equal Access</div>
+      <div class="node deep"><b>critic · isolated context</b><small>sees the actual image · judges truth, not compliance theater</small></div>
+    </div>
+    <div class="lane r d4"><h5>Prove</h5>
+      <div class="node dark"><b>receipt per fix</b><small>before/after · patch · gate results · verdict — accepts AND reverts</small></div>
+      <div class="node"><b>live dashboard</b><small>WebSocket counter + gate lights</small></div>
+      <div class="node"><b>Zero deploy</b><small>the agent ships the healed site itself</small></div>
+      <div class="node warn"><b>auto-revert on any FAIL</b><small>a caught failure is evidence the harness works</small></div>
+    </div>
+  </div>
+  <div class="foot r d5">Living mermaid versions of this diagram (system · round sequence · gate logic) are in docs/ARCHITECTURE.md</div>
+</section>
+
+<!-- 8 · VERSUS -->
+<section class="slide" aria-label="Bare agent versus Mend">
+  <div class="eyebrow r">The objection, answered</div>
+  <h1 class="r d1">“Can’t any agent do this?”</h1>
+  <div class="vs">
+    <div class="vCard bad r d2"><h3>loop.sh + “fix accessibility”</h3>
+      <ul>
+        <li>Suppresses violations to please the counter</li>
+        <li>Breaks layout with nothing watching</li>
+        <li>Declares victory with zero proof</li>
+        <li><b>Real case:</b> a blind optimizer agent ran 48h on production queries. Latency spiked <b>400%</b>.</li>
+      </ul>
+    </div>
+    <div class="vCard good r d3"><h3>MEND</h3>
+      <ul>
+        <li>Banned-pattern gate blocks every suppression trick</li>
+        <li>Pixel diff catches breakage and auto-reverts it</li>
+        <li>A receipt for every fix — failures included</li>
+        <li>An independent second engine must agree before anything counts</li>
+      </ul>
+    </div>
+  </div>
+  <p class="thesis r d4">The model is the commodity. <b>The harness is the product.</b> On stage, we demo the failure the harness catches.</p>
+  <div class="foot r d5">SQL incident: “I Let an AI Agent Optimize Our Database Queries for 48 Hours”, Towards AI, Mar 2026</div>
+</section>
+
+<!-- 9 · SPONSORS -->
+<section class="slide" aria-label="Sponsor integrations">
+  <div class="eyebrow r">Sponsor stack</div>
+  <h1 class="r d1">Three sponsors, <span class="hl">one per loop stage</span></h1>
+  <div class="rowList">
+    <div class="row r d2"><div class="glyph">🧠</div><div><h3>AWS Bedrock — the brain</h3>
+      <p>The fixer and the critic both run Claude through Bedrock. Two agents, one managed model layer.</p></div></div>
+    <div class="row r d3"><div class="glyph">🔒</div><div><h3>Pomerium — the access</h3>
+      <p>The target sits behind an identity-aware policy. The agent holds no credentials, and Pomerium’s access log joins the evidence trail: every page touched, policy-checked.</p></div></div>
+    <div class="row r d4"><div class="glyph">🚀</div><div><h3>Zero — the ship</h3>
+      <p>The loop’s final act: the agent deploys the healed site to a shareable link on its own. No API keys, no signup friction.</p></div></div>
+  </div>
+  <div class="foot r d5">Fallback, pre-decided: if Pomerium fights the timebox, deployment moves to Akash and Pomerium becomes roadmap.</div>
+</section>
+
+<!-- 10 · DEMO -->
+<section class="slide" aria-label="Demo plan">
+  <div class="eyebrow r">On stage</div>
+  <h1 class="r d1">The 3-minute demo</h1>
+  <div class="demoWrap">
+    <div class="acts">
+      <div class="act r d2"><h4>ACT 1 · the counter lies (30s)</h4><p>Recording of a naive, gates-off loop hiding content while its number drops.</p></div>
+      <div class="act hot r d3"><h4>ACT 2 · Mend live (90s)</h4><p>One page converges to zero on stage — including one fix caught by the pixel gate and auto-reverted, on screen.</p></div>
+      <div class="act r d4"><h4>ACT 3 · proof (45s)</h4><p>Open a receipt. Run IBM Equal Access live as the independent second opinion. The agent deploys the healed site via Zero; the link goes up.</p></div>
+    </div>
+    <div class="chart r d3">
+      <h4>Demo mode · convergence target</h4>
+      <div class="liveN"><span id="liveCount">47</span><span class="lab">violations in scope</span></div>
+      <svg viewBox="0 0 640 300" preserveAspectRatio="none" aria-hidden="true">
+        <defs><linearGradient id="gradFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#5EEAD4" stop-opacity=".5"/><stop offset="1" stop-color="#5EEAD4" stop-opacity="0"/>
+        </linearGradient></defs>
+        <line class="gridl" x1="40" y1="60" x2="620" y2="60"/><line class="gridl" x1="40" y1="120" x2="620" y2="120"/>
+        <line class="gridl" x1="40" y1="180" x2="620" y2="180"/><line class="axis" x1="40" y1="250" x2="620" y2="250"/>
+        <path id="convFill" class="convFill" d=""/>
+        <path id="convPath" class="convPath" d="M60,32 L172,106 L284,166 L396,208 L508,236 L590,250"/>
+        <g id="convPts"></g>
+        <text class="revertFlag" x="300" y="150">◄ round 2: layout break caught → reverted</text>
+        <text class="axLab" x="52" y="272">R0</text><text class="axLab" x="164" y="272">R1</text>
+        <text class="axLab" x="276" y="272">R2</text><text class="axLab" x="388" y="272">R3</text>
+        <text class="axLab" x="500" y="272">R4</text><text class="axLab" x="582" y="272">R5</text>
+      </svg>
+    </div>
+  </div>
+  <div class="foot r d5">Backup recording stands by · the overnight full-site run replays on the dashboard behind the live demo</div>
+</section>
+
+<!-- 11 · CLOSE -->
+<section class="slide" aria-label="Close">
+  <div class="closeWrap">
+    <div class="eyebrow r">After the weekend</div>
+    <div class="proof r d1">We built<br><span class="stampline">the proof.<span class="stamp">MEND ✓ VERIFIED</span></span></div>
+    <div class="roadRow">
+      <div class="road r d3"><h4>A loop that lives in CI</h4><p>GitHub Action: every PR gets verified fix commits with receipts attached. 1,427 repeat-defendant suits say audits don’t stick.</p></div>
+      <div class="road r d4"><h4>Receipts for the real buyer</h4><p>The owner with a demand letter on his desk, and his lawyer. Evidence, not promises.</p></div>
+      <div class="road r d5"><h4>Honesty as strategy</h4><p>We fix verified violations. We never claim compliance; overclaiming is what got the incumbent fined.</p></div>
+    </div>
+    <div class="foot r d6">Mend · Loop Engineering Hackathon · San Francisco · 2026</div>
+  </div>
+</section>
+
+</div>
+
+<div id="hud"><span id="counter">1 / 11</span><div id="dots" role="tablist" aria-label="Slides"></div></div>
+<div id="hint">← → navigate · F fullscreen</div>
+<div class="navzone prev" aria-hidden="true"></div>
+<div class="navzone next" aria-hidden="true"></div>
+
+<script>
+(function(){
+  const slides=[...document.querySelectorAll('.slide')];
+  const dots=document.getElementById('dots');
+  const bar=document.getElementById('bar');
+  const counter=document.getElementById('counter');
+  let i=0, timers=[];
+
+  slides.forEach((_,k)=>{
+    const b=document.createElement('button');
+    b.setAttribute('aria-label','Go to slide '+(k+1));
+    b.addEventListener('click',()=>go(k));
+    dots.appendChild(b);
+  });
+
+  function clearTimers(){timers.forEach(t=>clearInterval(t)||clearTimeout(t));timers=[]}
+
+  function animateCounters(slide){
+    slide.querySelectorAll('[data-count]').forEach(el=>{
+      const target=parseFloat(el.dataset.count), dec=+(el.dataset.dec||0);
+      const dur=1300, t0=performance.now();
+      function tick(t){
+        const p=Math.min(1,(t-t0)/dur), e=1-Math.pow(1-p,3);
+        el.textContent=(target*e).toLocaleString(undefined,{minimumFractionDigits:dec,maximumFractionDigits:dec});
+        if(p<1) requestAnimationFrame(tick);
+        else el.textContent=target.toLocaleString(undefined,{minimumFractionDigits:dec,maximumFractionDigits:dec});
+      }
+      requestAnimationFrame(tick);
+    });
+  }
+
+  function animateLoop(slide){
+    const steps=slide.querySelectorAll('#loopSteps .step');
+    if(!steps.length) return;
+    let k=0;
+    steps.forEach(s=>s.classList.remove('pulse'));
+    timers.push(setInterval(()=>{
+      steps.forEach(s=>s.classList.remove('pulse'));
+      steps[k%steps.length].classList.add('pulse');
+      k++;
+    },900));
+  }
+
+  function animateChart(slide){
+    const path=slide.querySelector('#convPath');
+    if(!path) return;
+    const pts=[[60,32,47],[172,106,31],[284,166,18],[396,208,9],[508,236,3],[590,250,0]];
+    const g=slide.querySelector('#convPts'); g.innerHTML='';
+    const fill=slide.querySelector('#convFill');
+    fill.setAttribute('d', path.getAttribute('d')+' L590,250 L60,250 Z');
+    const len=path.getTotalLength();
+    path.style.strokeDasharray=len; path.style.strokeDashoffset=len;
+    fill.style.opacity=0;
+    requestAnimationFrame(()=>{
+      path.style.transition='stroke-dashoffset 2.6s cubic-bezier(.4,0,.2,1)';
+      path.style.strokeDashoffset=0;
+    });
+    timers.push(setTimeout(()=>{fill.style.transition='opacity .8s';fill.style.opacity=.35},2200));
+    pts.forEach((p,idx)=>{
+      timers.push(setTimeout(()=>{
+        const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+        c.setAttribute('cx',p[0]);c.setAttribute('cy',p[1]);c.setAttribute('r',5);c.setAttribute('class','pt');
+        const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+        t.setAttribute('x',p[0]-6);t.setAttribute('y',p[1]-12);t.setAttribute('class','ptLab');t.textContent=p[2];
+        g.appendChild(c);g.appendChild(t);
+        document.getElementById('liveCount').textContent=p[2];
+      }, 400*idx+300));
+    });
+  }
+
+  function go(n){
+    if(n<0||n>=slides.length) return;
+    clearTimers();
+    slides[i].classList.remove('active');
+    i=n;
+    const s=slides[i];
+    s.classList.add('active');
+    counter.textContent=(i+1)+' / '+slides.length;
+    bar.style.width=((i+1)/slides.length*100)+'%';
+    [...dots.children].forEach((d,k)=>d.classList.toggle('on',k===i));
+    timers.push(setTimeout(()=>{animateCounters(s);animateLoop(s);animateChart(s)},350));
+  }
+
+  addEventListener('keydown',e=>{
+    if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();go(i+1)}
+    else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();go(i-1)}
+    else if(e.key==='Home')go(0);
+    else if(e.key==='End')go(slides.length-1);
+    else if(e.key.toLowerCase()==='f'){
+      document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();
+    }
+  });
+  document.querySelector('.navzone.next').addEventListener('click',()=>go(i+1));
+  document.querySelector('.navzone.prev').addEventListener('click',()=>go(i-1));
+
+  let tx=null;
+  addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
+  addEventListener('touchend',e=>{
+    if(tx===null)return;
+    const dx=e.changedTouches[0].clientX-tx;
+    if(Math.abs(dx)>50) dx<0?go(i+1):go(i-1);
+    tx=null;
+  },{passive:true});
+
+  go(0);
+})();
+</script>
+</body>
+</html>

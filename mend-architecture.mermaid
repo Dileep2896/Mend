@@ -1,0 +1,36 @@
+flowchart LR
+    subgraph RUN["Loop runner — loop.sh → Claude Code on Bedrock"]
+        T["TASKS.md + JOURNAL.md<br/>state lives in git"]
+    end
+
+    subgraph ACT["ACT"]
+        S["axe-core scan<br/>(Playwright)"] --> M["Source mapper<br/>DOM node → file:line"]
+        M --> F["Fixer agent<br/>Claude on Bedrock<br/>patches SOURCE only"]
+    end
+
+    subgraph TGT["Patient"]
+        P["Target site<br/>behind Pomerium policy<br/>agent holds no credentials"]
+    end
+
+    subgraph VERIFY["VERIFY — every gate must pass"]
+        G1["Gate 1 · axe re-scan<br/>violation gone"] --> G2["Gate 2 · pixel diff<br/>masked + frozen baseline"]
+        G2 --> G3["Gate 3 · banned patterns<br/>no suppression tricks"]
+        G3 --> G4["Gate 4 · IBM Equal Access<br/>independent rule engine"]
+        G4 --> C["Critic agent<br/>isolated context<br/>judges semantic truth"]
+    end
+
+    subgraph PROVE["PROVE"]
+        R["Receipt per fix<br/>before/after + diffs + verdicts"]
+        D["Live dashboard<br/>WebSocket counter + gate lights"]
+        Z["Zero deploy<br/>agent ships healed site"]
+    end
+
+    RUN --> S
+    S -->|renders| P
+    F -->|rebuild| P
+    F --> G1
+    C -->|PASS| R
+    C -->|FAIL| REV["Auto-revert<br/>+ failure receipt"]
+    REV --> R
+    R --> D
+    R --> Z
