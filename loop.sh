@@ -8,10 +8,16 @@ PROMPT_FILE="LOOP_PROMPT.md"
 LOG_DIR="runs/loop-logs"
 mkdir -p "$LOG_DIR"
 
-# Bedrock wiring — confirm exact vars against docs/PLATFORM_NOTES.md (M0).
-export CLAUDE_CODE_USE_BEDROCK="${CLAUDE_CODE_USE_BEDROCK:-1}"
-# export AWS_REGION=...   # set per PLATFORM_NOTES.md
-# export ANTHROPIC_MODEL=...  # set per PLATFORM_NOTES.md
+# Auth per docs/PLATFORM_NOTES.md (M0, verified Jul 17 2026):
+# default = subscription login (works today). Opt into Bedrock with
+# CLAUDE_CODE_USE_BEDROCK=1 once the Anthropic use-case form is accepted.
+if [[ "${CLAUDE_CODE_USE_BEDROCK:-0}" == "1" ]]; then
+  export CLAUDE_CODE_USE_BEDROCK=1
+  export AWS_REGION="${AWS_REGION:-us-east-1}"
+  export AWS_PROFILE="${AWS_PROFILE:-default}"
+  export ANTHROPIC_MODEL="${ANTHROPIC_MODEL:-us.anthropic.claude-sonnet-4-6}"
+  export ANTHROPIC_SMALL_FAST_MODEL="${ANTHROPIC_SMALL_FAST_MODEL:-us.anthropic.claude-haiku-4-5-20251001-v1:0}"
+fi
 
 for i in $(seq 1 "$MAX_ITERS"); do
   TS="$(date +%Y%m%d-%H%M%S)"

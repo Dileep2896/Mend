@@ -6,17 +6,22 @@ Hard gates are decisions, not aspirations. Times are local (SF).
 
 ## M0 — Platform truth (Friday night, ~1h) — DO THIS BEFORE ANY CODE
 
-- [ ] Read the real docs for Claude Code on AWS Bedrock (model access, region, env
+- [x] Read the real docs for Claude Code on AWS Bedrock (model access, region, env
       vars, auth). Write verified facts + exact setup commands to docs/PLATFORM_NOTES.md.
-- [ ] Read Pomerium docs: docker compose quickstart, policy file format, service
+      NOTE: Bedrock streaming blocked until human submits Anthropic use-case form in
+      console (us-east-1). Loop runs on subscription auth today; Bedrock is opt-in.
+- [x] Read Pomerium docs: docker compose quickstart, policy file format, service
       account / programmatic access for a non-human client. Note the minimal viable
       setup for "one upstream app, one policy, one agent identity" in PLATFORM_NOTES.md.
-- [ ] Read Zero docs (zero.xyz): install prompt, how an agent invokes a deploy-site
-      service, cost expectations. Note in PLATFORM_NOTES.md.
-- [ ] Confirm npm packages exist and note exact names/majors: @axe-core/playwright,
+      Plan A = Pomerium Zero free tier (service accounts are not in Core).
+- [x] Read Zero docs (zero.xyz): install prompt, how an agent invokes a deploy-site
+      service, cost expectations. Note in PLATFORM_NOTES.md. Free static-site host
+      verified live in registry; $5 welcome credit.
+- [x] Confirm npm packages exist and note exact names/majors: @axe-core/playwright,
       accessibility-checker (IBM Equal Access), pixelmatch, pngjs, express, ws.
-- [ ] Note in PLATFORM_NOTES.md anything that contradicts CLAUDE.md. PLATFORM_NOTES
-      wins on platform mechanics.
+      All exist; pixelmatch v7 is ESM-only; express is v5.
+- [x] Note in PLATFORM_NOTES.md anything that contradicts CLAUDE.md. PLATFORM_NOTES
+      wins on platform mechanics. 5 contradictions recorded.
 
 ## M1 — Target site + source mapper (Sat morning) — THE RISKIEST PART, FIRST
 
