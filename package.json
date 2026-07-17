@@ -14,7 +14,8 @@
     "diff": "node harness/diff.mjs --dir target",
     "gate:patterns": "node harness/gate-patterns.mjs",
     "gate:engine2": "node harness/gate-engine2.mjs --dir target",
-    "verify": "node harness/verify.mjs"
+    "verify": "node harness/verify.mjs",
+    "dashboard": "node dashboard/server.mjs"
   },
   "keywords": [],
   "author": "",
