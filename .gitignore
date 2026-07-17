@@ -1,3 +1,5 @@
 .DS_Store
 node_modules/
 runs/loop-logs/
+runs/latest/
+runs/*/screenshots/

@@ -25,23 +25,18 @@ Hard gates are decisions, not aspirations. Times are local (SF).
 
 ## M1 — Target site + source mapper (Sat morning) — THE RISKIEST PART, FIRST
 
-- [ ] Choose and vendor the target into target/. Criteria, all required:
-      real open-source project page (not fabricated for the demo), static or
-      plainly-structured React with readable JSX, builds locally in under 60s,
-      genuinely poor accessibility (run a quick axe scan to confirm 30+ violations
-      across at least 5 rule classes), no CI-generated class-name mangling that
-      would defeat source mapping. Record the choice + license + commit hash in
-      JOURNAL.md.
-- [ ] Seed check: run axe, save the "before" report to runs/000-before/.
-      This is pitch evidence. Do not fix anything yet.
-- [ ] Build harness/mapper: given an axe violation (selector + HTML snippet),
-      locate the producing source file and line range. Strategy in order:
-      (1) grep for stable attributes (id, data-*, href, literal text),
-      (2) structural match on the JSX/HTML,
-      (3) build-time source annotation (inject data-mend-src="file:line" via a
-          build transform) if 1 and 2 are unreliable.
-- [ ] Mapper acceptance test: for 10 randomly sampled violations, mapper finds the
-      true source location for at least 8. Write results to JOURNAL.md.
+- [x] Choose and vendor the target into target/. StartBootstrap SB Admin 2 (MIT,
+      commit f0309881, in target/.mend-source-commit). Static HTML, no build step,
+      14 pages, readable source, no class mangling → chosen FOR mappability (R1).
+      Seed axe: 561 violation nodes across 13 rule classes (>>30/5 required).
+- [x] Seed check: runs/000-before/axe.json saved (561 nodes, 13 classes,
+      33 critical / 362 serious / 166 moderate). Pitch evidence. Nothing fixed yet.
+- [x] Build harness/mapper (harness/mapper.mjs): strategy 1 stable-attr,
+      1b structural/document tag, 1c literal text, 2 structural scoring. Static
+      HTML means served file = source file; strategy 3 annotation not needed.
+- [x] Mapper acceptance test (harness/mapper-acceptance.mjs): 9/10 at n=10,
+      24/25 (96%) at n=25. GATE PASS. Lone miss: `<td>Tokyo</td>` (repeated
+      DataTables cell, genuinely ambiguous → correctly BLOCKED, not mis-mapped).
 
 ### HARD GATE — Saturday 12:00
 If the mapper acceptance test is not passing by noon: STOP. Swap to the backup

@@ -1,0 +1,28 @@
+{
+  "name": "mend",
+  "version": "1.0.0",
+  "description": "An agent loop that repairs website accessibility in SOURCE code and refuses to believe itself: every fix must survive four gates (axe re-scan, masked pixel diff, banned-pattern check, IBM Equal Access second engine) plus an isolated critic before it counts. Accepted or reverted, every round writes a receipt.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "scan": "node harness/scan.mjs --dir target --out runs/latest/axe.json",
+    "map:test": "node harness/mapper-acceptance.mjs --scan runs/000-before/axe.json --targetDir target --n 25"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "private": "true",
+  "dependencies": {
+    "@axe-core/playwright": "^4.12.1",
+    "accessibility-checker": "^4.0.29",
+    "express": "^5.2.1",
+    "pixelmatch": "^7.2.0",
+    "playwright": "^1.61.1",
+    "pngjs": "^7.0.0",
+    "ws": "^8.21.1"
+  }
+}
