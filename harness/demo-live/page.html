@@ -11,36 +11,49 @@
 --txt:#eaf0f7;--soft:#c3cedd;--mut:#7a8598;--display:'Fraunces',Georgia,serif;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--ink);color:var(--txt);font-family:var(--mono);height:100vh;overflow:hidden;-webkit-font-smoothing:antialiased;
-display:flex;flex-direction:column;
-background-image:radial-gradient(1000px 560px at 82% -12%,rgba(51,201,176,.07),transparent 58%),linear-gradient(rgba(180,205,235,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(180,205,235,.02) 1px,transparent 1px);background-size:100% 100%,46px 46px,46px 46px;}
-.top,.bar,.explain{flex:none}
-.top{display:flex;align-items:center;gap:16px;padding:13px 24px;border-bottom:1px solid var(--line)}
-.mark{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:-.02em}.mark .d{color:var(--teal-br)}
-.kick{font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--mut)}
-.counts{display:flex;gap:16px;margin-left:6px}
-.stat{display:flex;gap:6px;align-items:baseline}.stat .n{font-family:var(--display);font-weight:700;font-size:21px;font-variant-numeric:tabular-nums}
-.stat.fx .n,.stat.ac .n{color:var(--teal-br)}.stat.rv .n{color:var(--red)}.stat .l{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
-/* the repo input — the hero action */
-.bar{display:flex;align-items:center;gap:12px;padding:15px 24px;border-bottom:1px solid var(--line2);background:linear-gradient(180deg,rgba(51,201,176,.04),transparent)}
-.bar .lab{font-size:12px;color:var(--soft);white-space:nowrap}
-.inputwrap{flex:1;display:flex;align-items:center;gap:10px;background:var(--panel2);border:1px solid var(--line2);border-radius:12px;padding:0 14px;transition:.2s}
+background-image:radial-gradient(1000px 560px at 82% -12%,rgba(51,201,176,.06),transparent 58%),linear-gradient(rgba(180,205,235,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(180,205,235,.02) 1px,transparent 1px);background-size:100% 100%,46px 46px,46px 46px;}
+body{display:flex;flex-direction:column}
+/* thin top bar — the repo input lives here */
+.topbar{flex:none;display:flex;align-items:center;gap:12px;padding:11px 20px;border-bottom:1px solid var(--line2);background:linear-gradient(180deg,rgba(51,201,176,.045),transparent)}
+.mark{font-family:var(--display);font-weight:700;font-size:23px;letter-spacing:-.02em;line-height:1}.mark .d{color:var(--teal-br)}
+.tlab{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut);white-space:nowrap;margin-left:8px}
+.inputwrap{flex:1;max-width:620px;display:flex;align-items:center;gap:9px;background:var(--panel2);border:1px solid var(--line2);border-radius:11px;padding:0 13px;transition:.2s}
 .inputwrap:focus-within{border-color:var(--teal);box-shadow:0 0 0 3px rgba(51,201,176,.12)}
-.inputwrap .ic{color:var(--mut);font-size:15px}
-#repo{flex:1;background:transparent;border:0;outline:0;color:#fff;font-family:var(--mono);font-size:14px;padding:13px 0}
+.inputwrap .ic{color:var(--mut);font-size:14px}
+#repo{flex:1;min-width:0;background:transparent;border:0;outline:0;color:#fff;font-family:var(--mono);font-size:13px;padding:11px 0}
 #repo::placeholder{color:var(--mut)}
-#go{font-family:var(--mono);font-weight:600;font-size:14px;color:#03231e;background:var(--teal-br);border:0;border-radius:11px;padding:13px 22px;cursor:pointer;white-space:nowrap;transition:.2s}
+#go{font-family:var(--mono);font-weight:600;font-size:13.5px;color:#03231e;background:var(--teal-br);border:0;border-radius:10px;padding:11px 18px;cursor:pointer;white-space:nowrap;transition:.2s}
 #go:hover{filter:brightness(1.06)}#go:disabled{opacity:.5;cursor:default}
 .samples{display:flex;gap:7px;align-items:center;font-size:11px;color:var(--mut)}
 .samples button{font-family:var(--mono);font-size:11px;color:var(--soft);background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:6px 9px;cursor:pointer}
 .samples button:hover{border-color:var(--teal)}
-/* explanation */
-.explain{padding:14px 24px;border-bottom:1px solid var(--line);min-height:68px;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(180deg,rgba(51,201,176,.03),transparent)}
-.explain h2{font-family:var(--display);font-weight:700;font-size:clamp(17px,2vw,24px);letter-spacing:-.01em;transition:.3s}
-.explain p{color:var(--soft);font-size:13px;margin-top:4px;line-height:1.5;max-width:120ch}
-.explain.warn{background:linear-gradient(180deg,rgba(234,166,63,.08),transparent)}.explain.warn h2{color:var(--amber)}
-.explain.bad{background:linear-gradient(180deg,rgba(192,53,59,.1),transparent)}.explain.bad h2{color:#ff989c}
-.explain.good{background:linear-gradient(180deg,rgba(51,201,176,.1),transparent)}.explain.good h2{color:var(--teal-br)}
-.grid{display:grid;grid-template-columns:1fr 1.1fr .95fr;flex:1;min-height:0;overflow:hidden}
+#howbtn{margin-left:auto;font-family:var(--mono);font-size:12.5px;color:var(--soft);background:var(--panel);border:1px solid var(--line2);border-radius:9px;padding:9px 13px;cursor:pointer;transition:.2s;white-space:nowrap}
+#howbtn:hover{border-color:var(--teal);color:#fff}
+/* left tab rail */
+.app{display:flex;flex:1;min-height:0}
+.rail{width:212px;flex:none;border-right:1px solid var(--line2);display:flex;flex-direction:column;gap:14px;padding:16px 13px;overflow:auto}
+.rail-lab{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--mut);margin-bottom:4px}
+.tabs{display:flex;flex-direction:column;gap:6px}
+.tab{display:flex;align-items:center;gap:9px;font-family:var(--mono);font-size:13px;color:var(--soft);background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:10px 12px;cursor:pointer;text-align:left;transition:.2s}
+.tab:hover{border-color:var(--line2)}
+.tab .tick{width:15px;height:15px;border-radius:4px;border:1px solid var(--mut);flex:none;display:grid;place-items:center;font-size:10px;color:transparent;transition:.2s}
+.tab.on{color:#fff;border-color:var(--teal-dim);background:rgba(51,201,176,.06)}
+.tab.on .tick{background:var(--teal-br);border-color:var(--teal-br);color:#03231e}.tab.on .tick::after{content:"✓"}
+.tab:not(.on){opacity:.6}
+.counts{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:12px 0}
+.stat{display:flex;align-items:baseline;gap:10px}.stat .n{font-family:var(--display);font-weight:700;font-size:25px;font-variant-numeric:tabular-nums;width:32px}
+.stat.fx .n,.stat.ac .n{color:var(--teal-br)}.stat.rv .n{color:var(--red)}.stat .l{font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);line-height:1.3}
+/* explanation — narration cue, fills the rail */
+.explain{flex:1;min-height:0;overflow:auto;border-radius:12px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(51,201,176,.05),transparent);padding:15px 14px;display:flex;flex-direction:column;gap:8px}
+.explain .ex-step{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--teal)}
+.explain h2{font-family:var(--display);font-weight:700;font-size:19px;line-height:1.12;letter-spacing:-.01em;transition:.3s}
+.explain p{color:var(--soft);font-size:12.5px;line-height:1.55}
+.explain.warn{border-color:rgba(234,166,63,.3);background:linear-gradient(180deg,rgba(234,166,63,.09),transparent)}.explain.warn h2{color:var(--amber)}.explain.warn .ex-step{color:var(--amber)}
+.explain.bad{border-color:var(--red-deep);background:linear-gradient(180deg,rgba(192,53,59,.12),transparent)}.explain.bad h2{color:#ff989c}.explain.bad .ex-step{color:#ff989c}
+.explain.good{border-color:var(--teal-dim);background:linear-gradient(180deg,rgba(51,201,176,.12),transparent)}.explain.good h2{color:var(--teal-br)}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.grid{display:flex;flex:1;min-height:0;overflow:hidden}
+.grid .pane{flex:1 1 0}
 .pane{border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0;overflow:hidden}.pane:last-child{border-right:0}
 .diag{flex:none;max-height:34%}.pipe{flex:1;min-height:0}
 .hd{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut);padding:11px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
@@ -110,33 +123,41 @@ background-image:radial-gradient(1000px 560px at 82% -12%,rgba(51,201,176,.07),t
 @media(max-width:900px){#how .body{grid-template-columns:1fr}#how .diagram{display:none}}
 </style></head>
 <body>
-<div class="top">
-  <div><div class="kick">Heal any repo · real scan · real fixes</div><div class="mark">Mend<span class="d">.</span></div></div>
+<div class="topbar">
+  <div class="mark">Mend<span class="d">.</span></div>
+  <span class="tlab">Analyze a repo</span>
+  <div class="inputwrap"><span class="ic">⎇</span><input id="repo" placeholder="github.com/owner/repo — paste any repo" spellcheck="false" autocomplete="off"></div>
+  <button id="go">Analyze &amp; heal →</button>
+  <div class="samples"><span>try</span><button data-r="https://github.com/StartBootstrap/startbootstrap-sb-admin-2">sb-admin-2</button><button data-r="https://github.com/StartBootstrap/startbootstrap-freelancer">freelancer</button></div>
+  <button id="howbtn">▷ How it works</button>
+</div>
+<div class="app">
+<aside class="rail">
+  <div class="tabs">
+    <div class="rail-lab">Panels · click to toggle</div>
+    <button class="tab on" data-p="page"><span class="tick"></span>The page</button>
+    <button class="tab on" data-p="sr"><span class="tick"></span>Screen reader</button>
+    <button class="tab on" data-p="diag"><span class="tick"></span>Diagnosis &amp; proof</button>
+  </div>
   <div class="counts">
-    <div class="stat fx"><span class="n" id="s-fx">0</span><span class="l">issues fixed</span></div>
+    <div class="stat fx"><span class="n" id="s-fx">0</span><span class="l">issues fixed &amp; verified</span></div>
     <div class="stat ac"><span class="n" id="s-ac">0</span><span class="l">source patches</span></div>
     <div class="stat rv"><span class="n" id="s-rv">0</span><span class="l">cheats blocked</span></div>
   </div>
-  <button id="howbtn">▷ How it works</button>
-</div>
-<div class="bar">
-  <span class="lab">Analyze a repo</span>
-  <div class="inputwrap"><span class="ic">⎇</span><input id="repo" placeholder="https://github.com/owner/repo" spellcheck="false" autocomplete="off"></div>
-  <button id="go">Analyze &amp; heal →</button>
-  <div class="samples">try: <button data-r="https://github.com/StartBootstrap/startbootstrap-sb-admin-2">sb-admin-2</button><button data-r="https://github.com/StartBootstrap/startbootstrap-freelancer">freelancer</button></div>
-</div>
-<div class="explain" id="explain"><h2 id="ex-t">Paste a GitHub repo and press Analyze</h2><p id="ex-b">Mend clones it, runs a real axe scan to find accessibility barriers, then heals the source and proves each fix through four gates. You narrate.</p></div>
-<div class="grid">
-  <div class="pane">
+  <div class="explain" id="explain"><div class="ex-step" id="ex-step">walkthrough</div><h2 id="ex-t">Paste a repo &amp; press Analyze</h2><p id="ex-b">Mend clones it, runs a real axe scan to find the barriers, heals the source, and proves each fix through four gates. You narrate.</p></div>
+</aside>
+<main class="main">
+<div class="grid" id="grid">
+  <div class="pane" data-p="page">
     <div class="hd">The page <span id="fname" style="color:var(--soft)"></span><span class="badge before" id="sitebadge" style="display:none">BEFORE</span></div>
     <div class="sitewrap empty" id="sitewrap"><span id="siteempty">The repo's page appears here once you analyze.</span><iframe id="frame" style="display:none"></iframe></div>
   </div>
-  <div class="pane sr">
+  <div class="pane sr" data-p="sr">
     <div class="srbar" id="srbar">🔊 <b id="srtitle">What a screen reader announces</b><span class="live"><span class="dot"></span><span id="srstate">idle</span></span></div>
     <div class="srlist" id="srlist"><div class="emptysr">This shows what a blind or low-vision person actually experiences — before and after Mend heals the page. The robotic voice is the point: it's their real experience.</div></div>
     <div class="srhint">real browser accessibility tree · <button id="replay">▶ play as a screen reader</button><button id="voicetoggle">auto-voice off</button></div>
   </div>
-  <div class="pane">
+  <div class="pane" data-p="diag">
     <div class="hd">Diagnosis &amp; proof</div>
     <div class="diag"><div class="dt">What axe found</div><div id="diaglist" style="color:var(--mut);font-size:12px">— run an analysis —</div></div>
     <div class="pipe">
@@ -155,6 +176,8 @@ background-image:radial-gradient(1000px 560px at 82% -12%,rgba(51,201,176,.07),t
     </div>
     <div class="log" id="log"></div>
   </div>
+</div>
+</main>
 </div>
 <!-- dialog-based architecture explainer -->
 <div id="how">
@@ -224,7 +247,7 @@ function setNode(id,state,sub){const n=node(id);if(!n)return;n.classList.remove(
 function logLine(t,cls){const d=document.createElement('div');d.className='ln '+(cls||'');d.textContent=(cls==='cmd'?'':'  ')+t;$('log').appendChild(d);$('log').scrollTop=$('log').scrollHeight;}
 function esc(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
 function count(el,to){const from=+el.textContent||0;if(from===to){el.textContent=to;return;}const t0=performance.now();(function f(t){const p=Math.min(1,(t-t0)/500);el.textContent=Math.round(from+(to-from)*p);if(p<1)requestAnimationFrame(f);})(t0);}
-function setExplain(t,b,tone){$('ex-t').textContent=t;$('ex-b').textContent=b||'';$('explain').className='explain'+(tone?' '+tone:'');}
+function setExplain(t,b,tone){$('ex-t').textContent=t;$('ex-b').textContent=b||'';$('explain').className='explain'+(tone?' '+tone:'');$('ex-step').textContent=tone==='good'?'● result':tone==='warn'?'● watch this':tone==='bad'?'● caught':'● running';}
 function renderSR(who,items){lastItems=items;const el=$('srlist');el.innerHTML='';$('srtitle').textContent=who==='before'?'What a screen reader announces — BEFORE':'What a screen reader announces — HEALED';
   items.forEach((it,i)=>{const d=document.createElement('div');d.className='ann '+(it.problem?'problem':it.win?'win':'');d.innerHTML='<div class="say"><span class="ic">▸</span>'+esc(it.text)+'</div>'+(it.problem?'<div class="prob">⚠ '+esc(it.problem)+'</div>':'')+(it.win?'<div class="win">✓ '+esc(it.win)+'</div>':'');el.appendChild(d);setTimeout(()=>d.classList.add('on'),200+i*240);});
   setTimeout(()=>speakSeq(items),350);}
@@ -250,6 +273,12 @@ function analyze(){const repo=$('repo').value.trim();if(!repo)return;$('go').dis
 $('go').addEventListener('click',analyze);
 $('repo').addEventListener('keydown',e=>{if(e.key==='Enter')analyze();});
 document.querySelectorAll('.samples button').forEach(b=>b.addEventListener('click',()=>{$('repo').value=b.dataset.r;analyze();}));
+// tab rail — open/close panels (never let all close)
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  const pane=document.querySelector('.pane[data-p="'+t.dataset.p+'"]'); if(!pane)return;
+  const on=t.classList.toggle('on'); pane.style.display=on?'':'none';
+  if(![...document.querySelectorAll('.tab')].some(x=>x.classList.contains('on'))){t.classList.add('on');pane.style.display='';}
+}));
 $('replay').addEventListener('click',()=>{if(lastItems)speakSeq(lastItems,true);});
 $('voicetoggle').addEventListener('click',()=>{voiceOn=!voiceOn;$('voicetoggle').textContent=voiceOn?'auto-voice on':'auto-voice off';if(!voiceOn)speechSynthesis.cancel();});
 connect();
