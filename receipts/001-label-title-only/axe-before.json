@@ -1,0 +1,21 @@
+{
+  "ruleId": "label-title-only",
+  "count": 1,
+  "items": [
+    {
+      "route": "login.html",
+      "id": "label-title-only",
+      "impact": "serious",
+      "help": "Form elements should have a visible label",
+      "nodes": [
+        {
+          "target": [
+            "#exampleInputEmail"
+          ],
+          "html": "<input type=\"email\" class=\"form-control form-control-user\" id=\"exampleInputEmail\" aria-describedby=\"emailHelp\" placeholder=\"Enter Email Address...\">",
+          "failureSummary": "Fix all of the following:\n  Only title used to generate label for form element"
+        }
+      ]
+    }
+  ]
+}

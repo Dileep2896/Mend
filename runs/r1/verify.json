@@ -1,0 +1,27 @@
+{
+  "round": "r1",
+  "pass": true,
+  "gates": [
+    {
+      "name": "gate1-axe",
+      "pass": true,
+      "detail": "axe 8 → 7; newRules=[]; target 'label-title-only' gone"
+    },
+    {
+      "name": "gate2-pixel",
+      "pass": true,
+      "detail": "changed px = 0"
+    },
+    {
+      "name": "gate3-patterns",
+      "pass": true,
+      "detail": "no banned patterns"
+    },
+    {
+      "name": "gate4-engine2",
+      "pass": true,
+      "detail": "engine2 total = 4 (baseline 4)"
+    }
+  ],
+  "verifiedAt": "2026-07-17T19:09:55.987Z"
+}
