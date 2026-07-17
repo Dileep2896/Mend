@@ -42,7 +42,7 @@ background-image:radial-gradient(1000px 560px at 82% -12%,rgba(51,201,176,.07),t
 .explain.good{background:linear-gradient(180deg,rgba(51,201,176,.1),transparent)}.explain.good h2{color:var(--teal-br)}
 .grid{display:grid;grid-template-columns:1fr 1.1fr .95fr;flex:1;min-height:0;overflow:hidden}
 .pane{border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0;overflow:hidden}.pane:last-child{border-right:0}
-.diag{flex:none}.pipe{flex:none}
+.diag{flex:none;max-height:34%}.pipe{flex:1;min-height:0}
 .hd{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut);padding:11px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
 .hd .badge{margin-left:auto;font-size:9px;padding:3px 8px;border-radius:6px;letter-spacing:.06em}.badge.before{background:var(--red-deep);color:#fff}.badge.after{background:var(--teal-dim);color:var(--teal-br)}
 .sitewrap{flex:1;position:relative;background:#fff;overflow:hidden}#frame{width:200%;height:200%;border:0;transform:scale(.5);transform-origin:0 0}
@@ -72,7 +72,7 @@ background-image:radial-gradient(1000px 560px at 82% -12%,rgba(51,201,176,.07),t
 .node.pass{border-color:rgba(51,201,176,.4)}.node.pass .dot{background:var(--teal-br)}.node.pass .sub{color:var(--teal-br)}
 .node.fail{border-color:var(--red-deep);background:rgba(192,53,59,.08)}.node.fail .dot{background:var(--red)}.node.fail .sub{color:#ff989c}
 .gates{display:grid;grid-template-columns:1fr 1fr;gap:5px}.gates .node{margin:0}
-.log{border-top:1px solid var(--line);flex:1;overflow:auto;padding:10px 14px;font-size:11px;line-height:1.6;background:#060a0f;min-height:90px}
+.log{border-top:1px solid var(--line);flex:none;height:150px;overflow:auto;padding:10px 14px;font-size:11px;line-height:1.6;background:#060a0f}
 .log .ln{white-space:pre-wrap;word-break:break-word}.log .cmd{color:var(--teal-br)}.log .ok{color:#a7e8d8}.log .bad{color:#ff989c}.log .warn{color:var(--amber)}.log .accept{color:var(--teal-br);font-weight:600}
 #howbtn{font-family:var(--mono);font-size:12.5px;color:var(--soft);background:var(--panel);border:1px solid var(--line2);border-radius:9px;padding:9px 14px;cursor:pointer;transition:.2s}
 #howbtn:hover{border-color:var(--teal);color:#fff}

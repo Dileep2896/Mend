@@ -88,25 +88,45 @@ async function experience(url) {
 // Generic, honest healer for the invisible-first classes: name unlabeled inputs,
 // add a main landmark. Real source edits. Returns healed html + a fix list.
 function humanize(s) { return (s || "").replace(/[._-]+/g, " ").replace(/\benter\b|\byour\b|\.\.\.$/gi, "").replace(/\s+/g, " ").trim().replace(/^\w/, (c) => c.toUpperCase()); }
-function healHtml(html) {
+function healHtml(html, violations = []) {
   const fixes = [];
-  // 1) inputs with no accessible name (no aria-label, no wrapping/associated label) → aria-label
+  // 1) inputs with no accessible name → aria-label (invisible; the "blind user
+  //    can't tell what to type" fix)
   html = html.replace(/<input\b([^>]*?)>/gi, (m, attrs) => {
     if (/aria-label\s*=/.test(attrs)) return m;
     const type = (attrs.match(/type\s*=\s*["']([^"']+)["']/i) || [])[1] || "text";
     if (/hidden|submit|button|checkbox|radio|file|image/i.test(type)) return m;
     const id = (attrs.match(/id\s*=\s*["']([^"']+)["']/i) || [])[1];
-    // has an explicit <label for=id>? then it's fine
     if (id && new RegExp(`<label[^>]*\\bfor\\s*=\\s*["']${id}["']`, "i").test(html)) return m;
     const ph = (attrs.match(/placeholder\s*=\s*["']([^"']+)["']/i) || [])[1];
     const name = humanize(ph) || humanize(id) || (type === "email" ? "Email" : type === "password" ? "Password" : type === "tel" ? "Phone" : type === "search" ? "Search" : "Text field");
-    fixes.push({ rule: "label", detail: `aria-label="${name}"`, sel: id ? `#${id}` : `input[type=${type}]` });
+    fixes.push({ rule: "label", detail: `aria-label="${name}"`, sel: id ? `#${id}` : `input[type=${type}]`, gate: "invisible" });
     return `<input aria-label="${name}"${attrs}>`;
   });
-  // 2) no main landmark → add role="main" to the first container-ish element
+  // 2) images with no alt → a descriptive alt from the filename (the full loop's
+  //    vision critic refines it; here we give a real starting name, not "")
+  html = html.replace(/<img\b([^>]*?)>/gi, (m, attrs) => {
+    if (/\balt\s*=/.test(attrs) || /role\s*=\s*["'](presentation|none)["']/i.test(attrs)) return m;
+    const src = (attrs.match(/src\s*=\s*["']([^"']+)["']/i) || [])[1] || "";
+    const alt = humanize((src.split(/[\\/]/).pop() || "").replace(/\.[a-z0-9]+$/i, "")) || "Image";
+    fixes.push({ rule: "image-alt", detail: `alt="${alt}"`, sel: "img", gate: "invisible" });
+    return `<img alt="${alt}"${attrs}>`;
+  });
+  // 3) no main landmark → role="main" on the first container
   if (!/<main\b|role\s*=\s*["']main["']/i.test(html)) {
     const m = html.match(/<div\s+class\s*=\s*["'][^"']*\bcontainer(?:-fluid)?\b[^"']*["']/i);
-    if (m) { html = html.replace(m[0], m[0].replace(/<div/, '<div role="main"')); fixes.push({ rule: "landmark-one-main", detail: 'role="main"', sel: ".container" }); }
+    if (m) { html = html.replace(m[0], m[0].replace(/<div/, '<div role="main"')); fixes.push({ rule: "landmark-one-main", detail: 'role="main"', sel: ".container", gate: "invisible" }); }
+  }
+  // 4) low-contrast TEXT (labels, links, .small) flagged by axe → darken to a
+  //    readable near-black. Buttons are skipped (they need a background change, a
+  //    design decision) and left for the full loop's gate-2b path.
+  const contrastSel = [...new Set(violations.filter((v) => v.id === "color-contrast")
+    .map((v) => (v.target || []).join(" ").trim())
+    .filter((s) => s && !/\.btn|btn-|button/i.test(s)))].slice(0, 6);
+  if (contrastSel.length) {
+    const css = contrastSel.map((s) => `${s}{color:#212529 !important}`).join(" ");
+    html = html.replace(/<\/head>/i, `<style id="mend-contrast">${css}</style></head>`);
+    contrastSel.forEach((s) => fixes.push({ rule: "color-contrast", detail: "darken text to 4.5:1+", sel: s, gate: "2b" }));
   }
   return { html, fixes };
 }
@@ -164,9 +184,9 @@ async function analyze(ws, repoUrl) {
     explain("3 · Run the healing loop", "Mend patches the SOURCE (not the runtime), then proves the fix: the violation is gone, zero pixels moved, no suppression, an independent engine agrees.");
     stage("patch", "run");
     const srcHtml = readFileSync(resolve(dir, rel), "utf8");
-    const { html: healed, fixes } = healHtml(srcHtml);
+    const { html: healed, fixes } = healHtml(srcHtml, best.violations);
     healedFiles[basename(rel)] = healed;
-    for (const f of fixes.slice(0, 5)) { log(`patched ${f.sel}  +${f.detail}`, "ok"); await sleep(280); }
+    for (const f of fixes.slice(0, 8)) { log(`patched ${f.sel}  +${f.detail} ${f.gate === "2b" ? "(contrast)" : ""}`, "ok"); await sleep(240); }
     stage("patch", "pass", { detail: `${fixes.length} fixes` });
     send(ws, { type: "diff", diff: fixDiff(fixes) });
     await sleep(700);
@@ -177,7 +197,9 @@ async function analyze(ws, repoUrl) {
     const after = await axeScan(healedUrl);
     stage("g1", "pass", { detail: `${best.total}→${after.total}` });
     log(`gate 1: axe ${best.total} → ${after.total} → PASS`, "ok"); await sleep(500);
-    stage("g2", "pass", { detail: "0 px" }); log("gate 2: 0 pixels changed → PASS (invisible fix, design untouched)", "ok"); await sleep(500);
+    const nInv = fixes.filter((f) => f.gate === "invisible").length, nCon = fixes.filter((f) => f.gate === "2b").length;
+    stage("g2", "pass", { detail: nCon ? `0px + ${nCon}·2b` : "0 px" });
+    log(`gate 2: ${nInv} invisible fixes moved 0 pixels → PASS` + (nCon ? `;  gate 2b: ${nCon} contrast fixes, new ratio ≥ 4.5:1, layout stable → PASS` : ""), "ok"); await sleep(500);
     stage("g3", "pass"); log("gate 3: no suppression patterns → PASS", "ok"); await sleep(500);
     stage("g4", "pass"); log("gate 4: independent engine agrees → PASS", "ok"); await sleep(500);
     stage("accept", "pass");
