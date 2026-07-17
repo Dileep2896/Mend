@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mend — live healing console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#080c11;--ink2:#0d131a;--panel:#101822;--panel2:#0b1119;--line:rgba(180,205,235,.09);--line2:rgba(180,205,235,.16);
+--teal:#33c9b0;--teal-br:#74f0d8;--teal-dim:#123f39;--amber:#eaa63f;--red:#ff5b62;--red-deep:#c0353b;
+--txt:#e9eff7;--soft:#c3cedd;--mut:#78859a;--display:'Fraunces',Georgia,serif;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ink);color:var(--txt);font-family:var(--mono);height:100vh;overflow:hidden;
+background-image:radial-gradient(1000px 560px at 80% -10%,rgba(51,201,176,.08),transparent 60%),linear-gradient(rgba(180,205,235,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(180,205,235,.025) 1px,transparent 1px);background-size:100% 100%,44px 44px,44px 44px;}
+.top{display:flex;align-items:center;gap:18px;padding:16px 26px;border-bottom:1px solid var(--line2)}
+.mark{font-family:var(--display);font-weight:700;font-size:26px;letter-spacing:-.02em}.mark .d{color:var(--teal-br)}
+.kick{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--mut)}
+.stat{display:flex;gap:8px;align-items:baseline;margin-left:6px}
+.stat .n{font-family:var(--display);font-weight:700;font-size:26px;font-variant-numeric:tabular-nums}
+.stat.fx .n{color:var(--teal-br)}.stat.ac .n{color:var(--teal-br)}.stat.rv .n{color:var(--red)}
+.stat .l{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}
+#run{margin-left:auto;font-family:var(--mono);font-weight:600;font-size:15px;color:#03231e;background:var(--teal-br);border:0;border-radius:11px;padding:12px 22px;cursor:pointer}
+#run:disabled{opacity:.5;cursor:default}
+.grid{display:grid;grid-template-columns:1.15fr 1fr 1.05fr;height:calc(100vh - 63px)}
+.pane{border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.pane:last-child{border-right:0}
+.hd{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--mut);padding:12px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.hd .badge{margin-left:auto;font-size:10px;padding:3px 8px;border-radius:6px;letter-spacing:.1em}
+.badge.before{background:var(--red-deep);color:#fff}.badge.after{background:var(--teal-dim);color:var(--teal-br)}
+/* site */
+.sitewrap{flex:1;position:relative;background:#fff;overflow:hidden}
+#frame{width:200%;height:200%;border:0;transform:scale(.5);transform-origin:0 0}
+.vio{position:absolute;left:14px;bottom:14px;right:14px;max-height:38%;overflow:auto;background:rgba(8,12,17,.92);border:1px solid var(--red-deep);border-radius:10px;padding:12px 14px;font-size:11.5px;line-height:1.5;display:none}
+.vio.show{display:block}.vio h4{color:var(--red);font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.vio .v{color:var(--soft);padding:3px 0;border-bottom:1px dotted var(--line)}.vio .v b{color:#ff989c}
+/* pipeline */
+.pipe{padding:18px 20px;overflow:auto;flex:1}
+.lane{margin-bottom:14px}.lane .lt{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--mut);margin-bottom:8px}
+.node{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin-bottom:8px;position:relative;transition:.25s;display:flex;align-items:center;gap:10px}
+.node .dot{width:9px;height:9px;border-radius:50%;background:var(--mut);flex:none;transition:.25s}
+.node .nm{font-weight:500;font-size:13px}.node .sub{margin-left:auto;font-size:11px;color:var(--mut)}
+.node.run{border-color:var(--teal);box-shadow:0 0 0 1px var(--teal-dim),0 0 22px rgba(51,201,176,.14)}
+.node.run .dot{background:var(--teal-br);box-shadow:0 0 10px var(--teal-br);animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.4}}
+.node.pass{border-color:rgba(51,201,176,.4)}.node.pass .dot{background:var(--teal-br);box-shadow:0 0 8px var(--teal-br)}.node.pass .sub{color:var(--teal-br)}
+.node.fail{border-color:var(--red-deep);background:rgba(192,53,59,.08)}.node.fail .dot{background:var(--red);box-shadow:0 0 8px var(--red)}.node.fail .sub{color:#ff989c}
+.node.accept{border-color:rgba(51,201,176,.5);background:rgba(51,201,176,.08)}
+.node.revert{border-color:var(--red-deep);background:rgba(192,53,59,.1)}
+.gates{display:grid;grid-template-columns:1fr 1fr;gap:8px}.gates .node{margin:0}
+.arrow{text-align:center;color:var(--mut);font-size:12px;margin:-2px 0 6px}
+/* terminal */
+.term{background:#070b10}
+.log{flex:1;overflow:auto;padding:14px 16px;font-size:12px;line-height:1.65}
+.log .ln{white-space:pre-wrap;word-break:break-word}
+.log .cmd{color:var(--teal-br)}.log .ok{color:#a7e8d8}.log .bad{color:#ff989c}.log .warn{color:var(--amber)}
+.log .accept{color:var(--teal-br);font-weight:600}.log .revert{color:#ff989c;font-weight:600}
+.diff{border-top:1px solid var(--line);padding:12px 16px;font-size:11.5px;line-height:1.5;max-height:34%;overflow:auto;white-space:pre;background:#0a0f16}
+.diff .a{color:var(--teal-br)}.diff .r{color:#ff9a9d}.diff .h{color:var(--mut)}
+.dep{padding:10px 16px;border-top:1px solid var(--line);font-size:12px;display:none}
+.dep.show{display:block}.dep a{color:var(--teal-br)}
+</style></head>
+<body>
+<div class="top">
+  <div><div class="kick">Live healing console · real harness, real site</div><div class="mark">Mend<span class="d">.</span></div></div>
+  <div class="stat fx"><span class="n" id="s-fx">0</span><span class="l">fixed & verified</span></div>
+  <div class="stat ac"><span class="n" id="s-ac">0</span><span class="l">accepted</span></div>
+  <div class="stat rv"><span class="n" id="s-rv">0</span><span class="l">caught & reverted</span></div>
+  <button id="run">▶ Run the healing loop</button>
+</div>
+<div class="grid">
+  <!-- the patient -->
+  <div class="pane">
+    <div class="hd">The patient · login.html <span class="badge before" id="sitebadge">BEFORE — broken</span></div>
+    <div class="sitewrap"><iframe id="frame"></iframe>
+      <div class="vio" id="vio"><h4>axe found these — live</h4><div id="violist"></div></div>
+    </div>
+  </div>
+  <!-- architecture pipeline -->
+  <div class="pane pipe">
+    <div class="lane"><div class="lt">Act — find & patch</div>
+      <div class="node" id="n-scan"><span class="dot"></span><span class="nm">axe-core scan</span><span class="sub"></span></div>
+      <div class="arrow">↓</div>
+      <div class="node" id="n-map"><span class="dot"></span><span class="nm">source mapper</span><span class="sub">DOM → file:line</span></div>
+      <div class="arrow">↓</div>
+      <div class="node" id="n-patch"><span class="dot"></span><span class="nm">fixer · patch SOURCE</span><span class="sub"></span></div>
+    </div>
+    <div class="lane"><div class="lt">Verify — all four must pass</div>
+      <div class="gates">
+        <div class="node" id="n-g1"><span class="dot"></span><span class="nm">gate 1 · axe</span><span class="sub"></span></div>
+        <div class="node" id="n-g2"><span class="dot"></span><span class="nm">gate 2 · pixels</span><span class="sub"></span></div>
+        <div class="node" id="n-g3"><span class="dot"></span><span class="nm">gate 3 · patterns</span><span class="sub"></span></div>
+        <div class="node" id="n-g4"><span class="dot"></span><span class="nm">gate 4 · Equal Access</span><span class="sub"></span></div>
+      </div>
+    </div>
+    <div class="lane"><div class="lt">Prove</div>
+      <div class="node" id="n-accept"><span class="dot"></span><span class="nm">accept · receipt</span><span class="sub"></span></div>
+      <div class="node" id="n-revert"><span class="dot"></span><span class="nm">revert · caught</span><span class="sub"></span></div>
+    </div>
+  </div>
+  <!-- live terminal -->
+  <div class="pane term">
+    <div class="hd">Live output · real harness</div>
+    <div class="log" id="log"></div>
+    <div class="diff" id="diff" style="display:none"></div>
+    <div class="dep" id="dep"></div>
+  </div>
+</div>
+<script>
+const $=(id)=>document.getElementById(id);
+const frame=$('frame');
+let ws;
+function connect(){
+  ws=new WebSocket('ws://'+location.host);
+  ws.onmessage=(e)=>handle(JSON.parse(e.data));
+  ws.onclose=()=>setTimeout(connect,1000);
+}
+function node(id){return $('n-'+id);}
+function setNode(id,state,sub){const n=node(id);if(!n)return;n.classList.remove('run','pass','fail');if(state==='run')n.classList.add('run');if(state==='pass')n.classList.add('pass');if(state==='fail')n.classList.add('fail');if(sub!=null)n.querySelector('.sub').textContent=sub;}
+function logLine(t,cls){const d=document.createElement('div');d.className='ln '+(cls||'');d.textContent=(cls==='cmd'?'':'  ')+t;$('log').appendChild(d);$('log').scrollTop=$('log').scrollHeight;}
+function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+function count(el,to){const from=+el.textContent||0;if(from===to){el.textContent=to;return;}const t0=performance.now();(function f(t){const p=Math.min(1,(t-t0)/500);el.textContent=Math.round(from+(to-from)*p);if(p<1)requestAnimationFrame(f);})(t0);}
+
+function handle(m){
+  if(m.type==='reset'){ frame.src=m.before; $('sitebadge').textContent='BEFORE — broken'; $('sitebadge').className='badge before'; $('vio').classList.remove('show'); $('diff').style.display='none'; $('dep').classList.remove('show');
+    ['scan','map','patch','g1','g2','g3','g4','accept','revert'].forEach(id=>setNode(id,'idle','')); }
+  if(m.type==='stage'){ const map={scan:'scan',map:'map',patch:'patch',g1:'g1',g2:'g2',g3:'g3',g4:'g4',accept:'accept',revert:'revert'};
+    const id=map[m.id]; if(!id)return;
+    if(m.state==='run')setNode(id,'run',m.detail||'…');
+    else if(m.state==='done')setNode(id, id==='accept'?'accept':'pass', m.count!=null?m.count+' violations':m.detail);
+    else if(m.state==='pass')setNode(id,'pass',m.detail);
+    else if(m.state==='fail')setNode(id,'fail',m.detail||'CAUGHT');
+    if(m.id==='accept')node('accept').classList.add('accept');
+    if(m.id==='revert'){node('revert').classList.add('revert');node('revert').classList.add('fail');node('revert').querySelector('.sub').textContent='reverted';}
+  }
+  if(m.type==='log')logLine(m.t,m.cls);
+  if(m.type==='violations'){ const el=$('violist'); el.innerHTML=m.items.map(v=>'<div class="v"><b>'+v.id+'</b> · '+(v.impact||'')+' · <span style="color:var(--mut)">'+esc((v.target||[]).join(' '))+'</span></div>').join(''); $('vio').classList.add('show'); }
+  if(m.type==='diff'){ $('diff').style.display='block'; $('diff').innerHTML=m.diff.split('\n').map(l=>l.startsWith('+')&&!l.startsWith('+++')?'<span class="a">'+esc(l)+'</span>':l.startsWith('-')&&!l.startsWith('---')?'<span class="r">'+esc(l)+'</span>':'<span class="h">'+esc(l)+'</span>').join('\n'); }
+  if(m.type==='counts'){ count($('s-fx'),m.fixed); count($('s-ac'),m.accepts); count($('s-rv'),m.reverts); }
+  if(m.type==='done'){ frame.src=m.after; $('sitebadge').textContent='AFTER — healed & verified'; $('sitebadge').className='badge after'; $('vio').classList.remove('show');
+    if(m.deploy){ $('dep').classList.add('show'); $('dep').innerHTML='✓ agent self-deployed the healed site via Zero: <a href="'+m.deploy+'" target="_blank" rel="noopener">'+m.deploy+'</a>'; }
+    $('run').disabled=false; $('run').textContent='▶ Run again'; }
+}
+$('run').addEventListener('click',()=>{ $('run').disabled=true; $('run').textContent='running…'; $('log').innerHTML=''; ws.send(JSON.stringify({run:true})); });
+connect();
+</script>
+</body></html>

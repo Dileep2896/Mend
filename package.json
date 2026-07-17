@@ -22,7 +22,8 @@
     "demo": "node harness/demo.mjs",
     "deploy": "node harness/deploy-zero.mjs",
     "demo:video": "node harness/demo-video/build.mjs",
-    "present": "node harness/demo-video/present.mjs && node dashboard/server.mjs"
+    "present": "node harness/demo-video/present.mjs && node dashboard/server.mjs",
+    "demo:live": "node harness/demo-live/server.mjs"
   },
   "keywords": [],
   "author": "",
