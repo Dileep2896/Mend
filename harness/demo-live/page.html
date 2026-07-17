@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mend — live healing console</title>
+<title>Mend — live accessibility healing</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -11,136 +11,136 @@
 --txt:#e9eff7;--soft:#c3cedd;--mut:#78859a;--display:'Fraunces',Georgia,serif;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--ink);color:var(--txt);font-family:var(--mono);height:100vh;overflow:hidden;
-background-image:radial-gradient(1000px 560px at 80% -10%,rgba(51,201,176,.08),transparent 60%),linear-gradient(rgba(180,205,235,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(180,205,235,.025) 1px,transparent 1px);background-size:100% 100%,44px 44px,44px 44px;}
-.top{display:flex;align-items:center;gap:18px;padding:16px 26px;border-bottom:1px solid var(--line2)}
-.mark{font-family:var(--display);font-weight:700;font-size:26px;letter-spacing:-.02em}.mark .d{color:var(--teal-br)}
-.kick{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--mut)}
-.stat{display:flex;gap:8px;align-items:baseline;margin-left:6px}
-.stat .n{font-family:var(--display);font-weight:700;font-size:26px;font-variant-numeric:tabular-nums}
-.stat.fx .n{color:var(--teal-br)}.stat.ac .n{color:var(--teal-br)}.stat.rv .n{color:var(--red)}
-.stat .l{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}
-#run{margin-left:auto;font-family:var(--mono);font-weight:600;font-size:15px;color:#03231e;background:var(--teal-br);border:0;border-radius:11px;padding:12px 22px;cursor:pointer}
+background-image:radial-gradient(1000px 560px at 80% -10%,rgba(51,201,176,.07),transparent 60%),linear-gradient(rgba(180,205,235,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(180,205,235,.025) 1px,transparent 1px);background-size:100% 100%,44px 44px,44px 44px;}
+.top{display:flex;align-items:center;gap:16px;padding:13px 24px;border-bottom:1px solid var(--line2)}
+.mark{font-family:var(--display);font-weight:700;font-size:23px;letter-spacing:-.02em}.mark .d{color:var(--teal-br)}
+.kick{font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--mut)}
+.stat{display:flex;gap:7px;align-items:baseline;margin-left:4px}.stat .n{font-family:var(--display);font-weight:700;font-size:22px;font-variant-numeric:tabular-nums}
+.stat.fx .n,.stat.ac .n{color:var(--teal-br)}.stat.rv .n{color:var(--red)}.stat .l{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
+#run{margin-left:auto;font-family:var(--mono);font-weight:600;font-size:14px;color:#03231e;background:var(--teal-br);border:0;border-radius:10px;padding:11px 20px;cursor:pointer}
 #run:disabled{opacity:.5;cursor:default}
-.grid{display:grid;grid-template-columns:1.15fr 1fr 1.05fr;height:calc(100vh - 63px)}
-.pane{border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
-.pane:last-child{border-right:0}
-.hd{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--mut);padding:12px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
-.hd .badge{margin-left:auto;font-size:10px;padding:3px 8px;border-radius:6px;letter-spacing:.1em}
+/* explanation banner */
+.explain{padding:16px 26px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(51,201,176,.05),transparent);min-height:78px;display:flex;flex-direction:column;justify-content:center}
+.explain h2{font-family:var(--display);font-weight:700;font-size:clamp(19px,2.2vw,28px);letter-spacing:-.01em;transition:.3s}
+.explain p{color:var(--soft);font-size:14px;margin-top:5px;max-width:110ch;line-height:1.5}
+.explain.warn{background:linear-gradient(180deg,rgba(234,166,63,.08),transparent)}.explain.warn h2{color:var(--amber)}
+.explain.bad{background:linear-gradient(180deg,rgba(192,53,59,.1),transparent)}.explain.bad h2{color:#ff989c}
+.explain.good{background:linear-gradient(180deg,rgba(51,201,176,.1),transparent)}.explain.good h2{color:var(--teal-br)}
+.grid{display:grid;grid-template-columns:1fr 1.15fr .95fr;height:calc(100vh - 52px - 110px)}
+.pane{border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}.pane:last-child{border-right:0}
+.hd{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--mut);padding:11px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+.hd .badge{margin-left:auto;font-size:9.5px;padding:3px 8px;border-radius:6px;letter-spacing:.08em}
 .badge.before{background:var(--red-deep);color:#fff}.badge.after{background:var(--teal-dim);color:var(--teal-br)}
-/* site */
+/* the patient */
 .sitewrap{flex:1;position:relative;background:#fff;overflow:hidden}
 #frame{width:200%;height:200%;border:0;transform:scale(.5);transform-origin:0 0}
-.vio{position:absolute;left:14px;bottom:14px;right:14px;max-height:38%;overflow:auto;background:rgba(8,12,17,.92);border:1px solid var(--red-deep);border-radius:10px;padding:12px 14px;font-size:11.5px;line-height:1.5;display:none}
-.vio.show{display:block}.vio h4{color:var(--red);font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
-.vio .v{color:var(--soft);padding:3px 0;border-bottom:1px dotted var(--line)}.vio .v b{color:#ff989c}
-/* pipeline */
-.pipe{padding:18px 20px;overflow:auto;flex:1}
-.lane{margin-bottom:14px}.lane .lt{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--mut);margin-bottom:8px}
-.node{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin-bottom:8px;position:relative;transition:.25s;display:flex;align-items:center;gap:10px}
-.node .dot{width:9px;height:9px;border-radius:50%;background:var(--mut);flex:none;transition:.25s}
-.node .nm{font-weight:500;font-size:13px}.node .sub{margin-left:auto;font-size:11px;color:var(--mut)}
-.node.run{border-color:var(--teal);box-shadow:0 0 0 1px var(--teal-dim),0 0 22px rgba(51,201,176,.14)}
-.node.run .dot{background:var(--teal-br);box-shadow:0 0 10px var(--teal-br);animation:pulse 1s infinite}
+/* screen reader panel — the centerpiece */
+.sr{flex:1;display:flex;flex-direction:column;min-height:0;background:var(--panel2)}
+.srbar{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--line);font-size:12px;color:var(--soft)}
+.srbar .live{margin-left:auto;display:flex;align-items:center;gap:7px;font-size:11px;color:var(--mut)}
+.srbar .dot{width:8px;height:8px;border-radius:50%;background:var(--mut)}.srbar.speaking .dot{background:var(--teal-br);box-shadow:0 0 8px var(--teal-br);animation:pulse .8s infinite}
 @keyframes pulse{50%{opacity:.4}}
-.node.pass{border-color:rgba(51,201,176,.4)}.node.pass .dot{background:var(--teal-br);box-shadow:0 0 8px var(--teal-br)}.node.pass .sub{color:var(--teal-br)}
-.node.fail{border-color:var(--red-deep);background:rgba(192,53,59,.08)}.node.fail .dot{background:var(--red);box-shadow:0 0 8px var(--red)}.node.fail .sub{color:#ff989c}
-.node.accept{border-color:rgba(51,201,176,.5);background:rgba(51,201,176,.08)}
-.node.revert{border-color:var(--red-deep);background:rgba(192,53,59,.1)}
-.gates{display:grid;grid-template-columns:1fr 1fr;gap:8px}.gates .node{margin:0}
-.arrow{text-align:center;color:var(--mut);font-size:12px;margin:-2px 0 6px}
-/* terminal */
-.term{background:#070b10}
-.log{flex:1;overflow:auto;padding:14px 16px;font-size:12px;line-height:1.65}
-.log .ln{white-space:pre-wrap;word-break:break-word}
-.log .cmd{color:var(--teal-br)}.log .ok{color:#a7e8d8}.log .bad{color:#ff989c}.log .warn{color:var(--amber)}
-.log .accept{color:var(--teal-br);font-weight:600}.log .revert{color:#ff989c;font-weight:600}
-.diff{border-top:1px solid var(--line);padding:12px 16px;font-size:11.5px;line-height:1.5;max-height:34%;overflow:auto;white-space:pre;background:#0a0f16}
-.diff .a{color:var(--teal-br)}.diff .r{color:#ff9a9d}.diff .h{color:var(--mut)}
-.dep{padding:10px 16px;border-top:1px solid var(--line);font-size:12px;display:none}
-.dep.show{display:block}.dep a{color:var(--teal-br)}
+.srlist{flex:1;overflow:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.ann{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:12px 14px;opacity:.25;transform:translateY(6px);transition:.35s}
+.ann.on{opacity:1;transform:none}
+.ann .say{font-size:15px;color:#fff;display:flex;align-items:center;gap:8px}.ann .say .ic{opacity:.6}
+.ann .prob{margin-top:7px;font-size:12.5px;line-height:1.5;color:#ffb4b7;border-top:1px dashed rgba(192,53,59,.35);padding-top:7px;display:flex;gap:7px}
+.ann .win{margin-top:7px;font-size:12.5px;line-height:1.5;color:#a7e8d8;border-top:1px dashed rgba(51,201,176,.35);padding-top:7px;display:flex;gap:7px}
+.ann.problem{border-color:rgba(192,53,59,.45)}.ann.win{border-color:rgba(51,201,176,.4)}
+.srhint{padding:10px 16px;border-top:1px solid var(--line);font-size:11.5px;color:var(--mut);display:flex;gap:10px;align-items:center}
+.srhint button{font-family:var(--mono);font-size:11px;color:var(--soft);background:var(--panel);border:1px solid var(--line2);border-radius:7px;padding:6px 10px;cursor:pointer}
+/* harness proof */
+.pipe{padding:12px 14px;overflow:auto}
+.lane{margin-bottom:10px}.lane .lt{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--mut);margin-bottom:6px}
+.node{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:8px 11px;margin-bottom:6px;display:flex;align-items:center;gap:9px;transition:.25s;font-size:12.5px}
+.node .dot{width:8px;height:8px;border-radius:50%;background:var(--mut);flex:none;transition:.25s}.node .sub{margin-left:auto;font-size:10.5px;color:var(--mut)}
+.node.run{border-color:var(--teal);box-shadow:0 0 0 1px var(--teal-dim)}.node.run .dot{background:var(--teal-br);box-shadow:0 0 8px var(--teal-br);animation:pulse 1s infinite}
+.node.pass{border-color:rgba(51,201,176,.4)}.node.pass .dot{background:var(--teal-br)}.node.pass .sub{color:var(--teal-br)}
+.node.fail{border-color:var(--red-deep);background:rgba(192,53,59,.08)}.node.fail .dot{background:var(--red)}.node.fail .sub{color:#ff989c}
+.node.accept{border-color:rgba(51,201,176,.5);background:rgba(51,201,176,.08)}.node.revert{border-color:var(--red-deep);background:rgba(192,53,59,.1)}
+.gates{display:grid;grid-template-columns:1fr 1fr;gap:6px}.gates .node{margin:0}
+.log{border-top:1px solid var(--line);flex:1;overflow:auto;padding:11px 14px;font-size:11px;line-height:1.6;background:#070b10;min-height:120px}
+.log .ln{white-space:pre-wrap;word-break:break-word}.log .cmd{color:var(--teal-br)}.log .ok{color:#a7e8d8}.log .bad{color:#ff989c}.log .warn{color:var(--amber)}.log .accept{color:var(--teal-br);font-weight:600}.log .revert{color:#ff989c;font-weight:600}
+.dep{padding:9px 14px;border-top:1px solid var(--line);font-size:11.5px;display:none}.dep.show{display:block}.dep a{color:var(--teal-br)}
 </style></head>
 <body>
 <div class="top">
-  <div><div class="kick">Live healing console · real harness, real site</div><div class="mark">Mend<span class="d">.</span></div></div>
+  <div><div class="kick">Live · real harness · real screen reader</div><div class="mark">Mend<span class="d">.</span></div></div>
   <div class="stat fx"><span class="n" id="s-fx">0</span><span class="l">fixed & verified</span></div>
   <div class="stat ac"><span class="n" id="s-ac">0</span><span class="l">accepted</span></div>
   <div class="stat rv"><span class="n" id="s-rv">0</span><span class="l">caught & reverted</span></div>
   <button id="run">▶ Run the healing loop</button>
 </div>
+<div class="explain" id="explain"><h2 id="ex-t">Ready</h2><p id="ex-b">Click “Run the healing loop.” You narrate; the page shows what a blind or low-vision person actually experiences, before and after.</p></div>
 <div class="grid">
-  <!-- the patient -->
   <div class="pane">
-    <div class="hd">The patient · login.html <span class="badge before" id="sitebadge">BEFORE — broken</span></div>
-    <div class="sitewrap"><iframe id="frame"></iframe>
-      <div class="vio" id="vio"><h4>axe found these — live</h4><div id="violist"></div></div>
-    </div>
+    <div class="hd">The patient · login.html <span class="badge before" id="sitebadge">BEFORE</span></div>
+    <div class="sitewrap"><iframe id="frame"></iframe></div>
   </div>
-  <!-- architecture pipeline -->
-  <div class="pane pipe">
-    <div class="lane"><div class="lt">Act — find & patch</div>
-      <div class="node" id="n-scan"><span class="dot"></span><span class="nm">axe-core scan</span><span class="sub"></span></div>
-      <div class="arrow">↓</div>
-      <div class="node" id="n-map"><span class="dot"></span><span class="nm">source mapper</span><span class="sub">DOM → file:line</span></div>
-      <div class="arrow">↓</div>
-      <div class="node" id="n-patch"><span class="dot"></span><span class="nm">fixer · patch SOURCE</span><span class="sub"></span></div>
-    </div>
-    <div class="lane"><div class="lt">Verify — all four must pass</div>
-      <div class="gates">
-        <div class="node" id="n-g1"><span class="dot"></span><span class="nm">gate 1 · axe</span><span class="sub"></span></div>
-        <div class="node" id="n-g2"><span class="dot"></span><span class="nm">gate 2 · pixels</span><span class="sub"></span></div>
-        <div class="node" id="n-g3"><span class="dot"></span><span class="nm">gate 3 · patterns</span><span class="sub"></span></div>
-        <div class="node" id="n-g4"><span class="dot"></span><span class="nm">gate 4 · Equal Access</span><span class="sub"></span></div>
-      </div>
-    </div>
-    <div class="lane"><div class="lt">Prove</div>
-      <div class="node" id="n-accept"><span class="dot"></span><span class="nm">accept · receipt</span><span class="sub"></span></div>
-      <div class="node" id="n-revert"><span class="dot"></span><span class="nm">revert · caught</span><span class="sub"></span></div>
-    </div>
+  <div class="pane sr">
+    <div class="srbar" id="srbar">🔊 <b id="srtitle">What a screen reader announces</b><span class="live"><span class="dot"></span><span id="srstate">idle</span></span></div>
+    <div class="srlist" id="srlist"></div>
+    <div class="srhint">The robotic voice is the point — it's the actual experience of a blind user. <button id="replay">↻ hear it again</button><button id="voicetoggle">🔊 voice on</button></div>
   </div>
-  <!-- live terminal -->
-  <div class="pane term">
-    <div class="hd">Live output · real harness</div>
+  <div class="pane">
+    <div class="hd">Proof · every fix survives four gates</div>
+    <div class="pipe">
+      <div class="lane"><div class="lt">Act</div>
+        <div class="node" id="n-scan"><span class="dot"></span>axe scan<span class="sub"></span></div>
+        <div class="node" id="n-map"><span class="dot"></span>source map<span class="sub"></span></div>
+        <div class="node" id="n-patch"><span class="dot"></span>patch source<span class="sub"></span></div></div>
+      <div class="lane"><div class="lt">Verify</div><div class="gates">
+        <div class="node" id="n-g1"><span class="dot"></span>gate 1 axe<span class="sub"></span></div>
+        <div class="node" id="n-g2"><span class="dot"></span>gate 2 pixels<span class="sub"></span></div>
+        <div class="node" id="n-g3"><span class="dot"></span>gate 3 patterns<span class="sub"></span></div>
+        <div class="node" id="n-g4"><span class="dot"></span>gate 4 engine2<span class="sub"></span></div></div></div>
+      <div class="lane"><div class="lt">Prove</div>
+        <div class="node" id="n-accept"><span class="dot"></span>accept · receipt<span class="sub"></span></div>
+        <div class="node" id="n-revert"><span class="dot"></span>revert · caught<span class="sub"></span></div></div>
+    </div>
     <div class="log" id="log"></div>
-    <div class="diff" id="diff" style="display:none"></div>
     <div class="dep" id="dep"></div>
   </div>
 </div>
 <script>
 const $=(id)=>document.getElementById(id);
-const frame=$('frame');
-let ws;
-function connect(){
-  ws=new WebSocket('ws://'+location.host);
-  ws.onmessage=(e)=>handle(JSON.parse(e.data));
-  ws.onclose=()=>setTimeout(connect,1000);
-}
+const frame=$('frame'); let ws, voiceOn=true, srVoice=null, lastItems=null;
+function pickVoice(){ const vs=speechSynthesis.getVoices(); srVoice=vs.find(v=>/Zarvox|Trinoids|Albert|Google US English|en-US/.test(v.name+v.lang))||vs.find(v=>/^en/.test(v.lang))||vs[0]||null; }
+speechSynthesis.onvoiceschanged=pickVoice; pickVoice();
+function speakSeq(items){ if(!voiceOn||!('speechSynthesis'in window))return; speechSynthesis.cancel(); $('srbar').classList.add('speaking'); $('srstate').textContent='reading…';
+  let i=0; const go=()=>{ if(i>=items.length){$('srbar').classList.remove('speaking');$('srstate').textContent='done';return;} const u=new SpeechSynthesisUtterance(items[i].text.replace(/[“”]/g,'')); if(srVoice)u.voice=srVoice; u.rate=1.06; u.onend=()=>{i++;go();}; speechSynthesis.speak(u); }; go(); }
 function node(id){return $('n-'+id);}
-function setNode(id,state,sub){const n=node(id);if(!n)return;n.classList.remove('run','pass','fail');if(state==='run')n.classList.add('run');if(state==='pass')n.classList.add('pass');if(state==='fail')n.classList.add('fail');if(sub!=null)n.querySelector('.sub').textContent=sub;}
+function setNode(id,state,sub){const n=node(id);if(!n)return;n.classList.remove('run','pass','fail');if(state)n.classList.add(state);if(sub!=null)n.querySelector('.sub').textContent=sub;}
 function logLine(t,cls){const d=document.createElement('div');d.className='ln '+(cls||'');d.textContent=(cls==='cmd'?'':'  ')+t;$('log').appendChild(d);$('log').scrollTop=$('log').scrollHeight;}
 function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
 function count(el,to){const from=+el.textContent||0;if(from===to){el.textContent=to;return;}const t0=performance.now();(function f(t){const p=Math.min(1,(t-t0)/500);el.textContent=Math.round(from+(to-from)*p);if(p<1)requestAnimationFrame(f);})(t0);}
 
-function handle(m){
-  if(m.type==='reset'){ frame.src=m.before; $('sitebadge').textContent='BEFORE — broken'; $('sitebadge').className='badge before'; $('vio').classList.remove('show'); $('diff').style.display='none'; $('dep').classList.remove('show');
-    ['scan','map','patch','g1','g2','g3','g4','accept','revert'].forEach(id=>setNode(id,'idle','')); }
-  if(m.type==='stage'){ const map={scan:'scan',map:'map',patch:'patch',g1:'g1',g2:'g2',g3:'g3',g4:'g4',accept:'accept',revert:'revert'};
-    const id=map[m.id]; if(!id)return;
-    if(m.state==='run')setNode(id,'run',m.detail||'…');
-    else if(m.state==='done')setNode(id, id==='accept'?'accept':'pass', m.count!=null?m.count+' violations':m.detail);
-    else if(m.state==='pass')setNode(id,'pass',m.detail);
-    else if(m.state==='fail')setNode(id,'fail',m.detail||'CAUGHT');
-    if(m.id==='accept')node('accept').classList.add('accept');
-    if(m.id==='revert'){node('revert').classList.add('revert');node('revert').classList.add('fail');node('revert').querySelector('.sub').textContent='reverted';}
-  }
-  if(m.type==='log')logLine(m.t,m.cls);
-  if(m.type==='violations'){ const el=$('violist'); el.innerHTML=m.items.map(v=>'<div class="v"><b>'+v.id+'</b> · '+(v.impact||'')+' · <span style="color:var(--mut)">'+esc((v.target||[]).join(' '))+'</span></div>').join(''); $('vio').classList.add('show'); }
-  if(m.type==='diff'){ $('diff').style.display='block'; $('diff').innerHTML=m.diff.split('\n').map(l=>l.startsWith('+')&&!l.startsWith('+++')?'<span class="a">'+esc(l)+'</span>':l.startsWith('-')&&!l.startsWith('---')?'<span class="r">'+esc(l)+'</span>':'<span class="h">'+esc(l)+'</span>').join('\n'); }
-  if(m.type==='counts'){ count($('s-fx'),m.fixed); count($('s-ac'),m.accepts); count($('s-rv'),m.reverts); }
-  if(m.type==='done'){ frame.src=m.after; $('sitebadge').textContent='AFTER — healed & verified'; $('sitebadge').className='badge after'; $('vio').classList.remove('show');
-    if(m.deploy){ $('dep').classList.add('show'); $('dep').innerHTML='✓ agent self-deployed the healed site via Zero: <a href="'+m.deploy+'" target="_blank" rel="noopener">'+m.deploy+'</a>'; }
-    $('run').disabled=false; $('run').textContent='▶ Run again'; }
+function renderSR(who,items){ lastItems=items; const el=$('srlist'); el.innerHTML='';
+  $('srtitle').textContent = who==='before' ? 'What a screen reader announces — BEFORE' : 'What a screen reader announces — HEALED';
+  items.forEach((it,i)=>{ const d=document.createElement('div'); d.className='ann '+(it.problem?'problem':it.win?'win':'');
+    d.innerHTML='<div class="say"><span class="ic">▸</span>'+esc(it.text)+'</div>'+
+      (it.problem?'<div class="prob">⚠ '+esc(it.problem)+'</div>':'')+(it.win?'<div class="win">✓ '+esc(it.win)+'</div>':'');
+    el.appendChild(d); setTimeout(()=>d.classList.add('on'), 250+i*260); });
+  setTimeout(()=>speakSeq(items), 400);
 }
-$('run').addEventListener('click',()=>{ $('run').disabled=true; $('run').textContent='running…'; $('log').innerHTML=''; ws.send(JSON.stringify({run:true})); });
+function setExplain(t,b,tone){ $('ex-t').textContent=t; $('ex-b').textContent=b||''; $('explain').className='explain'+(tone?' '+tone:''); }
+
+function handle(m){
+  if(m.type==='reset'){ frame.src=m.before; $('sitebadge').textContent='BEFORE'; $('sitebadge').className='badge before'; $('srlist').innerHTML=''; $('dep').classList.remove('show');
+    ['scan','map','patch','g1','g2','g3','g4','accept','revert'].forEach(id=>setNode(id,'',''));  }
+  if(m.type==='explain'){ const tone=/blind|cheat|naive|hiding/i.test(m.title)?'warn':/healed|point|access/i.test(m.title)?'good':''; setExplain(m.title,m.body,tone); }
+  if(m.type==='stage'){ if(m.state==='run')setNode(m.id,'run',m.detail||'…'); else if(m.state==='done')setNode(m.id,m.id==='accept'?'accept':'pass',m.count!=null?m.count+' violations':m.detail); else if(m.state==='pass')setNode(m.id,'pass',m.detail); else if(m.state==='fail')setNode(m.id,'fail','CAUGHT'); if(m.id==='revert'){node('revert').classList.add('revert');setNode('revert','fail','reverted');} }
+  if(m.type==='sr'){ renderSR(m.who,m.items); }
+  if(m.type==='log')logLine(m.t,m.cls);
+  if(m.type==='diff'){ /* keep log focused; diffs shown inline */ (m.diff.split('\n').filter(l=>l.startsWith('+')&&!l.startsWith('+++'))).forEach(l=>logLine(l,'ok')); }
+  if(m.type==='counts'){ count($('s-fx'),m.fixed); count($('s-ac'),m.accepts); count($('s-rv'),m.reverts); }
+  if(m.type==='after'){ frame.src=m.after; $('sitebadge').textContent='AFTER — healed'; $('sitebadge').className='badge after'; }
+  if(m.type==='done'){ if(m.deploy){ $('dep').classList.add('show'); $('dep').innerHTML='✓ agent self-deployed the healed site via Zero: <a href="'+m.deploy+'" target="_blank" rel="noopener">'+m.deploy+'</a>'; } $('run').disabled=false; $('run').textContent='▶ Run again'; }
+}
+function connect(){ ws=new WebSocket('ws://'+location.host); ws.onmessage=(e)=>handle(JSON.parse(e.data)); ws.onclose=()=>setTimeout(connect,1000); }
+$('run').addEventListener('click',()=>{ $('run').disabled=true; $('run').textContent='running…'; $('log').innerHTML=''; if(voiceOn){const w=new SpeechSynthesisUtterance(' ');speechSynthesis.speak(w);} ws.send(JSON.stringify({run:true})); });
+$('replay').addEventListener('click',()=>{ if(lastItems)speakSeq(lastItems); });
+$('voicetoggle').addEventListener('click',()=>{ voiceOn=!voiceOn; $('voicetoggle').textContent=voiceOn?'🔊 voice on':'🔇 voice off'; if(!voiceOn)speechSynthesis.cancel(); });
 connect();
 </script>
 </body></html>
