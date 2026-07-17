@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mend — accessibility fixes you can prove</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#070b10;--ink2:#0b1017;--panel:#0f1721;--panel2:#0b1119;--line:rgba(180,205,235,.09);--line2:rgba(180,205,235,.16);
+  --teal:#33c9b0;--teal-br:#74f0d8;--teal-dim:#0f3b35;--amber:#eaa63f;--red:#ff5b62;--red-deep:#c0353b;--red-dim:#3a1417;
+  --paper:#f2ecdd;--paper-ink:#221d15;--paper-mut:#6b6250;--paper-line:#cfc4ad;
+  --txt:#eaf0f7;--soft:#c3cedd;--mut:#7a8598;
+  --display:'Fraunces',Georgia,'Times New Roman',serif;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--txt);font-family:var(--mono);-webkit-font-smoothing:antialiased;overflow-x:hidden;
+  background-image:radial-gradient(1200px 700px at 82% -10%,rgba(51,201,176,.08),transparent 58%),radial-gradient(900px 600px at -5% 30%,rgba(234,166,63,.045),transparent 55%),linear-gradient(rgba(180,205,235,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(180,205,235,.022) 1px,transparent 1px);
+  background-size:100% 100%,100% 100%,48px 48px,48px 48px;}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.025'/%3E%3C/svg%3E");}
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 clamp(20px,4vw,40px)}
+
+/* nav */
+nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px;padding:16px clamp(20px,4vw,40px);
+  backdrop-filter:blur(10px);background:rgba(7,11,16,.66);border-bottom:1px solid var(--line)}
+nav .mark{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:-.02em}.mark .d{color:var(--teal-br)}
+nav .sp{margin-left:auto;display:flex;gap:10px;align-items:center}
+nav a{font-size:13px;color:var(--soft);text-decoration:none;padding:9px 14px;border-radius:9px;border:1px solid transparent;transition:.2s}
+nav a:hover{color:#fff;border-color:var(--line2)}
+nav a.pri{color:#03231e;background:var(--teal-br);font-weight:600}nav a.pri:hover{border-color:transparent;filter:brightness(1.05)}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(20px);transition:opacity .7s cubic-bezier(.2,.7,.3,1),transform .7s cubic-bezier(.2,.7,.3,1)}
+.rv.in{opacity:1;transform:none}
+
+/* hero */
+.hero{padding:clamp(56px,9vh,120px) 0 60px;display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(24px,5vw,64px);align-items:center}
+.eyebrow{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--teal);margin-bottom:22px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(40px,6.4vw,82px);line-height:.98;letter-spacing:-.025em;font-optical-sizing:auto}
+h1 em{font-style:italic;color:var(--teal-br)}
+.lead{color:var(--soft);font-size:clamp(15px,1.5vw,18px);line-height:1.65;max-width:56ch;margin-top:26px}
+.lead b{color:#fff;font-weight:600}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:34px}
+.btn{font-family:var(--mono);font-size:14px;font-weight:600;text-decoration:none;padding:14px 22px;border-radius:12px;display:inline-flex;align-items:center;gap:9px;transition:.2s}
+.btn.p{color:#03231e;background:var(--teal-br)}.btn.p:hover{transform:translateY(-2px);box-shadow:0 12px 30px -8px rgba(116,240,216,.4)}
+.btn.s{color:var(--soft);border:1px solid var(--line2)}.btn.s:hover{color:#fff;border-color:var(--teal);transform:translateY(-2px)}
+.assure{margin-top:22px;font-size:12px;color:var(--mut);display:flex;gap:16px;flex-wrap:wrap}
+.assure span{display:flex;gap:6px;align-items:center}.assure b{color:var(--teal-br)}
+
+/* hero receipt card (paper) */
+.receipt{background:var(--paper);color:var(--paper-ink);border-radius:4px;padding:26px 26px 22px;font-family:var(--mono);
+  box-shadow:0 40px 70px -22px rgba(0,0,0,.75),0 4px 14px rgba(0,0,0,.4);transform:rotate(1deg);position:relative}
+.receipt::before,.receipt::after{content:"";position:absolute;left:0;right:0;height:11px;background:radial-gradient(circle at 8px -3px,transparent 0 7px,var(--paper) 7px);background-size:15px 11px;background-repeat:repeat-x}
+.receipt::before{top:-10px;transform:scaleY(-1)}.receipt::after{bottom:-10px}
+.receipt .rh{display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid var(--paper-ink);padding-bottom:11px}
+.receipt .rt{font-family:var(--display);font-weight:700;font-size:18px}.receipt .rn{font-size:10.5px;color:var(--paper-mut);letter-spacing:.1em}
+.receipt .rsub{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--paper-mut);margin:8px 0 14px}
+.receipt .row{display:flex;justify-content:space-between;font-size:11.5px;padding:5px 0;border-bottom:1px dotted var(--paper-line)}
+.receipt .row .k{color:var(--paper-mut)}.receipt .row .v{font-weight:500}
+.receipt .chips{display:flex;flex-wrap:wrap;gap:5px;margin:13px 0}
+.receipt .chip{font-size:9.5px;padding:3px 7px;border-radius:4px;background:#d7ead4;color:#25612a;border:1px solid #b6d3b0;text-transform:uppercase;letter-spacing:.05em}
+.stamp{position:absolute;top:64px;right:20px;font-family:var(--display);font-weight:700;font-size:14px;letter-spacing:.06em;
+  padding:6px 12px;border:2.5px solid var(--teal-dim);color:#1c6b5f;border-radius:6px;transform:rotate(-11deg);text-transform:uppercase;opacity:.9;mix-blend-mode:multiply}
+.receipt .foot{margin-top:14px;padding-top:10px;border-top:2px solid var(--paper-ink);display:flex;justify-content:space-between;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--paper-mut)}
+.barcode{height:22px;width:130px;align-self:center;background:repeating-linear-gradient(90deg,var(--paper-ink) 0 1px,transparent 1px 2px,var(--paper-ink) 2px 4px,transparent 4px 5px,var(--paper-ink) 5px 8px,transparent 8px 10px)}
+
+/* section */
+section{padding:clamp(48px,8vh,90px) 0;border-top:1px solid var(--line)}
+.sec-eye{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--teal);margin-bottom:14px}
+h2{font-family:var(--display);font-weight:700;font-size:clamp(28px,4vw,48px);line-height:1.04;letter-spacing:-.02em}
+.sub{color:var(--soft);font-size:15px;line-height:1.6;max-width:64ch;margin-top:16px}
+.sub b{color:#fff}
+
+/* the repo ledger */
+.repo{display:grid;grid-template-columns:1.25fr .75fr;gap:30px;align-items:start;margin-top:34px}
+.ledger{background:var(--panel2);border:1px solid var(--line2);border-radius:14px;overflow:hidden;font-size:13px}
+.ledger .lh{display:flex;align-items:center;gap:9px;padding:12px 16px;border-bottom:1px solid var(--line);color:var(--mut);font-size:11.5px}
+.ledger .lh .dot{width:11px;height:11px;border-radius:50%}.d1{background:#ff5f57}.d2{background:#febc2e}.d3{background:#28c840}
+.ledger .lh .path{margin-left:8px;color:var(--soft)}
+.commit{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--line);position:relative}
+.commit:last-child{border-bottom:0}
+.graph{width:14px;display:flex;justify-content:center;position:relative;align-self:stretch}
+.graph::before{content:"";position:absolute;top:0;bottom:0;width:2px;background:var(--teal-dim)}
+.commit:first-child .graph::before{top:50%}.commit:last-child .graph::before{bottom:50%}
+.node{width:11px;height:11px;border-radius:50%;background:var(--teal);border:2px solid var(--ink);z-index:1;position:relative}
+.commit.rev .node{background:var(--red)}
+.commit .msg{flex:1;min-width:0}
+.commit .msg .m{color:#e7edf5}.commit .msg .m .rule{color:var(--teal-br)}.commit.rev .msg .m .rule{color:#ff989c}
+.commit .msg .h{font-size:11px;color:var(--mut);margin-top:3px}
+.commit .tag{font-size:10px;padding:4px 9px;border-radius:99px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.tag.acc{background:var(--teal-dim);color:var(--teal-br)}.tag.rev{background:var(--red-dim);color:#ff989c}
+.repo-aside .stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:12px}
+.repo-aside .stat .n{font-family:var(--display);font-weight:700;font-size:34px;color:var(--teal-br);line-height:1}
+.repo-aside .stat.rv .n{color:var(--red)}
+.repo-aside .stat p{font-size:12.5px;color:var(--soft);margin-top:6px;line-height:1.45}
+.repo-aside .note{font-size:12.5px;color:var(--mut);line-height:1.6;margin-top:6px;border-left:2px solid var(--teal-dim);padding-left:12px}
+
+/* run-it split */
+.run{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:34px}
+.rcard{background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:24px;transition:.25s}
+.rcard:hover{border-color:var(--teal);transform:translateY(-3px)}
+.rcard h3{font-family:var(--display);font-weight:600;font-size:22px}
+.rcard p{color:var(--soft);font-size:13.5px;line-height:1.6;margin-top:10px}
+.sr-demo{margin-top:16px;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:14px;font-size:12.5px}
+.sr-demo .row{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;padding:7px 0;border-bottom:1px dashed var(--line)}
+.sr-demo .row:last-child{border-bottom:0}
+.sr-demo .b{color:#ff989c}.sr-demo .a{color:var(--teal-br)}.sr-demo .ar{color:var(--mut);text-align:center}
+.rcard .go{display:inline-flex;gap:8px;align-items:center;margin-top:16px;font-size:13px;font-weight:600;color:var(--teal-br);text-decoration:none}
+.rcard code{background:#0a0f16;border:1px solid var(--line);border-radius:6px;padding:2px 8px;color:var(--teal-br);font-size:12.5px}
+
+/* gates */
+.gates{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:30px}
+.gate{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+.gate .g{font-family:var(--mono);font-size:11px;color:var(--teal-br);letter-spacing:.1em}
+.gate h4{font-size:15px;margin:8px 0 6px;font-weight:600}.gate p{font-size:12.5px;color:var(--soft);line-height:1.5}
+.gate.crit{grid-column:span 4;border-color:var(--teal-dim);background:linear-gradient(180deg,rgba(51,201,176,.05),transparent)}
+
+/* arch */
+.arch{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:30px}
+.lane{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+.lane h5{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mut);margin-bottom:12px}
+.lane .n{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:12.5px;margin-bottom:8px}
+.lane .n b{color:#fff}.lane .n small{color:var(--mut);display:block;font-size:11px;margin-top:2px}
+.lane.warn .n:last-child{border-color:var(--red-dim);background:rgba(192,53,59,.07)}
+
+footer{border-top:1px solid var(--line);padding:40px 0 60px;color:var(--mut);font-size:12.5px;display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+footer a{color:var(--soft);text-decoration:none}footer a:hover{color:var(--teal-br)}
+footer .disc{max-width:60ch;line-height:1.6}
+@media(max-width:860px){.hero,.repo,.run{grid-template-columns:1fr}.gates{grid-template-columns:1fr 1fr}.gate.crit{grid-column:span 2}.arch{grid-template-columns:1fr}.receipt{transform:none;margin-top:12px}}
+@media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none}}
+::selection{background:var(--teal-dim);color:#eafff9}
+</style></head>
+<body>
+<nav>
+  <div class="mark">Mend<span class="d">.</span></div>
+  <div class="sp">
+    <a href="#repo">The repo</a>
+    <a href="#run">Run it</a>
+    <a href="https://github.com/Dileep2896/Mend" target="_blank" rel="noopener" class="pri">GitHub ↗</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <!-- HERO -->
+  <div class="hero">
+    <div>
+      <div class="eyebrow rv">Loop Engineering Hackathon · SF</div>
+      <h1 class="rv">You get a <em>repository</em>,<br>not a black box.</h1>
+      <p class="lead rv">Mend repairs website accessibility in your <b>source code</b> and proves every fix through four gates and an independent critic. The output is a Git repo where every fix is a <b>commit</b> and a <b>receipt</b> — evidence a screen-reader user benefits from and your lawyer can read.</p>
+      <div class="cta rv">
+        <a class="btn p" href="https://github.com/Dileep2896/Mend" target="_blank" rel="noopener">Open the repo →</a>
+        <a class="btn s" href="#run">Watch it run →</a>
+      </div>
+      <div class="assure rv">
+        <span>✓ fixes <b>source</b>, never runtime</span><span>✓ never suppresses</span><span>✓ never claims “compliant”</span>
+      </div>
+    </div>
+    <div class="rv">
+      <div class="receipt">
+        <div class="stamp">Verified</div>
+        <div class="rh"><span class="rt">Mend</span><span class="rn">RECEIPT #001</span></div>
+        <div class="rsub">Verification receipt · fixed and verified</div>
+        <div class="row"><span class="k">Rule</span><span class="v">label-title-only</span></div>
+        <div class="row"><span class="k">Source</span><span class="v">login.html:46</span></div>
+        <div class="row"><span class="k">Fixer</span><span class="v">Claude (subscription)</span></div>
+        <div class="row"><span class="k">Critic</span><span class="v">DeepSeek / Qwen · Akash</span></div>
+        <div class="chips"><span class="chip">g1 axe ✓</span><span class="chip">g2 pixels ✓</span><span class="chip">g3 patterns ✓</span><span class="chip">g4 engine2 ✓</span><span class="chip">critic ✓</span></div>
+        <div class="foot"><span>Accepted</span><span class="barcode"></span><span>Mend ✓</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- THE REPO -->
+<section id="repo"><div class="wrap">
+  <div class="sec-eye rv">The deliverable</div>
+  <h2 class="rv">A commit and a receipt<br>for every fix.</h2>
+  <p class="sub rv">No overlay, no runtime script, no “trust us.” Mend commits each round to Git — accept or revert — so the whole history is auditable. <b>The revert is in the log too:</b> a caught failure is evidence the harness works.</p>
+  <div class="repo">
+    <div class="ledger rv">
+      <div class="lh"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="path">git log — github.com/Dileep2896/Mend</span></div>
+      <div class="commit"><div class="graph"><span class="node"></span></div><div class="msg"><div class="m">round 6: <span class="rule">accept landmark-one-main</span> · forgot-password</div><div class="h">1ec0dbc · gates a/p/b/e</div></div><span class="tag acc">accept</span></div>
+      <div class="commit"><div class="graph"><span class="node"></span></div><div class="msg"><div class="m">round 5: <span class="rule">accept label-title-only</span> · #exampleInputEmail</div><div class="h">274bf7e · gates a/p/b/e/c</div></div><span class="tag acc">accept</span></div>
+      <div class="commit"><div class="graph"><span class="node"></span></div><div class="msg"><div class="m">round 4: <span class="rule">accept color-contrast</span> · gate 2b</div><div class="h">5092941 · gates a/2b/b/e</div></div><span class="tag acc">accept</span></div>
+      <div class="commit rev"><div class="graph"><span class="node"></span></div><div class="msg"><div class="m">round 3: <span class="rule">revert color-contrast</span> · suppression caught</div><div class="h">cd51c41 · gate 3 FAIL — aria-hidden</div></div><span class="tag rev">revert</span></div>
+      <div class="commit"><div class="graph"><span class="node"></span></div><div class="msg"><div class="m">round 2: <span class="rule">accept landmark-one-main</span> · .container</div><div class="h">77553e1 · gates a/p/b/e</div></div><span class="tag acc">accept</span></div>
+      <div class="commit"><div class="graph"><span class="node"></span></div><div class="msg"><div class="m">round 1: <span class="rule">accept label-title-only</span> · #exampleInputEmail</div><div class="h">111e250 · gates a/p/b/e/c</div></div><span class="tag acc">accept</span></div>
+    </div>
+    <div class="repo-aside rv">
+      <div class="stat"><div class="n">5</div><p>fixes accepted — each committed with a receipt (before/after, patch, gate results, critic verdict)</p></div>
+      <div class="stat rv"><div class="n">1</div><p>caught &amp; reverted — a suppression attempt, rejected by gate 3</p></div>
+      <div class="note">Receipts live in <code style="color:var(--teal-br)">receipts/</code>. Open any commit on GitHub to read the exact source diff that shipped.</div>
+      <a class="btn p" style="margin-top:14px" href="https://github.com/Dileep2896/Mend" target="_blank" rel="noopener">Browse the repository ↗</a>
+    </div>
+  </div>
+</div></section>
+
+<!-- RUN IT -->
+<section id="run"><div class="wrap">
+  <div class="sec-eye rv">Watch it work</div>
+  <h2 class="rv">See what a disabled<br>person actually gets.</h2>
+  <p class="sub rv">The live console runs the real harness on a real login page and shows — and voices — the screen-reader experience before and after. Not a counter: the actual human difference.</p>
+  <div class="run">
+    <div class="rcard rv">
+      <h3>The live healing console</h3>
+      <p>Runs the real axe scan, the real source mapping, the four real gates, and a real suppression getting caught — on the real page, in ~40 seconds. You narrate it.</p>
+      <div class="sr-demo">
+        <div class="row"><span class="b">“Enter Email Address…”, edit&nbsp;text</span><span class="ar">→</span><span class="a">“Email address”, edit&nbsp;text</span></div>
+        <div class="row"><span class="b">label contrast 3.56:1</span><span class="ar">→</span><span class="a">7.01:1 · readable</span></div>
+        <div class="row"><span class="b">no main landmark</span><span class="ar">→</span><span class="a">“skip to content” works</span></div>
+      </div>
+      <a class="go" href="#" onclick="return false">Run locally: <code>npm run demo:live</code></a>
+    </div>
+    <div class="rcard rv">
+      <h3>The healed site, live</h3>
+      <p>The agent deployed the healed page itself — no keys, $0 — to a shareable link via Zero. Same design, but now it works for a screen-reader user.</p>
+      <div class="sr-demo" style="display:flex;align-items:center;justify-content:center;min-height:96px;color:var(--soft)">
+        <span>✓ Healed by Mend — 5 accessibility fixes verified through four gates</span>
+      </div>
+      <a class="go" href="https://sites.withzero.ai/mend-healed-login-demo" target="_blank" rel="noopener">Open the live healed site ↗</a>
+    </div>
+  </div>
+</div></section>
+
+<!-- GATES -->
+<section><div class="wrap">
+  <div class="sec-eye rv">Why you can trust it</div>
+  <h2 class="rv">Four gates. One independent critic.</h2>
+  <p class="sub rv">A fix isn’t “done” because the code looks right. It’s done when it survives all of these — every round, no exceptions.</p>
+  <div class="gates">
+    <div class="gate rv"><div class="g">GATE 1</div><h4>axe re-scan</h4><p>The violation is gone, total is lower, nothing new introduced.</p></div>
+    <div class="gate rv"><div class="g">GATE 2</div><h4>pixel diff</h4><p>Zero pixels changed outside masks — the design is untouched.</p></div>
+    <div class="gate rv"><div class="g">GATE 3</div><h4>banned patterns</h4><p>No aria-hidden, alt="", display:none — no suppression tricks.</p></div>
+    <div class="gate rv"><div class="g">GATE 4</div><h4>IBM Equal Access</h4><p>A genuinely independent engine agrees. Not Lighthouse — that’s axe again.</p></div>
+    <div class="gate crit rv"><div class="g">THE CRITIC · independent model on Akash</div><h4>Semantic truth — is the fix actually right?</h4><p>Axe checks an alt attribute <em>exists</em>. Only something that can see the image checks it’s <b>true</b>. The critic runs on a different model family, on a different provider, so the fixer can never grade its own homework. Two axes of independence: engine and model.</p></div>
+  </div>
+</div></section>
+
+<!-- ARCH -->
+<section><div class="wrap">
+  <div class="sec-eye rv">How it fits together</div>
+  <h2 class="rv">Act · Verify · Prove</h2>
+  <div class="arch">
+    <div class="lane rv"><h5>Act</h5>
+      <div class="n"><b>axe scan</b><small>Playwright renders the patient</small></div>
+      <div class="n"><b>source mapper</b><small>violation → file : line</small></div>
+      <div class="n"><b>fixer · Claude</b><small>patches source only</small></div></div>
+    <div class="lane rv"><h5>Verify — all must pass</h5>
+      <div class="n"><b>gate 1 · axe</b><small>violation gone</small></div>
+      <div class="n"><b>gate 2 · pixels</b><small>design untouched</small></div>
+      <div class="n"><b>gate 3 · patterns</b><small>no suppression</small></div>
+      <div class="n"><b>gate 4 · Equal Access + critic</b><small>independent engine & model</small></div></div>
+    <div class="lane warn rv"><h5>Prove</h5>
+      <div class="n"><b>receipt per fix</b><small>before/after · patch · gates · verdict</small></div>
+      <div class="n"><b>Zero deploy</b><small>agent ships the healed site itself</small></div>
+      <div class="n"><b>auto-revert on any FAIL</b><small>a caught failure is the product</small></div></div>
+  </div>
+</div></section>
+
+<footer><div class="wrap" style="display:flex;gap:20px;flex-wrap:wrap;align-items:center;width:100%">
+  <span class="mark" style="font-family:var(--display);font-weight:700;font-size:20px">Mend<span style="color:var(--teal-br)">.</span></span>
+  <a href="https://github.com/Dileep2896/Mend" target="_blank" rel="noopener">GitHub ↗</a>
+  <a href="https://sites.withzero.ai/mend-healed-login-demo" target="_blank" rel="noopener">Healed site ↗</a>
+  <span class="disc" style="margin-left:auto">We fix verified violations and hand you the evidence. We never say “compliant” or “lawsuit-proof.” Automated rules catch only 30–40% of issues — the critic is how we climb past that, honestly labeled.</span>
+</div></footer>
+
+<script>
+const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.12});
+document.querySelectorAll('.rv').forEach((el,i)=>{ el.style.transitionDelay=(Math.min(i,6)*0.06)+'s'; io.observe(el); });
+</script>
+</body></html>
