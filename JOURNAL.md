@@ -112,3 +112,16 @@ so accidental spend is impossible. Healed login LIVE at sites.withzero.ai/mend-h
 "the agent ships the cured patient to a shareable link, itself, no keys, $0." Money: no wallet
 funding, no email (email would be $0.02 — NOT done, left as an opt-in per user's no-spend rule).
 | next: 2nd-audit findings, then keep spend $0.
+
+2026-07-17 late | 2nd audit pass + fixes | subagent re-audited the fixes; found+fixed 6 issues |
+regressions all green (mapper 24/25, determinism 0x3, demo 4/4, self-test PASS) | FIXES:
+[1 Med-High, self-inflicted] isModification interactive branch matched the OUTER tag not the
+INTERACTIVE tag → a <a> deleted inside <p> and re-added as <p> with a shared attr slipped
+gate 3; now parameterized by tag (suppression re-caught, verified). [2 Med] critic-akash now
+THROWS if an image-alt fix's image is missing instead of silently judging blind on the text
+model. [3 Low-Med] empty-alt regex was matching the word "alt" in prose and any &#\d+; entity;
+now anchored to <img|area|input> + zero-width entities only (prose + alt="&#169;" no longer
+false-flagged; real alt="" still caught). [4 Low] lastJson resyncs after a leading stray "}".
+[5 Low] gate4 baseline guard now also checks null (Number(null)===0 would have pinned baseline
+to 0). [6 Low] demo.mjs restores the page on SIGINT/SIGTERM. Money: still ~$0.001 (Akash only);
+Zero deploy stays $0 (--max-pay 0). | next: converged; report.

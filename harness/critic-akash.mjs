@@ -47,17 +47,25 @@ Never say "compliant"/"ADA"/"lawsuit-proof". When uncertain, FAIL.`;
 function parseVerdict(text) {
   if (!text) return null;
   // Take the LAST verdict the model emits (it may discuss PASS/FAIL before its
-  // final line). Fail-safe either way, but this respects the model's conclusion.
+  // final line), and pair the REASON from that same block (the first REASON at or
+  // after the final verdict), not a stray earlier one.
   const all = [...text.matchAll(/VERDICT:\s*(PASS|FAIL)/gi)];
   if (!all.length) return null;
-  const v = all[all.length - 1][1].toUpperCase();
-  const rs = [...text.matchAll(/REASON:\s*(.+?)(?:\n|$)/gi)];
-  return { verdict: v, reason: rs.length ? rs[rs.length - 1][1].trim() : "" };
+  const last = all[all.length - 1];
+  const v = last[1].toUpperCase();
+  const after = text.slice(last.index).match(/REASON:\s*(.+?)(?:\n|$)/i);
+  const reason = after ? after[1].trim() : ([...text.matchAll(/REASON:\s*(.+?)(?:\n|$)/gi)].pop()?.[1]?.trim() ?? "");
+  return { verdict: v, reason };
 }
 
 export async function critique({ rule, context, imagePath }) {
   const key = loadKey();
-  const useVision = Boolean(imagePath) && existsSync(imagePath);
+  // Fail LOUD, not open: if an image was supplied but is missing, an image-alt
+  // fix would otherwise be judged blind on a text model (2nd-audit finding 2).
+  if (imagePath && !existsSync(imagePath)) {
+    throw new Error(`critic image not found: ${imagePath} — an image-alt fix must be judged WITH the image`);
+  }
+  const useVision = Boolean(imagePath);
   const model = useVision ? VISION_MODEL : TEXT_MODEL;
 
   const userContent = [{ type: "text", text: `Rule: ${rule}\n\n${context}` }];

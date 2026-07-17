@@ -30,9 +30,11 @@ const ADDED_RULES = [
   { id: "aria-hidden-added", re: /aria-hidden\s*=\s*["']true["']/i,
     why: "aria-hidden=\"true\" hides content from assistive tech — suppression, not a fix" },
   { id: "empty-alt-added",
-    // alt="", alt="  ", alt="&nbsp;"/"&#8203;"/zero-width (reads empty to a screen
-    // reader), AND bare boolean alt (<img ... alt>) which axe treats as alt="".
-    re: /\balt\s*=\s*["'](?:\s|&nbsp;|&#\d+;|&#x[0-9a-fA-F]+;|​|﻿)*["']|\balt(?!\s*=)(?=[\s/>])/i,
+    // Only on an actual image element (img/area/input) on the same line — so the
+    // word "alt" in prose or a visible entity like alt="&#169;" is NOT flagged
+    // (2nd-audit finding 3). Matches: alt="" / "  " / "&nbsp;" / zero-width-only,
+    // and bare boolean alt (<img ... alt>) which axe treats as alt="".
+    re: /<(?:img|area|input)\b[^>]*?\balt\s*=\s*(["'])(?:\s|&nbsp;|&#(?:8203|65279|160);|&#x(?:200b|feff|a0);|​|﻿)*\1|<(?:img|area|input)\b[^>]*?\salt(?=[\s/>])/i,
     why: "empty/whitespace/bare alt on an image the critic has not certified decorative = silencing image-alt" },
   { id: "display-none-added", re: /(display\s*:\s*none|visibility\s*:\s*hidden|opacity\s*:\s*0(?!\.)|left\s*:\s*-9999)/i,
     why: "hiding/off-screening an element to remove it from the scanner's view" },
@@ -72,17 +74,22 @@ function innerTexts(content) {
 //   reappears (text may legitimately change — the canonical link-name fix), or
 //   the same visible text reappears.
 function isModification(ruleId, removed, addedLines) {
-  const tag = (removed.match(/<\s*([a-zA-Z][\w-]*)/) || [])[1];
+  const outerTag = (removed.match(/<\s*([a-zA-Z][\w-]*)/) || [])[1];
   const attrs = stableAttrValues(removed);
-  const sameElementReadded = () => {
-    if (!tag || !attrs.length) return false;
-    const tagRe = new RegExp(`<\\s*${tag}\\b`, "i");
+  // A modification only if the SPECIFIED tag reappears in an added line sharing a
+  // stable attr value. Must be parameterized by tag: for interactive-deleted the
+  // check has to be against the INTERACTIVE tag, not the (possibly outer) first
+  // tag on the line — else deleting <p><a name=cta>…</a></p> and re-adding
+  // <p name=cta> would wrongly read as an in-place edit (2nd-audit finding 1).
+  const sameElementReadded = (whichTag) => {
+    if (!whichTag || !attrs.length) return false;
+    const tagRe = new RegExp(`<\\s*${whichTag}\\b`, "i");
     return addedLines.some((a) => tagRe.test(a) && attrs.some((v) => a.includes(v)));
   };
   if (ruleId === "interactive-deleted") {
     const itag = (removed.match(INTERACTIVE_TAG) || [])[1];
     if (!itag) return false;
-    if (attrs.length) return sameElementReadded();
+    if (attrs.length) return sameElementReadded(itag);
     // no stable attr (e.g. <button>Menu</button>): require the SAME tag AND the
     // same inner text to reappear, not merely any element of that tag.
     const itagRe = new RegExp(`<\\s*${itag}\\b`, "i");
@@ -90,7 +97,7 @@ function isModification(ruleId, removed, addedLines) {
     return texts.length > 0 && addedLines.some((a) => itagRe.test(a) && texts.some((t) => a.includes(t)));
   }
   if (ruleId === "text-element-deleted") {
-    if (sameElementReadded()) return true; // link-name fix: same <a href> kept, text rewritten
+    if (sameElementReadded(outerTag)) return true; // link-name fix: same <a href> kept, text rewritten
     const texts = innerTexts(removed);
     return texts.length > 0 && texts.some((t) => addedLines.some((a) => a.includes(t)));
   }

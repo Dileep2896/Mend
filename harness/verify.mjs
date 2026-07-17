@@ -57,7 +57,11 @@ function lastJson(text) {
     }
     if (ch === '"') inStr = true;
     else if (ch === "{") { if (depth === 0) start = i; depth++; }
-    else if (ch === "}") { depth--; if (depth === 0 && start >= 0) { candidates.push(text.slice(start, i + 1)); start = -1; } }
+    else if (ch === "}") {
+      depth--;
+      if (depth < 0) { depth = 0; start = -1; } // resync after a leading stray '}'
+      else if (depth === 0 && start >= 0) { candidates.push(text.slice(start, i + 1)); start = -1; }
+    }
   }
   for (let i = candidates.length - 1; i >= 0; i--) { try { return JSON.parse(candidates[i]); } catch {} }
   return null;
@@ -163,7 +167,9 @@ if (!failed) {
     // must NOT become "[object Object]" → NaN → gate 4 fails every round.
     const b = JSON.parse(readFileSync(beforeE2, "utf8"));
     const bt = Number(b.total);
-    if (Number.isFinite(bt)) e2Args.push("--baseline", String(bt));
+    // Number(null) === 0, so guard on non-null too, else a null baseline pins
+    // gate 4 to <=0 and false-fails every round (2nd-audit finding 5).
+    if (b.total != null && Number.isFinite(bt)) e2Args.push("--baseline", String(bt));
   }
   const r = runNode("gate-engine2.mjs", e2Args, { allowFail: true });
   const j = lastJson(r.out);

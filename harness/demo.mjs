@@ -30,6 +30,11 @@ line(`\n${c.b}  MEND · demo${c.x} ${c.d}— fix → verify → receipt, live${c
 line(`${c.d}  target page:${c.x} ${ROUTE}   ${c.d}(reverts at the end — rehearse freely)${c.x}\n`);
 
 const original = readFileSync(FILE, "utf8");
+// Restore the page even on Ctrl-C mid-rehearsal (2nd-audit finding 6) so the
+// working tree is never left dirty (which loop.sh would otherwise auto-commit).
+let restored = false;
+const restore = () => { if (!restored) { restored = true; try { writeFileSync(FILE, original); } catch {} } };
+for (const sig of ["SIGINT", "SIGTERM"]) process.on(sig, () => { restore(); process.exit(130); });
 try {
   // ---- 0. seed
   const seed = scanCount(ROUTE);
@@ -72,6 +77,6 @@ try {
   line(`\n  ${c.d}open the receipts + live counter:${c.x} ${c.b}npm run dashboard${c.x} ${c.d}→ http://localhost:4000${c.x}\n`);
 } finally {
   // ---- revert so the demo is repeatable and target stays clean
-  writeFileSync(FILE, original);
+  restore();
   line(`  ${c.d}(${ROUTE} reverted — demo is repeatable)${c.x}\n`);
 }
