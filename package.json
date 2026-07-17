@@ -15,7 +15,8 @@
     "gate:patterns": "node harness/gate-patterns.mjs",
     "gate:engine2": "node harness/gate-engine2.mjs --dir target",
     "verify": "node harness/verify.mjs",
-    "dashboard": "node dashboard/server.mjs"
+    "dashboard": "node dashboard/server.mjs",
+    "naive": "node harness/naive-baseline.mjs"
   },
   "keywords": [],
   "author": "",

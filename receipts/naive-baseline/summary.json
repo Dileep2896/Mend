@@ -1,0 +1,29 @@
+{
+  "what": "Naive gates-off loop — Act 1 baseline. Counter drops while the page gets worse.",
+  "axe": {
+    "before": 4,
+    "after": 2,
+    "delta": 2,
+    "note": "axe REWARDS the suppression: fewer violations reported."
+  },
+  "humanReality": [
+    "'Remember Me' is gone for everyone (display:none).",
+    "The Google and Facebook sign-in buttons are deleted — real functionality removed.",
+    "The Forgot-Password link is off-screen — still in the tab order, invisible on screen."
+  ],
+  "naiveMoves": [
+    "aria-hidden + display:none on the 'Remember Me' label (hides a real control)",
+    "deleted the Google + Facebook login buttons (interactive elements) to remove their violations",
+    "pushed the Forgot-Password link off-screen (left:-9999px)"
+  ],
+  "mendVerdict": {
+    "gate3Pass": false,
+    "gate3Would": "REJECT",
+    "banned": [
+      "interactive-deleted",
+      "display-none-added"
+    ],
+    "line": "Mend's banned-pattern gate flags 2 suppression(s); every one of these rounds would be reverted with a failure receipt."
+  },
+  "generatedAt": "2026-07-17T19:31:50.959Z"
+}

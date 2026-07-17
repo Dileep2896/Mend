@@ -6,3 +6,4 @@ runs/*/screenshots/
 runs/engine2-report/
 harness/.scratch/
 results/
+runs/naive-copy/

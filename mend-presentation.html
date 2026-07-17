@@ -3,220 +3,308 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
 <title>Mend — the accessibility healer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,600&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0D1520; --bg2:#121E2D; --panel:#16243689;
-    --paper:#F7F4EE; --paper2:#EFEAE0; --ink:#1B2536; --ink2:#4B5568;
-    --teal:#2FBFA9; --teal-br:#5EEAD4; --teal-dim:#17564D;
-    --amber:#E8A13D; --amber-deep:#C05621; --red:#E5484D; --upvote:#FF5A1F;
-    --line:rgba(255,255,255,.09); --txt:#E8EDF4; --mut:#8B98AB;
-    --serif:Georgia,'Times New Roman',serif;
-    --sans:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
-    --mono:ui-monospace,'SF Mono','Cascadia Code',Menlo,Consolas,monospace;
+    --bg:#070C11; --bg2:#0A131B; --panel:rgba(18,30,42,.62);
+    --paper:#F3EEE1; --paper2:#E6DECB; --paper-ink:#1B231F; --paper-ink2:#4A5450;
+    --mint:#6FF2DB; --teal:#28C2A8; --teal-deep:#0E463E; --teal-line:rgba(90,220,200,.14);
+    --amber:#F4A73C; --amber-deep:#B4571A; --red:#FF6060; --upvote:#FF6A33;
+    --ink:#EAF2F0; --soft:#B6C6C6; --mut:#7B8E92;
+    --line:rgba(120,210,196,.12);
+    --serif:'Fraunces',Georgia,'Times New Roman',serif;
+    --sans:'Hanken Grotesk',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    --disp:'SOFT' 30,'WONK' 1;
+    --shadow:0 30px 60px -20px rgba(0,0,0,.7),0 10px 24px -12px rgba(0,0,0,.5);
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
-  body{background:var(--bg);color:var(--txt);font-family:var(--sans);overflow:hidden}
-  ::selection{background:var(--teal-dim)}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);overflow:hidden;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  ::selection{background:var(--teal-deep);color:#EAFBF6}
 
-  #deck{position:relative;width:100vw;height:100vh}
-  .slide{position:absolute;inset:0;padding:clamp(24px,4.5vh,56px) clamp(28px,5vw,84px);
+  /* ---------- atmosphere ---------- */
+  .atmo,.grid,.grain{position:fixed;inset:0;pointer-events:none;z-index:0}
+  .atmo{background:
+    radial-gradient(58% 52% at 84% 8%,rgba(40,194,168,.17),transparent 62%),
+    radial-gradient(46% 46% at 8% 96%,rgba(244,167,60,.07),transparent 60%),
+    radial-gradient(130% 120% at 50% -8%,#0B1620,#070C11 68%)}
+  .grid{background-image:
+      linear-gradient(rgba(120,210,196,.05) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(120,210,196,.05) 1px,transparent 1px);
+    background-size:40px 40px;background-position:center;
+    -webkit-mask:radial-gradient(118% 100% at 50% 40%,transparent 30%,#000 94%);
+            mask:radial-gradient(118% 100% at 50% 40%,transparent 30%,#000 94%);opacity:.7}
+  .grain{opacity:.05;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+  #deck{position:relative;width:100vw;height:100vh;z-index:1}
+  .slide{position:absolute;inset:0;padding:clamp(26px,4.6vh,60px) clamp(40px,6vw,116px) clamp(20px,3vh,40px);
     display:flex;flex-direction:column;opacity:0;visibility:hidden;
-    transform:translateY(14px);transition:opacity .45s ease,transform .45s ease,visibility .45s}
+    transform:translateY(12px) scale(.994);transition:opacity .5s ease,transform .5s ease,visibility .5s}
   .slide.active{opacity:1;visibility:visible;transform:none;z-index:2}
+  .head{flex:none}
+  .main{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:2vh}
+  .main.top{justify-content:flex-start;padding-top:clamp(14px,2.6vh,30px)}
 
   /* entrance choreography */
-  .r{opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .5s ease}
+  .r{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
   .active .r{opacity:1;transform:none}
   .active .d1{transition-delay:.08s}.active .d2{transition-delay:.18s}
   .active .d3{transition-delay:.28s}.active .d4{transition-delay:.38s}
   .active .d5{transition-delay:.5s}.active .d6{transition-delay:.62s}
   .active .d7{transition-delay:.74s}
 
-  .eyebrow{font-family:var(--mono);font-size:clamp(11px,1.2vw,13px);letter-spacing:.22em;
-    text-transform:uppercase;color:var(--teal);margin-bottom:1.2vh}
-  h1{font-family:var(--serif);font-weight:700;font-size:clamp(30px,4.6vw,58px);
-    line-height:1.06;letter-spacing:-.01em}
-  h1 .hl{color:var(--teal-br)}
-  .sub{color:var(--mut);font-size:clamp(14px,1.5vw,18px);max-width:62ch;margin-top:1.4vh;line-height:1.55}
-  .foot{margin-top:auto;padding-top:2vh;font-size:clamp(10px,1vw,12px);color:var(--mut);
-    font-family:var(--mono);letter-spacing:.02em}
-  .foot b{color:#B9C4D4;font-weight:600}
+  /* ---------- shared type ---------- */
+  .eyebrow{font-family:var(--mono);font-size:clamp(10.5px,1.05vw,12.5px);letter-spacing:.28em;
+    text-transform:uppercase;color:var(--teal);display:inline-flex;align-items:center;gap:.7em}
+  .eyebrow::before{content:"";width:26px;height:1px;background:linear-gradient(90deg,var(--teal),transparent)}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(30px,4.5vw,60px);
+    line-height:1.02;letter-spacing:-.015em;margin-top:1.3vh;font-variation-settings:var(--disp),'opsz' 144}
+  h1 .hl{color:var(--mint);font-style:italic;font-weight:500}
+  h1 .warn{color:var(--amber);font-style:italic;font-weight:500}
+  .sub{color:var(--soft);font-size:clamp(14px,1.5vw,18px);max-width:62ch;margin-top:1.4vh;line-height:1.55}
+  .foot{flex:none;margin-top:2.2vh;font-size:clamp(10px,1vw,12.5px);color:var(--mut);
+    font-family:var(--mono);letter-spacing:.02em;line-height:1.5;
+    padding-top:1.6vh;border-top:1px solid var(--line);display:flex;gap:.6em;align-items:baseline}
+  .foot::before{content:"▐";color:var(--teal);opacity:.6;font-size:.9em}
+  .foot b{color:#C9D6D6;font-weight:600}
 
   /* ---------- title slide ---------- */
-  .titleWrap{margin:auto 0;display:grid;grid-template-columns:1.25fr .75fr;gap:4vw;align-items:center}
-  .brand{font-family:var(--serif);font-size:clamp(64px,10.5vw,148px);font-weight:700;
-    letter-spacing:.02em;line-height:.95}
-  .brand small{display:block;font-family:var(--mono);font-weight:400;letter-spacing:.34em;
-    font-size:clamp(12px,1.4vw,16px);color:var(--teal-br);margin-top:2.2vh;text-transform:uppercase}
-  .stage{margin-top:4.2vh;font-family:var(--serif);font-style:italic;
-    font-size:clamp(16px,2vw,24px);line-height:1.5;color:#D7DEE9;max-width:34ch}
-  .stage b{color:#fff;font-style:italic}
-  .ring{position:relative;width:min(30vw,340px);aspect-ratio:1;margin-inline:auto}
-  .ring::before{content:"";position:absolute;inset:0;border-radius:50%;
-    background:conic-gradient(from 0deg,var(--teal) 0 25%,transparent 25% 33%,
-      var(--teal) 33% 58%,transparent 58% 66%,var(--amber) 66% 74%,transparent 74% 82%,
+  .titleWrap{flex:1;display:grid;grid-template-columns:1.2fr .8fr;gap:5vw;align-items:center;min-height:0}
+  .brand{font-family:var(--serif);font-size:clamp(74px,12vw,178px);font-weight:900;
+    letter-spacing:-.02em;line-height:.9;font-variation-settings:'SOFT' 0,'WONK' 0,'opsz' 144;
+    background:linear-gradient(178deg,#FBFEFD 12%,#B7D6CF 96%);-webkit-background-clip:text;
+    background-clip:text;color:transparent;position:relative}
+  .brand .sig{display:block;font-family:var(--mono);font-weight:400;letter-spacing:.4em;
+    -webkit-text-fill-color:var(--mint);color:var(--mint);
+    font-size:clamp(11px,1.35vw,15px);margin-top:2.6vh;text-transform:uppercase}
+  .stage{margin-top:4vh;font-family:var(--serif);font-style:italic;font-weight:400;
+    font-size:clamp(17px,2.05vw,25px);line-height:1.48;color:#D9E4E1;max-width:33ch}
+  .stage b{color:#fff;font-style:italic;font-weight:600}
+  .stage .q{color:var(--teal);font-style:normal}
+
+  .instr{position:relative;width:min(30vw,360px);aspect-ratio:1;margin-inline:auto}
+  .ring::before,.ring::after{content:"";position:absolute;border-radius:50%}
+  .ring::before{inset:0;background:conic-gradient(from 0deg,var(--teal) 0 24%,transparent 24% 33%,
+      var(--mint) 33% 57%,transparent 57% 65%,var(--amber) 65% 73%,transparent 73% 82%,
       var(--teal) 82% 100%);
-    -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 14px),#000 calc(100% - 13px));
-    mask:radial-gradient(farthest-side,transparent calc(100% - 14px),#000 calc(100% - 13px));
-    animation:spin 14s linear infinite}
-  .ring .core{position:absolute;inset:0;display:grid;place-items:center;text-align:center;
-    font-family:var(--mono);font-size:clamp(11px,1.2vw,14px);color:var(--mut);line-height:2.1}
-  .ring .core b{color:var(--teal-br);font-weight:600}
+    -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 13px),#000 calc(100% - 12px));
+    mask:radial-gradient(farthest-side,transparent calc(100% - 13px),#000 calc(100% - 12px));
+    animation:spin 16s linear infinite;filter:drop-shadow(0 0 10px rgba(90,220,200,.35))}
+  .ring::after{inset:14px;border:1px dashed rgba(120,210,196,.22);animation:spin 40s linear infinite reverse}
+  .core{position:absolute;inset:0;display:grid;place-items:center;text-align:center;
+    font-family:var(--mono);font-size:clamp(11px,1.15vw,13.5px);color:var(--mut);line-height:2.2}
+  .core b{color:var(--mint);font-weight:500}
+  .core .beat{display:block;margin-bottom:.7em;color:var(--teal);font-size:1.4em;letter-spacing:.1em;
+    animation:beat 2.4s ease-in-out infinite}
   @keyframes spin{to{transform:rotate(1turn)}}
+  @keyframes beat{0%,72%,100%{opacity:.35}12%,20%{opacity:1}}
 
   /* ---------- exhibit (reddit) cards ---------- */
-  .exGrid{display:grid;grid-template-columns:1.15fr .85fr;gap:1.6vw;margin-top:2.2vh;min-height:0;flex:1}
-  .exCol{display:flex;flex-direction:column;gap:1.6vh;min-height:0}
-  .card{background:var(--paper);color:var(--ink);border-radius:10px;padding:1.8vh 1.4vw;
-    position:relative;box-shadow:0 18px 40px rgba(0,0,0,.45)}
-  .tag{position:absolute;top:-11px;left:16px;font-family:var(--mono);font-size:11px;
-    letter-spacing:.14em;background:var(--amber);color:#231303;font-weight:700;
-    padding:3px 10px;border-radius:3px;transform:rotate(-1.6deg);box-shadow:0 3px 8px rgba(0,0,0,.35)}
+  .exGrid{flex:1;display:grid;grid-template-columns:1.14fr .86fr;gap:1.5vw;min-height:0}
+  .exCol{display:flex;flex-direction:column;gap:1.5vh;min-height:0}
+  .card{background:linear-gradient(180deg,var(--paper),var(--paper2));color:var(--paper-ink);
+    border-radius:6px;padding:1.9vh 1.5vw;position:relative;box-shadow:var(--shadow);
+    border:1px solid rgba(0,0,0,.18)}
+  .card::after{content:"";position:absolute;inset:0;border-radius:6px;pointer-events:none;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.6);
+    background:radial-gradient(120% 60% at 100% 0%,rgba(0,0,0,.03),transparent 55%)}
+  .card.grow{flex:1;display:flex;flex-direction:column;min-height:0;justify-content:center}
+  .tag{position:absolute;top:-11px;left:16px;font-family:var(--mono);font-size:10.5px;
+    letter-spacing:.16em;background:var(--amber);color:#231303;font-weight:600;
+    padding:3px 10px;border-radius:2px;transform:rotate(-1.4deg);
+    box-shadow:0 4px 10px rgba(0,0,0,.4);text-transform:uppercase}
   .tag.t{background:var(--teal);color:#03231E}
-  .rHead{display:flex;align-items:center;gap:.55em;font-size:clamp(11px,1.1vw,13px);color:var(--ink2)}
-  .rHead .sr{font-weight:700;color:#D7300F}
-  .rHead .dot::before{content:"·";margin:0 .1em}
-  .fresh{font-family:var(--mono);font-size:.86em;background:#FDEBD2;color:#8C4A00;
+  .rHead{display:flex;align-items:center;gap:.5em;font-size:clamp(11px,1.05vw,13px);
+    color:var(--paper-ink2);font-family:var(--mono);flex-wrap:wrap}
+  .rHead .sr{font-weight:600;color:#C23213}
+  .rHead .dot::before{content:"·";margin:0 .05em}
+  .fresh{font-family:var(--mono);font-size:.84em;background:#F6DCB4;color:#8C4A00;
     padding:1px 7px;border-radius:99px;font-weight:600}
-  .rTitle{font-family:var(--serif);font-weight:700;font-size:clamp(15px,1.75vw,22px);
-    line-height:1.25;margin:.55em 0 .4em}
-  .rBody{font-size:clamp(12px,1.25vw,15px);line-height:1.5;color:#333E52}
-  .rBody b{color:var(--ink)}
-  .rQuote{font-family:var(--serif);font-style:italic;font-size:clamp(13px,1.4vw,17px);
-    color:var(--ink);border-left:3px solid var(--upvote);padding-left:.7em;margin-top:.6em}
+  .rTitle{font-family:var(--serif);font-weight:600;font-size:clamp(15px,1.75vw,22px);
+    line-height:1.22;margin:.6em 0 .42em;letter-spacing:-.01em}
+  .rBody{font-size:clamp(12px,1.24vw,15px);line-height:1.5;color:#37423B}
+  .rBody b{color:var(--paper-ink);font-weight:700}
+  .rQuote{font-family:var(--serif);font-style:italic;font-size:clamp(13.5px,1.42vw,17.5px);
+    color:var(--paper-ink);border-left:3px solid var(--upvote);padding-left:.7em;margin-top:.6em;line-height:1.35}
   .rMeta{display:flex;gap:1.1em;margin-top:.75em;font-family:var(--mono);
-    font-size:clamp(11px,1.05vw,12.5px);color:var(--ink2)}
-  .up{color:var(--upvote);font-weight:700}
-  .chips{display:flex;flex-wrap:wrap;gap:.5em;margin-top:.7em}
-  .chip{font-family:var(--mono);font-size:clamp(10px,1vw,12px);background:var(--paper2);
-    border:1px solid #DED7C8;color:#5A5040;padding:3px 9px;border-radius:99px}
-  .kicker{background:linear-gradient(90deg,#2A1606,#1B1208);border:1px solid #6b3d1244;
-    border-left:4px solid var(--amber);border-radius:8px;padding:1.5vh 1.3vw;
-    font-size:clamp(12.5px,1.35vw,16px);line-height:1.5;color:#F3E4CD}
-  .kicker b{color:var(--amber)}
+    font-size:clamp(11px,1.02vw,12.5px);color:var(--paper-ink2)}
+  .up{color:var(--upvote);font-weight:600}
+  .chips{display:flex;flex-wrap:wrap;gap:.5em;margin-top:.75em}
+  .chip{font-family:var(--mono);font-size:clamp(10px,.98vw,11.5px);background:var(--paper2);
+    border:1px solid #D6CDB8;color:#5A5040;padding:3px 9px;border-radius:2px;letter-spacing:.02em}
+  .kicker{background:linear-gradient(100deg,rgba(58,26,6,.85),rgba(24,16,10,.85));
+    border:1px solid rgba(244,167,60,.22);border-left:3px solid var(--amber);border-radius:8px;
+    padding:1.6vh 1.4vw;font-size:clamp(12.5px,1.34vw,16px);line-height:1.5;color:#F3E4CD;
+    backdrop-filter:blur(6px)}
+  .kicker b{color:var(--amber);font-weight:700}
 
   /* ---------- stat counters ---------- */
-  .statGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.4vw;margin-top:3.4vh}
+  .statGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.3vw}
   .stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;
-    padding:2.6vh 1.3vw 2.2vh}
-  .stat .n{font-family:var(--mono);font-weight:700;font-size:clamp(34px,4.4vw,62px);
-    color:var(--teal-br);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-  .stat .n .sfx{font-size:.55em;color:var(--teal)}
+    padding:2.6vh 1.4vw 2.2vh;backdrop-filter:blur(8px);position:relative;overflow:hidden}
+  .stat::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--teal),transparent 70%)}
+  .stat.warn::before{background:linear-gradient(90deg,var(--amber),transparent 70%)}
+  .stat .n{font-family:var(--mono);font-weight:600;font-size:clamp(36px,4.6vw,64px);
+    color:var(--mint);letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1}
+  .stat .n .sfx{font-size:.5em;color:var(--teal)}
   .stat.warn .n{color:var(--amber)}
-  .stat p{margin-top:1.1vh;font-size:clamp(12px,1.2vw,14.5px);color:#C4CDDA;line-height:1.45}
-  .stat .src{display:block;margin-top:1vh;font-family:var(--mono);font-size:10.5px;color:var(--mut)}
+  .stat p{margin-top:1.3vh;font-size:clamp(12px,1.2vw,14.5px);color:#C4D2D0;line-height:1.45}
+  .stat .src{display:block;margin-top:1.2vh;font-family:var(--mono);font-size:10px;color:var(--mut);
+    letter-spacing:.02em}
+  .trend{margin-top:.5vh}
+  .trend svg{width:100%;height:clamp(70px,12vh,130px);display:block}
+  .trendPath{fill:none;stroke:var(--amber);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;
+    filter:drop-shadow(0 0 6px rgba(244,167,60,.4))}
+  .trendArea{fill:url(#trendGrad);opacity:.9}
+  .trendLab{font-family:var(--mono);font-size:11px;fill:var(--mut)}
+  .trendPk{fill:var(--amber)}
 
-  /* ---------- icon rows / cards ---------- */
-  .rowList{display:flex;flex-direction:column;gap:2.2vh;margin-top:3vh;max-width:100ch}
-  .row{display:grid;grid-template-columns:56px 1fr;gap:1.4vw;align-items:start}
-  .glyph{width:52px;height:52px;border-radius:12px;display:grid;place-items:center;
-    font-size:24px;background:var(--teal-dim);color:var(--teal-br);flex:none}
-  .glyph.a{background:#3A2008;color:var(--amber)}
-  .row h3{font-size:clamp(16px,1.9vw,23px);font-weight:650;letter-spacing:-.01em}
-  .row p{margin-top:.45vh;color:#B9C4D4;font-size:clamp(12.5px,1.3vw,16px);line-height:1.55;max-width:88ch}
-  .row p q{font-family:var(--serif);font-style:italic;color:#EADFCB;quotes:"“" "”"}
-  .row p .who{font-family:var(--mono);font-size:.82em;color:var(--mut)}
+  /* ---------- icon rows ---------- */
+  .rowList{display:flex;flex-direction:column;gap:2.4vh;max-width:104ch}
+  .row{display:grid;grid-template-columns:56px 1fr;gap:1.5vw;align-items:start}
+  .glyph{width:52px;height:52px;border-radius:13px;display:grid;place-items:center;font-size:23px;
+    background:linear-gradient(150deg,rgba(40,194,168,.22),rgba(14,70,62,.5));color:var(--mint);
+    border:1px solid var(--teal-line);flex:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+  .glyph.a{background:linear-gradient(150deg,rgba(244,167,60,.2),rgba(58,32,8,.6));
+    color:var(--amber);border-color:rgba(244,167,60,.24)}
+  .row h3{font-size:clamp(16px,1.9vw,23px);font-weight:700;letter-spacing:-.01em;
+    font-family:var(--serif);font-variation-settings:'SOFT' 20}
+  .row p{margin-top:.6vh;color:#B6C6C6;font-size:clamp(12.5px,1.3vw,16px);line-height:1.55;max-width:90ch}
+  .row p q{font-family:var(--serif);font-style:italic;color:#EADFCB;quotes:"\201C" "\201D"}
+  .row p .who{font-family:var(--mono);font-size:.8em;color:var(--mut)}
 
   /* ---------- loop steps ---------- */
-  .loopRow{display:grid;grid-template-columns:repeat(6,1fr);gap:.9vw;margin-top:3.4vh}
+  .loopRow{display:grid;grid-template-columns:repeat(6,1fr);gap:0;position:relative}
   .step{background:var(--panel);border:1px solid var(--line);border-radius:12px;
-    padding:2vh 1vw;text-align:center;position:relative;transition:border-color .3s,transform .3s}
-  .step .num{font-family:var(--mono);color:var(--teal);font-size:clamp(13px,1.4vw,17px)}
-  .step h4{font-size:clamp(15px,1.7vw,21px);margin:.5vh 0 .6vh;font-weight:650}
-  .step p{font-size:clamp(10.5px,1.05vw,13px);color:var(--mut);line-height:1.45}
-  .step.pulse{border-color:var(--teal);transform:translateY(-4px);
-    box-shadow:0 0 0 1px var(--teal),0 14px 30px rgba(47,191,169,.15)}
-  .step.pulse .num{color:var(--teal-br)}
-  .gateStrip{display:grid;grid-template-columns:repeat(2,1fr);gap:1vh 1.4vw;margin-top:3vh}
-  .gate{background:var(--bg2);border:1px solid var(--line);border-radius:10px;
-    padding:1.3vh 1.1vw;font-size:clamp(11.5px,1.15vw,14px);color:#C4CDDA;line-height:1.45}
-  .gate b{color:var(--teal-br);font-family:var(--mono);font-weight:600}
+    padding:2.3vh 1vw;text-align:center;position:relative;z-index:1;backdrop-filter:blur(8px);
+    transition:border-color .35s,transform .35s,box-shadow .35s;margin:0 .45vw}
+  .step .num{font-family:var(--mono);color:var(--teal);font-size:clamp(12px,1.2vw,14px);letter-spacing:.1em}
+  .step h4{font-size:clamp(16px,1.8vw,22px);margin:.8vh 0 .7vh;font-weight:700;font-family:var(--serif);
+    font-variation-settings:'SOFT' 20}
+  .step p{font-size:clamp(10.5px,1.02vw,12.5px);color:var(--mut);line-height:1.42}
+  .step:not(:last-child)::after{content:"›";position:absolute;right:-.55vw;top:50%;transform:translateY(-50%);
+    color:var(--teal);opacity:.5;font-size:20px;z-index:2}
+  .step.pulse{border-color:var(--teal);transform:translateY(-5px);
+    box-shadow:0 0 0 1px var(--teal),0 16px 34px rgba(40,194,168,.18)}
+  .step.pulse .num{color:var(--mint)}
+  .gateStrip{display:grid;grid-template-columns:repeat(2,1fr);gap:1.1vh 1.4vw}
+  .gate{background:linear-gradient(180deg,rgba(10,19,27,.7),rgba(10,19,27,.4));
+    border:1px solid var(--line);border-left:2px solid var(--teal);border-radius:9px;
+    padding:1.4vh 1.2vw;font-size:clamp(11.5px,1.15vw,14px);color:#C4D2D0;line-height:1.42}
+  .gate b{color:var(--mint);font-family:var(--mono);font-weight:600;letter-spacing:.04em}
+  .band{font-family:var(--serif);font-style:italic;font-size:clamp(15px,1.7vw,21px);color:#EAF2F0;
+    text-align:center;margin-top:.5vh}
+  .band b{color:var(--mint);font-weight:600}
 
   /* ---------- architecture lanes ---------- */
-  .arch{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:1.4vw;margin-top:2.6vh;flex:1;min-height:0}
-  .lane{background:var(--panel);border:1px solid var(--line);border-radius:14px;
-    padding:1.6vh 1vw;display:flex;flex-direction:column;gap:1.1vh;min-height:0}
-  .lane h5{font-family:var(--mono);letter-spacing:.24em;font-size:11.5px;color:var(--mut);
-    text-transform:uppercase;padding-left:.2em}
-  .node{border-radius:9px;padding:1.15vh .9vw;font-size:clamp(11px,1.12vw,14px);
-    line-height:1.35;background:var(--teal-dim);color:#D8F6F0;border:1px solid #2FBFA933}
-  .node b{color:#fff;font-weight:650}
-  .node.deep{background:#0E3A34}
-  .node.dark{background:#0A101B;border-color:var(--line);color:#C4CDDA}
-  .node.warn{background:#3A2008;border-color:#E8A13D44;color:#F3DCB8}
-  .node small{display:block;color:inherit;opacity:.75;font-size:.86em;margin-top:.2em}
-  .dn{align-self:center;color:var(--mut);font-size:14px;line-height:1;font-family:var(--mono)}
+  .arch{flex:1;display:grid;grid-template-columns:1fr 1.12fr 1fr;gap:1.4vw;min-height:0;align-items:stretch}
+  .lane{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:1.8vh 1.1vw;
+    display:flex;flex-direction:column;gap:1.1vh;min-height:0;backdrop-filter:blur(8px);position:relative}
+  .lane.mid{border-color:rgba(90,220,200,.22)}
+  .lane h5{font-family:var(--mono);letter-spacing:.26em;font-size:11px;color:var(--teal);
+    text-transform:uppercase;padding:.2em .2em 1vh;border-bottom:1px solid var(--line);margin-bottom:.4vh}
+  .lane .fill{display:flex;flex-direction:column;gap:1.1vh;flex:1;justify-content:center}
+  .node{border-radius:10px;padding:1.25vh 1vw;font-size:clamp(11px,1.12vw,14px);line-height:1.35;
+    background:linear-gradient(150deg,rgba(40,194,168,.16),rgba(14,70,62,.34));color:#D8F6F0;
+    border:1px solid rgba(40,194,168,.24)}
+  .node b{color:#fff;font-weight:600}
+  .node.deep{background:linear-gradient(150deg,rgba(40,194,168,.3),rgba(14,70,62,.5));
+    border-color:rgba(90,220,200,.4)}
+  .node.dark{background:rgba(10,16,25,.66);border-color:var(--line);color:#C4D2D0}
+  .node.warn{background:linear-gradient(150deg,rgba(244,167,60,.16),rgba(58,32,8,.44));
+    border-color:rgba(244,167,60,.3);color:#F3DCB8}
+  .node small{display:block;color:inherit;opacity:.75;font-size:.85em;margin-top:.25em;font-family:var(--mono)}
+  .dn{align-self:center;color:var(--teal);opacity:.6;font-size:13px;line-height:1;font-family:var(--mono)}
 
   /* ---------- versus ---------- */
-  .vs{display:grid;grid-template-columns:1fr 1fr;gap:1.6vw;margin-top:3vh;flex:1;min-height:0}
-  .vCard{border-radius:14px;padding:2.4vh 1.5vw;border:1px solid var(--line);display:flex;flex-direction:column}
-  .vCard.bad{background:linear-gradient(180deg,#241608,#1A1208)}
-  .vCard.good{background:linear-gradient(180deg,#0E2C28,#0C1F1D)}
-  .vCard h3{font-family:var(--mono);font-size:clamp(15px,1.6vw,20px);letter-spacing:.02em}
-  .vCard.bad h3{color:var(--amber)} .vCard.good h3{color:var(--teal-br)}
-  .vCard ul{list-style:none;margin-top:2vh;display:flex;flex-direction:column;gap:1.6vh}
-  .vCard li{display:grid;grid-template-columns:22px 1fr;gap:.7em;
-    font-size:clamp(12.5px,1.3vw,16px);line-height:1.5;color:#D8DFE9}
-  .vCard.bad li::before{content:"✕";color:var(--amber);font-weight:700}
-  .vCard.good li::before{content:"✓";color:var(--teal-br);font-weight:700}
-  .vCard li b{color:#fff}
-  .thesis{margin-top:2.6vh;font-family:var(--serif);font-style:italic;
-    font-size:clamp(15px,1.8vw,22px);color:#EDF2F8}
-  .thesis b{color:var(--teal-br)}
+  .vs{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:1.6vw;min-height:0}
+  .vCard{border-radius:16px;padding:2.6vh 1.7vw;border:1px solid var(--line);display:flex;
+    flex-direction:column;justify-content:center;position:relative;overflow:hidden;backdrop-filter:blur(8px)}
+  .vCard.bad{background:linear-gradient(165deg,rgba(40,24,10,.9),rgba(20,14,10,.85));
+    border-color:rgba(244,167,60,.2)}
+  .vCard.good{background:linear-gradient(165deg,rgba(14,52,46,.92),rgba(10,28,26,.88));
+    border-color:rgba(90,220,200,.24)}
+  .vCard h3{font-family:var(--mono);font-size:clamp(15px,1.6vw,20px);letter-spacing:.01em;
+    padding-bottom:1.6vh;border-bottom:1px solid var(--line);margin-bottom:.4vh}
+  .vCard.bad h3{color:var(--amber)} .vCard.good h3{color:var(--mint)}
+  .vCard ul{list-style:none;margin-top:1.4vh;display:flex;flex-direction:column;gap:1.7vh}
+  .vCard li{display:flex;gap:.75em;font-size:clamp(12.5px,1.3vw,16px);line-height:1.5;color:#D8E2E0;align-items:baseline}
+  .vCard li .mk{flex:none;font-weight:700;width:1.1em;text-align:center}
+  .vCard.bad .mk{color:var(--amber)} .vCard.good .mk{color:var(--mint)}
+  .vCard li b{color:#fff;font-weight:700}
+  .vCard.bad li.case b{color:var(--amber)}
+  .thesis{font-family:var(--serif);font-style:italic;font-size:clamp(15px,1.8vw,22px);
+    color:#EDF4F2;text-align:center;margin-top:.4vh}
+  .thesis b{color:var(--mint);font-weight:600}
 
   /* ---------- demo slide ---------- */
-  .demoWrap{display:grid;grid-template-columns:.95fr 1.05fr;gap:2vw;margin-top:2.6vh;flex:1;min-height:0}
-  .acts{display:flex;flex-direction:column;gap:1.5vh}
-  .act{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1.6vh 1.2vw}
-  .act.hot{border-color:var(--teal);box-shadow:0 0 0 1px var(--teal-dim)}
-  .act h4{font-family:var(--mono);font-size:clamp(12.5px,1.25vw,15px);color:var(--teal-br)}
-  .act p{margin-top:.5vh;font-size:clamp(12px,1.2vw,14.5px);color:#C4CDDA;line-height:1.5}
-  .chart{background:var(--panel);border:1px solid var(--line);border-radius:14px;
-    padding:2vh 1.4vw;display:flex;flex-direction:column;min-height:0}
-  .chart h4{font-size:clamp(13px,1.3vw,16px);color:#C4CDDA;font-weight:600}
-  .liveN{font-family:var(--mono);font-size:clamp(40px,5vw,68px);font-weight:700;
-    color:var(--teal-br);font-variant-numeric:tabular-nums;line-height:1;margin-top:.6vh}
-  .liveN .lab{font-size:.24em;color:var(--mut);font-weight:400;letter-spacing:.14em;
-    text-transform:uppercase;margin-left:1em}
+  .demoWrap{flex:1;display:grid;grid-template-columns:.92fr 1.08fr;gap:2vw;min-height:0}
+  .acts{display:flex;flex-direction:column;gap:1.5vh;justify-content:center}
+  .act{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1.8vh 1.3vw;
+    backdrop-filter:blur(8px);position:relative}
+  .act h4{font-family:var(--mono);font-size:clamp(12px,1.24vw,15px);color:var(--teal);letter-spacing:.04em}
+  .act p{margin-top:.6vh;font-size:clamp(12px,1.2vw,14.5px);color:#C4D2D0;line-height:1.5}
+  .act.hot{border-color:var(--teal);box-shadow:0 0 0 1px var(--teal-deep),0 16px 34px rgba(40,194,168,.15)}
+  .act.hot h4{color:var(--mint)}
+  .chart{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:2.2vh 1.5vw;
+    display:flex;flex-direction:column;min-height:0;backdrop-filter:blur(8px)}
+  .chart h4{font-family:var(--mono);font-size:clamp(12px,1.24vw,15px);color:var(--teal);letter-spacing:.04em;font-weight:500}
+  .liveN{font-family:var(--mono);font-size:clamp(44px,5.2vw,72px);font-weight:600;color:var(--mint);
+    font-variant-numeric:tabular-nums;line-height:1;margin-top:.8vh;letter-spacing:-.02em}
+  .liveN .lab{font-size:.22em;color:var(--mut);font-weight:400;letter-spacing:.16em;
+    text-transform:uppercase;margin-left:1em;font-family:var(--mono)}
   .chart svg{width:100%;height:100%;flex:1;min-height:120px;margin-top:1vh}
   .axis{stroke:var(--line);stroke-width:1}
-  .gridl{stroke:rgba(255,255,255,.05);stroke-width:1}
-  .convPath{fill:none;stroke:var(--teal-br);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+  .gridl{stroke:rgba(255,255,255,.045);stroke-width:1}
+  .convPath{fill:none;stroke:var(--mint);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;
+    filter:drop-shadow(0 0 7px rgba(111,242,219,.5))}
   .convFill{fill:url(#gradFill);opacity:.35}
-  .pt{fill:var(--bg);stroke:var(--teal-br);stroke-width:2.5}
+  .pt{fill:var(--bg);stroke:var(--mint);stroke-width:2.5}
   .ptLab{font-family:var(--mono);font-size:12px;fill:#BFE9E2}
   .axLab{font-family:var(--mono);font-size:11px;fill:var(--mut)}
   .revertFlag{font-family:var(--mono);font-size:11px;fill:var(--amber)}
 
   /* ---------- close ---------- */
-  .closeWrap{margin:auto 0}
-  .proof{font-family:var(--serif);font-weight:700;font-size:clamp(44px,7.4vw,104px);
-    letter-spacing:-.015em;line-height:1.05}
-  .proof .stampline{display:inline-block;position:relative}
-  .stamp{display:inline-block;font-family:var(--mono);font-size:clamp(11px,1.2vw,14px);
-    letter-spacing:.2em;color:var(--teal-br);border:2px solid var(--teal);
-    border-radius:6px;padding:.35em .8em;transform:rotate(-3deg) translateY(-1.2em);
-    margin-left:.4em;vertical-align:middle}
-  .roadRow{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4vw;margin-top:5vh;max-width:1100px}
-  .road{border-top:2px solid var(--teal-dim);padding-top:1.4vh}
-  .road h4{font-size:clamp(13.5px,1.4vw,17px);font-weight:650}
-  .road p{margin-top:.5vh;font-size:clamp(11.5px,1.15vw,14px);color:var(--mut);line-height:1.5}
+  .proof{font-family:var(--serif);font-weight:900;font-size:clamp(46px,7.6vw,110px);
+    letter-spacing:-.025em;line-height:1;font-variation-settings:'SOFT' 0,'WONK' 0,'opsz' 144;
+    background:linear-gradient(176deg,#FBFEFD,#AFCFC8);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .proof .stampline{display:inline-block;position:relative;-webkit-text-fill-color:transparent}
+  .stamp{display:inline-block;font-family:var(--mono);font-size:clamp(11px,1.2vw,14px);letter-spacing:.2em;
+    -webkit-text-fill-color:var(--mint);color:var(--mint);border:2px solid var(--teal);border-radius:6px;
+    padding:.35em .8em;transform:rotate(-3.5deg) translateY(-1.1em);margin-left:.4em;vertical-align:middle;
+    box-shadow:0 0 18px rgba(40,194,168,.25);text-transform:uppercase}
+  .roadRow{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6vw;max-width:1150px;margin-top:1vh}
+  .road{border-top:2px solid var(--teal-deep);padding-top:1.5vh;position:relative}
+  .road::before{content:"";position:absolute;top:-2px;left:0;width:34px;height:2px;background:var(--mint)}
+  .road h4{font-size:clamp(14px,1.42vw,17.5px);font-weight:700;font-family:var(--serif);font-variation-settings:'SOFT' 20}
+  .road p{margin-top:.6vh;font-size:clamp(11.5px,1.15vw,14px);color:var(--mut);line-height:1.55}
 
   /* ---------- chrome ---------- */
-  #bar{position:fixed;top:0;left:0;height:3px;background:var(--teal-br);width:0;z-index:50;
-    transition:width .35s ease}
-  #hud{position:fixed;bottom:16px;right:22px;z-index:50;display:flex;align-items:center;gap:14px;
+  #bar{position:fixed;top:0;left:0;height:2px;background:var(--mint);width:0;z-index:50;
+    box-shadow:0 0 10px rgba(111,242,219,.7);transition:width .4s ease}
+  #hud{position:fixed;bottom:16px;right:24px;z-index:50;display:flex;align-items:center;gap:15px;
     font-family:var(--mono);font-size:12px;color:var(--mut);user-select:none}
-  #dots{display:flex;gap:7px}
-  #dots button{width:8px;height:8px;border-radius:50%;border:0;background:#3A4658;cursor:pointer;padding:0}
-  #dots button.on{background:var(--teal-br)}
-  #hint{position:fixed;bottom:16px;left:22px;z-index:50;font-family:var(--mono);
-    font-size:11.5px;color:#5E6B7E;user-select:none}
-  .navzone{position:fixed;top:0;bottom:0;width:18vw;z-index:40;cursor:pointer}
+  #counter b{color:var(--mint);font-weight:500}
+  #dots{display:flex;gap:8px}
+  #dots button{width:7px;height:7px;border-radius:50%;border:0;background:#2C3A44;cursor:pointer;padding:0;
+    transition:background .3s,transform .3s}
+  #dots button.on{background:var(--mint);transform:scale(1.3);box-shadow:0 0 8px rgba(111,242,219,.6)}
+  #hint{position:fixed;bottom:16px;left:24px;z-index:50;font-family:var(--mono);font-size:11.5px;
+    color:#57666B;user-select:none;letter-spacing:.04em}
+  #hint kbd{color:var(--teal);border:1px solid var(--line);border-radius:3px;padding:0 .4em;font-size:.9em}
+  .wm{position:fixed;top:15px;left:24px;z-index:50;font-family:var(--mono);font-size:11px;letter-spacing:.34em;
+    color:var(--mut);text-transform:uppercase;user-select:none}
+  .wm b{color:var(--teal);font-weight:500}
+  .navzone{position:fixed;top:0;bottom:0;width:16vw;z-index:40;cursor:pointer}
   .navzone.prev{left:0}.navzone.next{right:0}
-  button:focus-visible{outline:2px solid var(--teal-br);outline-offset:3px}
+  button:focus-visible{outline:2px solid var(--mint);outline-offset:3px}
 
   @media (prefers-reduced-motion:reduce){
     *{animation:none!important;transition:none!important}
@@ -226,8 +314,9 @@
     .titleWrap,.exGrid,.vs,.demoWrap{grid-template-columns:1fr}
     .statGrid{grid-template-columns:repeat(2,1fr)}
     .loopRow{grid-template-columns:repeat(3,1fr)}
+    .step:not(:last-child)::after{display:none}
     .arch{grid-template-columns:1fr}
-    .ring{display:none}
+    .instr,.wm{display:none}
     body{overflow:auto}
     .slide{position:relative;opacity:1;visibility:visible;transform:none;min-height:100vh}
     #hud,#hint,.navzone,#bar{display:none}
@@ -235,7 +324,11 @@
 </style>
 </head>
 <body>
+<div class="atmo"></div>
+<div class="grid"></div>
+<div class="grain"></div>
 <div id="bar"></div>
+<div class="wm"><b>MEND</b> · diagnostic ledger</div>
 <div id="deck">
 
 <!-- 1 · TITLE -->
@@ -243,44 +336,51 @@
   <div class="titleWrap">
     <div>
       <div class="eyebrow r">Loop Engineering Hackathon · tokens& · SF · July 2026</div>
-      <div class="brand r d1">MEND<small>The accessibility healer</small></div>
-      <p class="stage r d3">“Claude can write the fix. Only the harness can prove it. <b>We built the proof.</b>”</p>
+      <div class="brand r d1">MEND<span class="sig">The accessibility healer</span></div>
+      <p class="stage r d3"><span class="q">“</span>Claude can write the fix. Only the harness can prove it. <b>We built the proof.</b><span class="q">”</span></p>
     </div>
-    <div class="ring r d4"><div class="core"><span><b>fix</b> → verify</span><span>verify → <b>receipt</b></span><span>receipt → repeat</span></div></div>
+    <div class="instr ring r d4"><div class="core">
+      <span class="beat">♥</span>
+      <span><b>fix</b> → verify</span><span>verify → <b>receipt</b></span><span>receipt → repeat</span>
+    </div></div>
   </div>
-  <div class="foot r d5">A self-verifying repair loop for website accessibility · patches source, never runtime · every fix ships with evidence</div>
+  <div class="foot r d5">A self-verifying repair loop for website accessibility · patches <b>source</b>, never runtime · every fix ships with evidence</div>
 </section>
 
 <!-- 2 · EXHIBITS (REAL REDDIT) -->
 <section class="slide" aria-label="Real Reddit evidence">
-  <div class="eyebrow r">Exhibit files · scraped live via BrightData · July 17, 2026</div>
-  <h1 class="r d1">This happened to a real owner <span class="hl">four days ago</span></h1>
-  <div class="exGrid">
-    <div class="exCol">
-      <article class="card r d2">
-        <span class="tag">EXHIBIT A · THE POST</span>
-        <div class="rHead"><span class="sr">r/smallbusiness</span><span class="dot"></span><span>u/TheTruth730</span><span class="dot"></span><span>July 13, 2026</span><span class="fresh">4 days ago</span></div>
-        <h3 class="rTitle">“Served lawsuit for website not being accessible for blind people…”</h3>
-        <p class="rBody">The suit was <b>taped to the shop door</b> when his wife opened their retail store. Federal case, Western District of North Carolina. A friend hit months earlier is settling for <b>$15,000</b> plus ongoing remediation costs. They run a standard Shopify store and had no idea they were exposed.</p>
-        <p class="rQuote">“We’re so distressed and torn up over this.”</p>
-        <div class="rMeta"><span class="up">▲ 260</span><span>💬 202 comments</span></div>
-        <div class="chips"><span class="chip">suit taped to the door</span><span class="chip">federal case, W.D.N.C.</span><span class="chip">$15k settlement pressure</span></div>
-      </article>
-      <div class="kicker r d5"><b>And inside this same thread,</b> a commenter recommends accessiBe as the fix — the overlay vendor the FTC fined <b>$1M</b> for false advertising. The market’s default answer to this man’s worst week is the villain.</div>
-    </div>
-    <div class="exCol">
-      <article class="card r d3">
-        <span class="tag t">EXHIBIT B · THE MOOD</span>
-        <div class="rHead"><span class="sr">r/smallbusiness</span><span class="dot"></span><span>u/keineskeines123</span><span class="dot"></span><span>top reply</span></div>
-        <p class="rQuote" style="margin-top:.7em">“It is basically extortion.”</p>
-        <p class="rBody" style="margin-top:.55em">…and advises that fighting costs more in legal fees than settling. Lawyers alone run another $10–20k.</p>
-      </article>
-      <article class="card r d4">
-        <span class="tag t">EXHIBIT C · THE PRO</span>
-        <div class="rHead"><span class="sr">r/smallbusiness</span><span class="dot"></span><span>remediation specialist since 2019</span></div>
-        <p class="rBody" style="margin-top:.7em">Reports client settlements from <b>under $10k to nearly $100k</b> — one New York client paid <b>$82,500</b>. Describes professional plaintiffs; one Florida filer has sued <b>175+ businesses</b>. Asked whether a little widget can fix a site:</p>
-        <p class="rQuote">“No, not really.”</p>
-      </article>
+  <div class="head">
+    <div class="eyebrow r">Exhibit files · scraped live via BrightData · July 17, 2026</div>
+    <h1 class="r d1">This happened to a real owner <span class="hl">four days ago</span></h1>
+  </div>
+  <div class="main top">
+    <div class="exGrid">
+      <div class="exCol">
+        <article class="card grow r d2">
+          <span class="tag">EXHIBIT A · THE POST</span>
+          <div class="rHead"><span class="sr">r/smallbusiness</span><span class="dot"></span><span>u/TheTruth730</span><span class="dot"></span><span>July 13, 2026</span><span class="fresh">4 days ago</span></div>
+          <h3 class="rTitle">“Served lawsuit for website not being accessible for blind people…”</h3>
+          <p class="rBody">The suit was <b>taped to the shop door</b> when his wife opened their retail store. Federal case, Western District of North Carolina. A friend hit months earlier is settling for <b>$15,000</b> plus ongoing remediation costs. They run a standard Shopify store and had no idea they were exposed.</p>
+          <p class="rQuote">“We’re so distressed and torn up over this.”</p>
+          <div class="rMeta"><span class="up">▲ 260</span><span>💬 202 comments</span></div>
+          <div class="chips"><span class="chip">suit taped to the door</span><span class="chip">federal case, W.D.N.C.</span><span class="chip">$15k settlement pressure</span></div>
+        </article>
+        <div class="kicker r d5"><b>And inside this same thread,</b> a commenter recommends accessiBe as the fix — the overlay vendor the FTC fined <b>$1M</b> for false advertising. The market’s default answer to this man’s worst week is the villain.</div>
+      </div>
+      <div class="exCol">
+        <article class="card grow r d3">
+          <span class="tag t">EXHIBIT B · THE MOOD</span>
+          <div class="rHead"><span class="sr">r/smallbusiness</span><span class="dot"></span><span>u/keineskeines123</span><span class="dot"></span><span>top reply</span></div>
+          <p class="rQuote" style="margin-top:.7em">“It is basically extortion.”</p>
+          <p class="rBody" style="margin-top:.6em">…and advises that fighting costs more in legal fees than settling. Lawyers alone run another $10–20k.</p>
+        </article>
+        <article class="card grow r d4">
+          <span class="tag t">EXHIBIT C · THE PRO</span>
+          <div class="rHead"><span class="sr">r/smallbusiness</span><span class="dot"></span><span>remediation specialist since 2019</span></div>
+          <p class="rBody" style="margin-top:.7em">Reports client settlements from <b>under $10k to nearly $100k</b> — one New York client paid <b>$82,500</b>. Describes professional plaintiffs; one Florida filer has sued <b>175+ businesses</b>. Asked whether a little widget can fix a site:</p>
+          <p class="rQuote">“No, not really.”</p>
+        </article>
+      </div>
     </div>
   </div>
   <div class="foot r d6">Source: reddit.com/r/smallbusiness · post 1uvn0ix, pulled with comment data via BrightData MCP on presentation day</div>
@@ -288,95 +388,134 @@
 
 <!-- 3 · THE NUMBERS -->
 <section class="slide" aria-label="Market numbers">
-  <div class="eyebrow r">The scale · freshest data available</div>
-  <h1 class="r d1">He isn’t unlucky. He’s the <span class="hl">trend line</span>.</h1>
-  <div class="statGrid">
-    <div class="stat r d2"><div class="n"><span data-count="6000">0</span><span class="sfx">+</span></div>
-      <p>lawsuits projected for 2026 across state and federal courts</p><span class="src">UsableNet midyear · released Jul 8, 2026</span></div>
-    <div class="stat r d3"><div class="n"><span data-count="1427">0</span></div>
-      <p>of 2025’s suits hit companies that had already been sued before</p><span class="src">UsableNet 2025 year-end report</span></div>
-    <div class="stat warn r d4"><div class="n"><span data-count="95.9" data-dec="1">0</span><span class="sfx">%</span></div>
-      <p>of the top 1M home pages fail WCAG checks — worsening for the first time in years</p><span class="src">WebAIM Million 2026 · Mar 2026</span></div>
-    <div class="stat r d5"><div class="n"><span data-count="1.3" data-dec="1">0</span><span class="sfx">B</span></div>
-      <p>people worldwide live with disabilities</p><span class="src">WHO</span></div>
+  <div class="head">
+    <div class="eyebrow r">The scale · freshest data available</div>
+    <h1 class="r d1">He isn’t unlucky. He’s the <span class="warn">trend line</span>.</h1>
   </div>
-  <div class="foot r d6">Repeat defendants are the tell: <b>one-time audits don’t stick.</b> A loop that lives in CI does.</div>
+  <div class="main">
+    <div class="statGrid">
+      <div class="stat r d2"><div class="n"><span data-count="6000">0</span><span class="sfx">+</span></div>
+        <p>lawsuits projected for 2026 across state and federal courts</p><span class="src">UsableNet midyear · released Jul 8, 2026</span></div>
+      <div class="stat r d3"><div class="n"><span data-count="1427">0</span></div>
+        <p>of 2025’s suits hit companies that had already been sued before</p><span class="src">UsableNet 2025 year-end report</span></div>
+      <div class="stat warn r d4"><div class="n"><span data-count="95.9" data-dec="1">0</span><span class="sfx">%</span></div>
+        <p>of the top 1M home pages fail WCAG checks — worsening for the first time in years</p><span class="src">WebAIM Million 2026 · Mar 2026</span></div>
+      <div class="stat r d5"><div class="n"><span data-count="1.3" data-dec="1">0</span><span class="sfx">B</span></div>
+        <p>people worldwide live with disabilities</p><span class="src">WHO</span></div>
+    </div>
+    <div class="trend r d6">
+      <svg viewBox="0 0 1200 150" preserveAspectRatio="none" aria-hidden="true">
+        <defs><linearGradient id="trendGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#F4A73C" stop-opacity=".28"/><stop offset="1" stop-color="#F4A73C" stop-opacity="0"/>
+        </linearGradient></defs>
+        <path id="trendArea" class="trendArea" d=""/>
+        <path id="trendPath" class="trendPath" d="M20,128 L260,116 L500,96 L740,74 L980,44 L1180,14"/>
+        <circle class="trendPk" cx="1180" cy="14" r="4.5"/>
+        <text class="trendLab" x="16" y="146">2020</text>
+        <text class="trendLab" x="1120" y="146">2026 ▲</text>
+      </svg>
+    </div>
+  </div>
+  <div class="foot r d7">Repeat defendants are the tell: <b>one-time audits don’t stick.</b> A loop that lives in CI does.</div>
 </section>
 
 <!-- 4 · THE VILLAIN -->
 <section class="slide" aria-label="The overlay problem">
-  <div class="eyebrow r">The incumbent</div>
-  <h1 class="r d1">The default “fix” makes you a <span style="color:var(--amber)">bigger target</span></h1>
-  <div class="rowList">
-    <div class="row r d2"><div class="glyph a">$</div><div><h3>$1M FTC fine</h3>
-      <p>accessiBe, the biggest overlay vendor, fined for false advertising and fake customer reviews. Overlays inject a script that hides issues at runtime — the broken source ships untouched.</p></div></div>
-    <div class="row r d3"><div class="glyph a">✍</div><div><h3>1,000+ signatures against overlays</h3>
-      <p>The community’s Overlay Fact Sheet open letter started with ~400 experts in 2021 and has crossed 1,000. On r/accessibility: <q>As far as I know it is a garbage</q> <span class="who">— u/Komaniu00</span> · <q>Check out the overlay fact sheet</q> <span class="who">— u/_mothdust, top comment</span></p></div></div>
-    <div class="row r d4"><div class="glyph a">⌖</div><div><h3>Overlays now attract lawsuits</h3>
-      <p>456 suits in the first half of 2025 — 22.6% of all filings — targeted sites that <b>had a widget installed</b>. The badge in the corner reads as an admission, not a shield.</p></div></div>
+  <div class="head">
+    <div class="eyebrow r">The incumbent</div>
+    <h1 class="r d1">The default “fix” makes you a <span class="warn">bigger target</span></h1>
+  </div>
+  <div class="main">
+    <div class="rowList">
+      <div class="row r d2"><div class="glyph a">$</div><div><h3>$1M FTC fine</h3>
+        <p>accessiBe, the biggest overlay vendor, fined for false advertising and fake customer reviews. Overlays inject a script that hides issues at runtime — the broken source ships untouched.</p></div></div>
+      <div class="row r d3"><div class="glyph a">✍</div><div><h3>1,000+ signatures against overlays</h3>
+        <p>The community’s Overlay Fact Sheet open letter started with ~400 experts in 2021 and has crossed 1,000. On r/accessibility: <q>As far as I know it is a garbage</q> <span class="who">— u/Komaniu00</span> · <q>Check out the overlay fact sheet</q> <span class="who">— u/_mothdust, top comment</span></p></div></div>
+      <div class="row r d4"><div class="glyph a">⌖</div><div><h3>Overlays now attract lawsuits</h3>
+        <p>456 suits in the first half of 2025 — 22.6% of all filings — targeted sites that <b>had a widget installed</b>. The badge in the corner reads as an admission, not a shield.</p></div></div>
+    </div>
   </div>
   <div class="foot r d5">Sources: FTC case 2223156 · overlayfactsheet.com · r/accessibility · UsableNet H1-2025 data via rev.com</div>
 </section>
 
 <!-- 5 · WHY NOW -->
 <section class="slide" aria-label="Why now">
-  <div class="eyebrow r">Timing</div>
-  <h1 class="r d1">Why now</h1>
-  <div class="rowList">
-    <div class="row r d2"><div class="glyph">⚖</div><div><h3>The law arrived</h3>
-      <p>European Accessibility Act enforcement went live June 28, 2025, and covers non-EU companies selling into the EU. US federal filings rose 27% the same year.</p></div></div>
-    <div class="row r d3"><div class="glyph">✓</div><div><h3>The approach is proven</h3>
-      <p>At Axe-con 2026, Meta reported 2,500 AI-assisted accessibility fixes shipped at a 90% solve rate, with 5,000 more queued. AI fixing accessibility at scale is no longer a hypothesis.</p></div></div>
-    <div class="row r d4"><div class="glyph">◉</div><div><h3>The ceiling is real — and it’s our opening</h3>
-      <p>Automated scanners catch roughly 30 to 40% of issues (Deque, GDS). Rules can check that alt text <b>exists</b>. Only something that can see the image can check that it’s <b>true</b>. That’s our critic.</p></div></div>
+  <div class="head">
+    <div class="eyebrow r">Timing</div>
+    <h1 class="r d1">Why <span class="hl">now</span></h1>
+  </div>
+  <div class="main">
+    <div class="rowList">
+      <div class="row r d2"><div class="glyph">⚖</div><div><h3>The law arrived</h3>
+        <p>European Accessibility Act enforcement went live June 28, 2025, and covers non-EU companies selling into the EU. US federal filings rose 27% the same year.</p></div></div>
+      <div class="row r d3"><div class="glyph">✓</div><div><h3>The approach is proven</h3>
+        <p>At Axe-con 2026, Meta reported 2,500 AI-assisted accessibility fixes shipped at a 90% solve rate, with 5,000 more queued. AI fixing accessibility at scale is no longer a hypothesis.</p></div></div>
+      <div class="row r d4"><div class="glyph">◉</div><div><h3>The ceiling is real — and it’s our opening</h3>
+        <p>Automated scanners catch roughly 30 to 40% of issues (Deque, GDS). Rules can check that alt text <b>exists</b>. Only something that can see the image can check that it’s <b>true</b>. That’s our critic.</p></div></div>
+    </div>
   </div>
   <div class="foot r d5">Sources: EU Commission · Axe-con 2026 coverage · Deque automated coverage research · UK GDS audit</div>
 </section>
 
 <!-- 6 · THE LOOP -->
 <section class="slide" aria-label="The loop">
-  <div class="eyebrow r">The system</div>
-  <h1 class="r d1">The loop: fix, then <span class="hl">prove it</span></h1>
-  <div class="loopRow r d2" id="loopSteps">
-    <div class="step"><div class="num">01</div><h4>Scan</h4><p>axe-core via Playwright</p></div>
-    <div class="step"><div class="num">02</div><h4>Map</h4><p>DOM node → source file:line</p></div>
-    <div class="step"><div class="num">03</div><h4>Patch</h4><p>source only, never runtime</p></div>
-    <div class="step"><div class="num">04</div><h4>Verify</h4><p>four gates · any fail = revert</p></div>
-    <div class="step"><div class="num">05</div><h4>Judge</h4><p>isolated critic · semantic truth</p></div>
-    <div class="step"><div class="num">06</div><h4>Receipt</h4><p>accept or revert, always logged</p></div>
+  <div class="head">
+    <div class="eyebrow r">The system</div>
+    <h1 class="r d1">The loop: fix, then <span class="hl">prove it</span></h1>
   </div>
-  <div class="gateStrip">
-    <div class="gate r d3"><b>GATE 1</b> · axe re-scan — the violation is gone, none introduced</div>
-    <div class="gate r d4"><b>GATE 2</b> · pixel diff — zero changed pixels outside masks; the design is untouched</div>
-    <div class="gate r d5"><b>GATE 3</b> · banned patterns — no aria-hidden, alt="", display:none suppression tricks</div>
-    <div class="gate r d6"><b>GATE 4</b> · IBM Equal Access — an independent engine agrees (not Lighthouse: that’s axe again)</div>
+  <div class="main">
+    <div class="loopRow r d2" id="loopSteps">
+      <div class="step"><div class="num">01</div><h4>Scan</h4><p>axe-core via Playwright</p></div>
+      <div class="step"><div class="num">02</div><h4>Map</h4><p>DOM node → source file:line</p></div>
+      <div class="step"><div class="num">03</div><h4>Patch</h4><p>source only, never runtime</p></div>
+      <div class="step"><div class="num">04</div><h4>Verify</h4><p>four gates · any fail = revert</p></div>
+      <div class="step"><div class="num">05</div><h4>Judge</h4><p>isolated critic · semantic truth</p></div>
+      <div class="step"><div class="num">06</div><h4>Receipt</h4><p>accept or revert, always logged</p></div>
+    </div>
+    <div class="gateStrip">
+      <div class="gate r d3"><b>GATE 1</b> · axe re-scan — the violation is gone, none introduced</div>
+      <div class="gate r d4"><b>GATE 2</b> · pixel diff — zero changed pixels outside masks; the design is untouched</div>
+      <div class="gate r d5"><b>GATE 3</b> · banned patterns — no aria-hidden, alt="", display:none suppression tricks</div>
+      <div class="gate r d6"><b>GATE 4</b> · IBM Equal Access — an independent engine agrees (not Lighthouse: that’s axe again)</div>
+    </div>
+    <p class="band r d7">The fixer <b>never</b> grades its own homework.</p>
   </div>
-  <div class="foot r d7">The fixer never grades its own homework.</div>
+  <div class="foot r d7">Six steps, four gates, one critic — a fix that survives all of them, or it never happened.</div>
 </section>
 
 <!-- 7 · ARCHITECTURE -->
 <section class="slide" aria-label="Architecture">
-  <div class="eyebrow r">Architecture</div>
-  <h1 class="r d1">Act · Verify · Prove</h1>
-  <div class="arch">
-    <div class="lane r d2"><h5>Act</h5>
-      <div class="node"><b>axe scan</b><small>Playwright renders the patient</small></div><div class="dn">↓</div>
-      <div class="node"><b>source mapper</b><small>violation → file : line</small></div><div class="dn">↓</div>
-      <div class="node deep"><b>fixer · Claude on Bedrock</b><small>patches source only</small></div><div class="dn">↓ rebuild</div>
-      <div class="node dark"><b>target site behind Pomerium</b><small>identity-aware policy · agent holds no credentials</small></div>
-    </div>
-    <div class="lane r d3"><h5>Verify — all must pass</h5>
-      <div class="node">Gate 1 · axe re-scan</div>
-      <div class="node">Gate 2 · pixel diff, masked + frozen</div>
-      <div class="node">Gate 3 · banned-pattern check</div>
-      <div class="node">Gate 4 · IBM Equal Access</div>
-      <div class="node deep"><b>critic · isolated context</b><small>sees the actual image · judges truth, not compliance theater</small></div>
-    </div>
-    <div class="lane r d4"><h5>Prove</h5>
-      <div class="node dark"><b>receipt per fix</b><small>before/after · patch · gate results · verdict — accepts AND reverts</small></div>
-      <div class="node"><b>live dashboard</b><small>WebSocket counter + gate lights</small></div>
-      <div class="node"><b>Zero deploy</b><small>the agent ships the healed site itself</small></div>
-      <div class="node warn"><b>auto-revert on any FAIL</b><small>a caught failure is evidence the harness works</small></div>
+  <div class="head">
+    <div class="eyebrow r">Architecture</div>
+    <h1 class="r d1">Act <span class="hl">·</span> Verify <span class="hl">·</span> Prove</h1>
+  </div>
+  <div class="main top">
+    <div class="arch">
+      <div class="lane r d2"><h5>Act</h5>
+        <div class="fill">
+          <div class="node"><b>axe scan</b><small>Playwright renders the patient</small></div><div class="dn">↓</div>
+          <div class="node"><b>source mapper</b><small>violation → file : line</small></div><div class="dn">↓</div>
+          <div class="node deep"><b>fixer · Claude on Bedrock</b><small>patches source only</small></div><div class="dn">↓ rebuild</div>
+          <div class="node dark"><b>target site behind Pomerium</b><small>identity-aware policy · agent holds no credentials</small></div>
+        </div>
+      </div>
+      <div class="lane mid r d3"><h5>Verify — all must pass</h5>
+        <div class="fill">
+          <div class="node">Gate 1 · axe re-scan</div>
+          <div class="node">Gate 2 · pixel diff, masked + frozen</div>
+          <div class="node">Gate 3 · banned-pattern check</div>
+          <div class="node">Gate 4 · IBM Equal Access</div>
+          <div class="node deep"><b>critic · isolated context</b><small>sees the actual image · judges truth, not compliance theater</small></div>
+        </div>
+      </div>
+      <div class="lane r d4"><h5>Prove</h5>
+        <div class="fill">
+          <div class="node dark"><b>receipt per fix</b><small>before/after · patch · gate results · verdict — accepts AND reverts</small></div>
+          <div class="node"><b>live dashboard</b><small>WebSocket counter + gate lights</small></div>
+          <div class="node"><b>Zero deploy</b><small>the agent ships the healed site itself</small></div>
+          <div class="node warn"><b>auto-revert on any FAIL</b><small>a caught failure is evidence the harness works</small></div>
+        </div>
+      </div>
     </div>
   </div>
   <div class="foot r d5">Living mermaid versions of this diagram (system · round sequence · gate logic) are in docs/ARCHITECTURE.md</div>
@@ -384,72 +523,84 @@
 
 <!-- 8 · VERSUS -->
 <section class="slide" aria-label="Bare agent versus Mend">
-  <div class="eyebrow r">The objection, answered</div>
-  <h1 class="r d1">“Can’t any agent do this?”</h1>
-  <div class="vs">
-    <div class="vCard bad r d2"><h3>loop.sh + “fix accessibility”</h3>
-      <ul>
-        <li>Suppresses violations to please the counter</li>
-        <li>Breaks layout with nothing watching</li>
-        <li>Declares victory with zero proof</li>
-        <li><b>Real case:</b> a blind optimizer agent ran 48h on production queries. Latency spiked <b>400%</b>.</li>
-      </ul>
-    </div>
-    <div class="vCard good r d3"><h3>MEND</h3>
-      <ul>
-        <li>Banned-pattern gate blocks every suppression trick</li>
-        <li>Pixel diff catches breakage and auto-reverts it</li>
-        <li>A receipt for every fix — failures included</li>
-        <li>An independent second engine must agree before anything counts</li>
-      </ul>
-    </div>
+  <div class="head">
+    <div class="eyebrow r">The objection, answered</div>
+    <h1 class="r d1">“Can’t <span class="hl">any</span> agent do this?”</h1>
   </div>
-  <p class="thesis r d4">The model is the commodity. <b>The harness is the product.</b> On stage, we demo the failure the harness catches.</p>
+  <div class="main">
+    <div class="vs">
+      <div class="vCard bad r d2"><h3>loop.sh + “fix accessibility”</h3>
+        <ul>
+          <li><span class="mk">✕</span><span>Suppresses violations to please the counter</span></li>
+          <li><span class="mk">✕</span><span>Breaks layout with nothing watching</span></li>
+          <li><span class="mk">✕</span><span>Declares victory with zero proof</span></li>
+          <li class="case"><span class="mk">✕</span><span><b>Real case:</b> a blind optimizer agent ran 48h on production queries. Latency spiked <b>400%</b>.</span></li>
+        </ul>
+      </div>
+      <div class="vCard good r d3"><h3>MEND</h3>
+        <ul>
+          <li><span class="mk">✓</span><span>Banned-pattern gate blocks every suppression trick</span></li>
+          <li><span class="mk">✓</span><span>Pixel diff catches breakage and auto-reverts it</span></li>
+          <li><span class="mk">✓</span><span>A receipt for every fix — failures included</span></li>
+          <li><span class="mk">✓</span><span>An independent second engine must agree before anything counts</span></li>
+        </ul>
+      </div>
+    </div>
+    <p class="thesis r d4">The model is the commodity. <b>The harness is the product.</b> On stage, we demo the failure the harness catches.</p>
+  </div>
   <div class="foot r d5">SQL incident: “I Let an AI Agent Optimize Our Database Queries for 48 Hours”, Towards AI, Mar 2026</div>
 </section>
 
 <!-- 9 · SPONSORS -->
 <section class="slide" aria-label="Sponsor integrations">
-  <div class="eyebrow r">Sponsor stack</div>
-  <h1 class="r d1">Three sponsors, <span class="hl">one per loop stage</span></h1>
-  <div class="rowList">
-    <div class="row r d2"><div class="glyph">🧠</div><div><h3>AWS Bedrock — the brain</h3>
-      <p>The fixer and the critic both run Claude through Bedrock. Two agents, one managed model layer.</p></div></div>
-    <div class="row r d3"><div class="glyph">🔒</div><div><h3>Pomerium — the access</h3>
-      <p>The target sits behind an identity-aware policy. The agent holds no credentials, and Pomerium’s access log joins the evidence trail: every page touched, policy-checked.</p></div></div>
-    <div class="row r d4"><div class="glyph">🚀</div><div><h3>Zero — the ship</h3>
-      <p>The loop’s final act: the agent deploys the healed site to a shareable link on its own. No API keys, no signup friction.</p></div></div>
+  <div class="head">
+    <div class="eyebrow r">Sponsor stack</div>
+    <h1 class="r d1">Three sponsors, <span class="hl">one per loop stage</span></h1>
+  </div>
+  <div class="main">
+    <div class="rowList">
+      <div class="row r d2"><div class="glyph">🧠</div><div><h3>AWS Bedrock — the brain</h3>
+        <p>The fixer and the critic both run Claude through Bedrock. Two agents, one managed model layer.</p></div></div>
+      <div class="row r d3"><div class="glyph">🔒</div><div><h3>Pomerium — the access</h3>
+        <p>The target sits behind an identity-aware policy. The agent holds no credentials, and Pomerium’s access log joins the evidence trail: every page touched, policy-checked.</p></div></div>
+      <div class="row r d4"><div class="glyph">🚀</div><div><h3>Zero — the ship</h3>
+        <p>The loop’s final act: the agent deploys the healed site to a shareable link on its own. No API keys, no signup friction.</p></div></div>
+    </div>
   </div>
   <div class="foot r d5">Fallback, pre-decided: if Pomerium fights the timebox, deployment moves to Akash and Pomerium becomes roadmap.</div>
 </section>
 
 <!-- 10 · DEMO -->
 <section class="slide" aria-label="Demo plan">
-  <div class="eyebrow r">On stage</div>
-  <h1 class="r d1">The 3-minute demo</h1>
-  <div class="demoWrap">
-    <div class="acts">
-      <div class="act r d2"><h4>ACT 1 · the counter lies (30s)</h4><p>Recording of a naive, gates-off loop hiding content while its number drops.</p></div>
-      <div class="act hot r d3"><h4>ACT 2 · Mend live (90s)</h4><p>One page converges to zero on stage — including one fix caught by the pixel gate and auto-reverted, on screen.</p></div>
-      <div class="act r d4"><h4>ACT 3 · proof (45s)</h4><p>Open a receipt. Run IBM Equal Access live as the independent second opinion. The agent deploys the healed site via Zero; the link goes up.</p></div>
-    </div>
-    <div class="chart r d3">
-      <h4>Demo mode · convergence target</h4>
-      <div class="liveN"><span id="liveCount">47</span><span class="lab">violations in scope</span></div>
-      <svg viewBox="0 0 640 300" preserveAspectRatio="none" aria-hidden="true">
-        <defs><linearGradient id="gradFill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#5EEAD4" stop-opacity=".5"/><stop offset="1" stop-color="#5EEAD4" stop-opacity="0"/>
-        </linearGradient></defs>
-        <line class="gridl" x1="40" y1="60" x2="620" y2="60"/><line class="gridl" x1="40" y1="120" x2="620" y2="120"/>
-        <line class="gridl" x1="40" y1="180" x2="620" y2="180"/><line class="axis" x1="40" y1="250" x2="620" y2="250"/>
-        <path id="convFill" class="convFill" d=""/>
-        <path id="convPath" class="convPath" d="M60,32 L172,106 L284,166 L396,208 L508,236 L590,250"/>
-        <g id="convPts"></g>
-        <text class="revertFlag" x="300" y="150">◄ round 2: layout break caught → reverted</text>
-        <text class="axLab" x="52" y="272">R0</text><text class="axLab" x="164" y="272">R1</text>
-        <text class="axLab" x="276" y="272">R2</text><text class="axLab" x="388" y="272">R3</text>
-        <text class="axLab" x="500" y="272">R4</text><text class="axLab" x="582" y="272">R5</text>
-      </svg>
+  <div class="head">
+    <div class="eyebrow r">On stage</div>
+    <h1 class="r d1">The <span class="hl">3-minute</span> demo</h1>
+  </div>
+  <div class="main">
+    <div class="demoWrap">
+      <div class="acts">
+        <div class="act r d2"><h4>ACT 1 · the counter lies (30s)</h4><p>Recording of a naive, gates-off loop hiding content while its number drops.</p></div>
+        <div class="act hot r d3"><h4>ACT 2 · Mend live (90s)</h4><p>One page converges to zero on stage — including one fix caught by the pixel gate and auto-reverted, on screen.</p></div>
+        <div class="act r d4"><h4>ACT 3 · proof (45s)</h4><p>Open a receipt. Run IBM Equal Access live as the independent second opinion. The agent deploys the healed site via Zero; the link goes up.</p></div>
+      </div>
+      <div class="chart r d3">
+        <h4>Demo mode · convergence target</h4>
+        <div class="liveN"><span id="liveCount">47</span><span class="lab">violations in scope</span></div>
+        <svg viewBox="0 0 640 300" preserveAspectRatio="none" aria-hidden="true">
+          <defs><linearGradient id="gradFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#6FF2DB" stop-opacity=".5"/><stop offset="1" stop-color="#6FF2DB" stop-opacity="0"/>
+          </linearGradient></defs>
+          <line class="gridl" x1="40" y1="60" x2="620" y2="60"/><line class="gridl" x1="40" y1="120" x2="620" y2="120"/>
+          <line class="gridl" x1="40" y1="180" x2="620" y2="180"/><line class="axis" x1="40" y1="250" x2="620" y2="250"/>
+          <path id="convFill" class="convFill" d=""/>
+          <path id="convPath" class="convPath" d="M60,32 L172,106 L284,166 L396,208 L508,236 L590,250"/>
+          <g id="convPts"></g>
+          <text class="revertFlag" x="300" y="150">◄ round 2: layout break caught → reverted</text>
+          <text class="axLab" x="52" y="272">R0</text><text class="axLab" x="164" y="272">R1</text>
+          <text class="axLab" x="276" y="272">R2</text><text class="axLab" x="388" y="272">R3</text>
+          <text class="axLab" x="500" y="272">R4</text><text class="axLab" x="582" y="272">R5</text>
+        </svg>
+      </div>
     </div>
   </div>
   <div class="foot r d5">Backup recording stands by · the overnight full-site run replays on the dashboard behind the live demo</div>
@@ -457,22 +608,24 @@
 
 <!-- 11 · CLOSE -->
 <section class="slide" aria-label="Close">
-  <div class="closeWrap">
+  <div class="head">
     <div class="eyebrow r">After the weekend</div>
+  </div>
+  <div class="main">
     <div class="proof r d1">We built<br><span class="stampline">the proof.<span class="stamp">MEND ✓ VERIFIED</span></span></div>
     <div class="roadRow">
       <div class="road r d3"><h4>A loop that lives in CI</h4><p>GitHub Action: every PR gets verified fix commits with receipts attached. 1,427 repeat-defendant suits say audits don’t stick.</p></div>
       <div class="road r d4"><h4>Receipts for the real buyer</h4><p>The owner with a demand letter on his desk, and his lawyer. Evidence, not promises.</p></div>
       <div class="road r d5"><h4>Honesty as strategy</h4><p>We fix verified violations. We never claim compliance; overclaiming is what got the incumbent fined.</p></div>
     </div>
-    <div class="foot r d6">Mend · Loop Engineering Hackathon · San Francisco · 2026</div>
   </div>
+  <div class="foot r d6">Mend · Loop Engineering Hackathon · San Francisco · 2026</div>
 </section>
 
 </div>
 
-<div id="hud"><span id="counter">1 / 11</span><div id="dots" role="tablist" aria-label="Slides"></div></div>
-<div id="hint">← → navigate · F fullscreen</div>
+<div id="hud"><span id="counter"><b>1</b> / 11</span><div id="dots" role="tablist" aria-label="Slides"></div></div>
+<div id="hint"><kbd>←</kbd> <kbd>→</kbd> navigate · <kbd>F</kbd> fullscreen</div>
 <div class="navzone prev" aria-hidden="true"></div>
 <div class="navzone next" aria-hidden="true"></div>
 
@@ -519,6 +672,26 @@
     },900));
   }
 
+  function drawPath(path, dur){
+    const len=path.getTotalLength();
+    path.style.strokeDasharray=len; path.style.strokeDashoffset=len;
+    requestAnimationFrame(()=>{
+      path.style.transition='stroke-dashoffset '+dur+'s cubic-bezier(.4,0,.2,1)';
+      path.style.strokeDashoffset=0;
+    });
+    return len;
+  }
+
+  function animateTrend(slide){
+    const path=slide.querySelector('#trendPath');
+    if(!path) return;
+    const area=slide.querySelector('#trendArea');
+    area.setAttribute('d', path.getAttribute('d')+' L1180,150 L20,150 Z');
+    area.style.opacity=0;
+    drawPath(path,2.0);
+    timers.push(setTimeout(()=>{area.style.transition='opacity .9s';area.style.opacity=.9},1400));
+  }
+
   function animateChart(slide){
     const path=slide.querySelector('#convPath');
     if(!path) return;
@@ -526,13 +699,8 @@
     const g=slide.querySelector('#convPts'); g.innerHTML='';
     const fill=slide.querySelector('#convFill');
     fill.setAttribute('d', path.getAttribute('d')+' L590,250 L60,250 Z');
-    const len=path.getTotalLength();
-    path.style.strokeDasharray=len; path.style.strokeDashoffset=len;
+    drawPath(path,2.6);
     fill.style.opacity=0;
-    requestAnimationFrame(()=>{
-      path.style.transition='stroke-dashoffset 2.6s cubic-bezier(.4,0,.2,1)';
-      path.style.strokeDashoffset=0;
-    });
     timers.push(setTimeout(()=>{fill.style.transition='opacity .8s';fill.style.opacity=.35},2200));
     pts.forEach((p,idx)=>{
       timers.push(setTimeout(()=>{
@@ -553,10 +721,10 @@
     i=n;
     const s=slides[i];
     s.classList.add('active');
-    counter.textContent=(i+1)+' / '+slides.length;
+    counter.innerHTML='<b>'+(i+1)+'</b> / '+slides.length;
     bar.style.width=((i+1)/slides.length*100)+'%';
     [...dots.children].forEach((d,k)=>d.classList.toggle('on',k===i));
-    timers.push(setTimeout(()=>{animateCounters(s);animateLoop(s);animateChart(s)},350));
+    timers.push(setTimeout(()=>{animateCounters(s);animateLoop(s);animateChart(s);animateTrend(s)},380));
   }
 
   addEventListener('keydown',e=>{

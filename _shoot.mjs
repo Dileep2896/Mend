@@ -13,7 +13,8 @@ fs.mkdirSync(outDir, { recursive: true });
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2 });
 await page.goto('file://' + file);
-await page.waitForTimeout(600);
+try { await page.evaluate(() => document.fonts.ready); } catch (e) {}
+await page.waitForTimeout(1200);
 
 for (let i = 0; i < N; i++) {
   // go to slide i

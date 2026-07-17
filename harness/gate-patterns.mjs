@@ -12,7 +12,11 @@
 
 import { execSync } from "node:child_process";
 import { readFileSync } from "node:fs";
+import { pathToFileURL } from "node:url";
 import { arg, ROOT } from "./lib.mjs";
+
+// Only run the CLI when executed directly (not when imported for scanDiff).
+const IS_MAIN = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
 
 // Files a fix round may never touch (selector/gate laundering, scope creep).
 const FORBIDDEN_PATHS = [
@@ -165,7 +169,9 @@ function selfTest() {
   process.exit(ok ? 0 : 1);
 }
 
-if (arg("self-test", null) !== null || process.argv.includes("--self-test")) {
+if (!IS_MAIN) {
+  // imported as a module — export only, do not run the CLI.
+} else if (process.argv.includes("--self-test")) {
   selfTest();
 } else {
   const diffFile = arg("diff-file");

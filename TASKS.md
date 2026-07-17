@@ -76,18 +76,20 @@ to JOURNAL.md, move on. Do not spend the afternoon on the mapper.
 
 ## M3 — The loop itself (Sat evening)
 
-- [ ] Wire LOOP_PROMPT.md + loop.sh (already drafted; adjust paths/flags to reality).
-- [ ] Contrast-fix special case: for color-contrast violations, pixel diff will
-      legitimately change. Mask the flagged element's box for gate 2 and instead
-      assert layout geometry stable (bounding boxes of all OTHER elements unchanged)
-      + the new computed contrast ratio ≥ 4.5:1. Implement as gate 2b.
-- [ ] Critic path: fixer never judges its own alt text / labels / heading logic.
-      Route those to the critic subagent (.claude/agents/critic.md), which sees the
-      image + context and returns PASS/FAIL + reason. Wire verdict into verify.
-- [ ] Run the loop for real on 2 pages. Target: converging violation counts,
-      at least one caught-and-reverted failure in receipts (if none occurs
-      naturally, that is suspicious — check the gates actually run).
-- [ ] Overnight run: full site, 6-round cap per page. Let it grind. Morning review.
+- [x] Wire LOOP_PROMPT.md + loop.sh (paths/flags adjusted in M0: subscription-auth
+      default, Bedrock opt-in; models pinned to reachable Sonnet 4.6 / Haiku 4.5).
+- [x] Contrast gate 2b (harness/gate-contrast.mjs): WCAG ratio + geometry-stability
+      (all other bounding boxes unchanged). Wired into verify via --contrast
+      --selector. Proven on round 4 (ratio 3.56→7.01, layout stable).
+- [x] Critic path (.claude/agents/critic.md, separate vision-capable model per
+      Amendment 1). Routed for label/alt/heading fixes; verdicts in receipts
+      001/005. Runs in an isolated agent context.
+- [x] Ran the loop for real on 2 pages — login.html (rounds 1–4) and
+      forgot-password.html (rounds 5–6). Converging counts: login 8→4,
+      forgot-password 7→4 (only color-contrast remains). One caught-and-reverted
+      failure: receipt 003 (aria-hidden suppression, caught by gate 1 + gate 3).
+- [~] Overnight run: DEFERRED (time-based). loop.sh + LOOP_PROMPT ready; round
+      mechanics proven end-to-end. Run when a full unattended window is available.
 
 ## M4 — Pomerium (Sun morning) — TIMEBOX: 3 HOURS, THEN DECIDE
 
@@ -110,14 +112,15 @@ Act 2. No sponsor integration ever sits on the critical path of Act 2.
 
 ## M5 — Dashboard + Zero + demo (Sun afternoon)
 
-- [ ] Dashboard: live violation counter, round log, gate lights, before/after
-      screenshot pairs, receipt browser. ws push from the loop. Dark, readable from
-      the back of a room, numbers huge.
+- [x] Dashboard (dashboard/server.mjs + index.html): live counter, round log, gate
+      lights, before/after + patch receipt browser, ws push on fs change. Dark,
+      huge numbers. Verified rendering. `npm run dashboard` :4000.
 - [ ] `npm run demo`: one small page, tuned to converge live in ~90 seconds.
       Rehearse 3 times. Record a full run as backup video.
-- [ ] Naive-vs-Mend A/B evidence: run a bare "fix accessibility" loop with gates OFF
-      on a copy of one page. Capture it suppressing/breaking things. Save screenshots
-      to receipts/naive-baseline/. This is act one of the pitch.
+- [x] Naive-vs-Mend A/B (harness/naive-baseline.mjs, `npm run naive`): gates-off
+      suppression on a copy drops axe 4->2 while deleting buttons + hiding controls;
+      Mend gate 3 REJECTS (interactive-deleted, display-none-added). Evidence +
+      before/after screenshots in receipts/naive-baseline/. Act 1.
 - [ ] Zero: agent deploys the healed site to a shareable link as the loop's final
       act. Capture the link + the moment for the demo.
 - [ ] (Amendment 1 §3, verification-gated — Zero email = YES) Extended final act:
