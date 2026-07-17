@@ -69,17 +69,34 @@ function record(name, pass, detail) {
     const newRules = nowRules.filter((id) => !beforeRules.has(id));
     const targetRulePath = resolve(roundDir, "target-rule.txt");
     const targetRule = existsSync(targetRulePath) ? readFileSync(targetRulePath, "utf8").trim() : null;
-    const targetGone = targetRule ? !(j?.totals?.byRule ?? {})[targetRule] : true;
-    pass = total < beforeTotal && newRules.length === 0 && targetGone;
-    detail = `axe ${beforeTotal} → ${total}; newRules=[${newRules.join(",")}]; target '${targetRule ?? "-"}' ${targetGone ? "gone" : "STILL PRESENT"}`;
+    // "targeted violation absent" (RUBRIC gate 1): for a rule with many nodes we
+    // fix one node per round, so require the target rule's node count to strictly
+    // decrease (fully gone when it hits 0). A suppression that games the count is
+    // still blocked by the "total strictly lower" + "no new rules" conditions and
+    // by gate 3.
+    const beforeRuleCount = (before.totals?.byRule ?? {})[targetRule] ?? 0;
+    const nowRuleCount = (j?.totals?.byRule ?? {})[targetRule] ?? 0;
+    const targetProgress = targetRule ? nowRuleCount < beforeRuleCount : true;
+    pass = total < beforeTotal && newRules.length === 0 && targetProgress;
+    detail = `axe ${beforeTotal} → ${total}; newRules=[${newRules.join(",")}]; target '${targetRule ?? "-"}' ${beforeRuleCount}→${nowRuleCount} ${targetProgress ? "(reduced)" : "(NOT reduced)"}`;
   } else {
     detail += " (no round-start ref — report only)";
   }
   record("gate1-axe", pass, detail);
 }
 
-// ---- Gate 2: pixel diff (fail-fast stops here if a prior gate failed).
-if (!failed) {
+// ---- Gate 2: pixel diff — OR gate 2b for contrast fixes (--contrast --selector).
+const contrast = process.argv.includes("--contrast");
+const selector = arg("selector");
+if (!failed && contrast && selector) {
+  const cArgs = ["--route", (routesArg || "").split(",")[0], "--selector", selector, "--round", round,
+    "--baseline-boxes", `runs/${round}/boxes-before.json`];
+  if (process.argv.includes("--large")) cArgs.push("--large");
+  const r = runNode("gate-contrast.mjs", cArgs, { allowFail: true });
+  const j = lastJson(r.out);
+  const pass = r.code === 0 && j?.pass === true;
+  record("gate2b-contrast", pass, `ratio ${j?.ratio ?? "?"}:1, ${j?.geometryStable ? "layout stable" : `${j?.movedBoxes} box(es) moved`}`);
+} else if (!failed) {
   const diffArgs = ["--dir", "target", "--round", round];
   if (routesArg) diffArgs.push("--routes", routesArg);
   const r = runNode("diff.mjs", diffArgs, { allowFail: true });

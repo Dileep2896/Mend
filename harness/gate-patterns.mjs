@@ -43,6 +43,38 @@ const REMOVED_RULES = [
     why: "deletion of an element containing user-visible text" },
 ];
 
+const INTERACTIVE_TAG = /<\s*(a|button|input|select|textarea|label)\b/i;
+function stableAttrValues(content) {
+  const out = [];
+  for (const m of content.matchAll(/\b(id|for|href|name|value)\s*=\s*["']([^"']+)["']/g)) out.push(m[2]);
+  return out;
+}
+function innerTexts(content) {
+  const out = [];
+  for (const m of content.matchAll(/>([^<>]{3,60})</g)) out.push(m[1].trim());
+  const tail = content.match(/>([^<>]{3,60})\s*$/);
+  if (tail) out.push(tail[1].trim());
+  return out.filter(Boolean);
+}
+// Is a removed line a real deletion, or the "before" side of an in-place edit?
+// interactive-deleted: only a modification if the SAME interactive tag reappears
+//   in an added line sharing a stable attribute (button→span must still FAIL).
+// text-element-deleted: a modification if the same visible text reappears.
+function isModification(ruleId, removed, addedLines) {
+  if (ruleId === "interactive-deleted") {
+    const tag = (removed.match(INTERACTIVE_TAG) || [])[1];
+    if (!tag) return false;
+    const attrs = stableAttrValues(removed);
+    const tagRe = new RegExp(`<\\s*${tag}\\b`, "i");
+    return addedLines.some((a) => tagRe.test(a) && (attrs.length === 0 || attrs.some((v) => a.includes(v))));
+  }
+  if (ruleId === "text-element-deleted") {
+    const texts = innerTexts(removed);
+    return texts.length > 0 && texts.some((t) => addedLines.some((a) => a.includes(t)));
+  }
+  return false;
+}
+
 export function scanDiff(diffText, changedPaths = []) {
   const violations = [];
 
@@ -51,6 +83,16 @@ export function scanDiff(diffText, changedPaths = []) {
     if (FORBIDDEN_PATHS.some((re) => re.test(rel))) {
       violations.push({ id: "forbidden-path", file: rel, line: 0,
         why: "a fix round edited harness/mask/rubric — gate/selector laundering (RUBRIC s4)" });
+    }
+  }
+
+  // First pass: collect added-line content per file (to detect modifications).
+  const addedByFile = {};
+  {
+    let f = null;
+    for (const raw of diffText.split("\n")) {
+      if (raw.startsWith("+++ ")) { f = raw.slice(4).replace(/^b\//, ""); addedByFile[f] ??= []; continue; }
+      if (raw.startsWith("+") && !raw.startsWith("+++") && f) addedByFile[f].push(raw.slice(1));
     }
   }
 
@@ -69,8 +111,11 @@ export function scanDiff(diffText, changedPaths = []) {
       newLine++;
     } else if (raw.startsWith("-") && !raw.startsWith("---")) {
       const content = raw.slice(1);
+      const added = addedByFile[file] ?? [];
       for (const r of REMOVED_RULES) {
-        if (r.re.test(content)) violations.push({ id: r.id, file, line: newLine, why: r.why, snippet: content.trim().slice(0, 100) });
+        if (r.re.test(content) && !isModification(r.id, content, added)) {
+          violations.push({ id: r.id, file, line: newLine, why: r.why, snippet: content.trim().slice(0, 100) });
+        }
       }
       // removed lines don't advance the new-file counter
     } else {
@@ -96,13 +141,27 @@ function selfTest() {
 @@ -40,4 +40,4 @@
 -  <button type="button">Menu</button>
 +  <span aria-hidden="true">Menu</span>
+@@ -70,3 +70,2 @@
+-  <p class="note">Important announcement for all users</p>
+`;
+  // A legitimate in-place modification that must NOT be flagged (same label kept).
+  const goodDiff = `--- a/target/login.html
++++ b/target/login.html
+@@ -59,2 +59,3 @@
+-  <label class="custom-control-label" for="customCheck">Remember Me</label>
++  <label class="custom-control-label" for="customCheck"
++      style="color:#565869;">Remember Me</label>
 `;
   const { violations } = scanDiff(badDiff, ["target/index.html"]);
   const ids = violations.map((v) => v.id).sort();
   const expected = ["aria-hidden-added", "empty-alt-added", "interactive-deleted", "text-element-deleted"];
-  const ok = expected.every((e) => ids.includes(e));
+  const bites = expected.every((e) => ids.includes(e));
+  const goodViolations = scanDiff(goodDiff, ["target/login.html"]).violations;
+  const noFalsePositive = goodViolations.length === 0;
   console.log("self-test detectors fired:", ids.join(", "));
-  console.log(ok ? "SELF-TEST PASS (gate bites)" : "SELF-TEST FAIL");
+  console.log("in-place label modification flagged:", goodViolations.map((v) => v.id).join(",") || "(none — correct)");
+  const ok = bites && noFalsePositive;
+  console.log(ok ? "SELF-TEST PASS (bites suppression, ignores in-place edits)" : "SELF-TEST FAIL");
   process.exit(ok ? 0 : 1);
 }
 
