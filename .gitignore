@@ -13,3 +13,5 @@ runs/naive-copy/
 harness/.secrets
 runs/zero-payload.json
 runs/deploy.json
+.env.pomerium
+docker/pomerium-config.yaml

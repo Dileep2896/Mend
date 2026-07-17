@@ -1,0 +1,40 @@
+# Mend — M4 Pomerium (identity-aware access to the patient).
+# The agent reaches the target site THROUGH Pomerium's policy, holding no raw
+# credentials; Pomerium's authorize log ("who touched what route, allow/deny")
+# becomes part of the evidence trail (one line lands in a receipt — the 80/20
+# slice per TASKS M4 / Amendment 1 §5).
+#
+# Pomerium Zero mode: the data-plane container connects to the hosted Zero console
+# using POMERIUM_ZERO_TOKEN; routes + policy + service account are configured in
+# the console. Token comes from ../.env.pomerium (gitignored).
+#
+# Bring up:   cd docker && docker compose --env-file ../.env.pomerium up -d
+# Bootstrap (per the console's instructions, if env-token alone isn't enough):
+#             docker exec -it mend /bin/pomerium zero import --token "$POMERIUM_ZERO_TOKEN_1"
+# Access log: docker logs -f mend | grep '"message":"authorize check"'
+
+services:
+  # The patient — the vendored target site, served internally on :80.
+  target:
+    image: nginx:alpine
+    container_name: mend-target
+    volumes:
+      - ../target:/usr/share/nginx/html:ro
+    expose:
+      - "80"
+    restart: unless-stopped
+
+  # Pomerium data plane, Zero mode. container_name "mend" matches the
+  # `docker exec -it mend …` bootstrap command.
+  mend:
+    image: pomerium/pomerium:latest
+    container_name: mend
+    depends_on:
+      - target
+    environment:
+      # Set to one of the two cluster tokens from ../.env.pomerium at up-time.
+      - POMERIUM_ZERO_TOKEN=${POMERIUM_ZERO_TOKEN_1}
+    ports:
+      - "443:443"
+      - "80:80"
+    restart: unless-stopped
