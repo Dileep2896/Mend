@@ -72,6 +72,46 @@ after the use-case form is accepted (Bedrock is the sponsor story for the pitch 
 "Bedrock is the brain" — so flip it before demo day if at all possible).
 loop.sh defaults to subscription auth; set CLAUDE_CODE_USE_BEDROCK=1 to opt in.
 
+## Critic model separation (Amendment 1 §1)
+
+- Fixer model = `us.anthropic.claude-sonnet-4-6`. Critic model =
+  `us.anthropic.claude-haiku-4-5-20251001-v1:0` (set in .claude/agents/critic.md
+  frontmatter `model:`). Different weights than the fixer (mirrors gate 4's
+  independent engine), and vision-capable (required for alt-text judging).
+- Vision smoke test — capability CONFIRMED (Jul 17): an isolated critic agent read
+  runs/baseline/login.png and accurately described it ("Welcome Back!" heading,
+  email/password/remember-me controls, Login/Google/Facebook buttons, Forgot-
+  Password/Create-Account links) via the loop's current subscription-auth path.
+- Bedrock-specific vision test = BLOCKED by the same account use-case-form gate as
+  all Bedrock streaming (see the ONE BLOCKER above). Both non-streaming CLI
+  `converse` and the SDK now return "use case details have not been submitted."
+  Once the form is accepted, confirm Haiku-4.5 vision on Bedrock with:
+  ```bash
+  aws bedrock-runtime converse --profile default --region us-east-1 \
+    --model-id us.anthropic.claude-haiku-4-5-20251001-v1:0 \
+    --messages file://<msg-with-image>.json --inference-config '{"maxTokens":120}'
+  ```
+
+## Zero — sending email (Amendment 1 §3): YES (via registry, pay-per-call)
+
+- An agent CAN send email "through Zero": Zero is the search+payment layer; actual
+  sending is a third-party capability discovered via `zero search "send email"`
+  (25 results) and invoked+paid via `zero fetch` (auto-resolves x402/mpp USDC). No
+  API keys, no account. Honest framing: "email through a pay-per-call service
+  discovered and paid via Zero," NOT Zero running its own mail server.
+- Best fit — StableEmail Send (`stableemail-send-e2635eee`), `POST
+  https://stableemail.dev/api/send`, fixed shared sender `relay@stableemail.dev`
+  (no domain verification). Inputs: to[] (req), subject (req), text/html,
+  attachments[] base64 (≤5, ~3.7MB each) → receipts.zip attaches directly.
+  Cost $0.02/call. Health ✓ 5.0★.
+- Larger bundles — AgentMail (`agentmail-send-email-message-72a567bc`), $0.01,
+  attachments support a URL (attach the zip by link, no base64 size cap).
+- Deliverability is best-effort: API 2xx = "handed off," not "delivered"; silent
+  bounces + shared-relay spam risk possible. NOT tested with a live paid send this
+  session (inferred from registry health/rating/last-run, all 2026-07-17).
+  → M5 gains the "deploy via Zero, then email receipt bundle" final act, with a
+    recorded backup video (external dependency; never faked on stage).
+
 ## Pomerium
 
 Docs verified: pomerium.com/docs — core/get-started, quickstart (Zero), internals/ppl,

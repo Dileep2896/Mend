@@ -41,3 +41,23 @@ gate scripts, fail-fast but records every gate to runs/<round>/verify.json. (5) 
 gates from verify.json, screenshots from baseline/shot/diff, axe filtered per-rule, patch from
 git — accept and revert both first-class. | next: M3 — loop.sh/LOOP_PROMPT already drafted;
 add contrast gate 2b, wire critic subagent, then run real fix rounds on 2 pages.
+
+2026-07-17 ~23:30 | AMENDMENT 1 applied (mid-build, additive) | edited critic.md (model:),
+receipt.mjs (+models/tokens/estCostUsd), RUBRIC s6, PLATFORM_NOTES (+critic model, +Zero email),
+TASKS (M0/M4/M5), PITCH (Pomerium/Nexla/critic objection); researched Zero email; vision smoke
+test | no gates changed; gate3 self-test still green | DECISIONS: (§1) critic model =
+us.anthropic.claude-haiku-4-5-20251001-v1:0 (fixer = sonnet-4-6) — different weights + vision-
+capable. Vision CAPABILITY confirmed (isolated critic read runs/baseline/login.png and described
+it accurately). Bedrock-specific vision test BLOCKED by the same account use-case-form gate as all
+Bedrock streaming; exact re-test command in PLATFORM_NOTES. (§2) Receipts now carry models/tokens/
+estCostUsd, additive — the 4 existing receipts (001-004) stay valid without them, untouched.
+(§3) Zero email = YES via registry (StableEmail $0.02 w/ zip attachment / AgentMail $0.01 attach-
+by-URL), pay-per-call, honest "hand-off not delivery" framing; M5 gains the email-receipt-bundle
+final act with mandatory backup video. Not live-send-tested. (§4) M4 Akash wording fixed: Akash is
+compute-to-RUN, not an access layer, does NOT replace Pomerium. (§5) Pomerium reframed to the
+production story (agent safely touching a CUSTOMER's live site, audit log → receipts); 80/20 slice
+= traffic through Pomerium + one authorize-check line in one receipt; sequencing guard = Gate 2
+determinism (DONE) precedes Pomerium, no sponsor on Act 2's critical path. (§6) Nexla = one
+surgical slide (normalizes axe + Equal Access schemas into one queryable data product), build
+nothing. (§7) wall rule reaffirmed: sponsor order after live convergence = 3, 1, 5-slice, stop.
+| next: resume TASKS order — finish M3 (2nd page + note overnight), then M5 dashboard.

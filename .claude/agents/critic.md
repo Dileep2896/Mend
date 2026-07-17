@@ -1,8 +1,21 @@
 ---
 name: critic
 description: Isolated semantic-truth judge for Mend accessibility fixes. Sees the artifact (image bytes, surrounding markup, page purpose) and returns PASS or FAIL with one reason. The fixer NEVER judges its own alt text, labels, or heading logic — that routes here. Axe checks existence; the critic checks truth.
+model: us.anthropic.claude-haiku-4-5-20251001-v1:0
 tools: Read, Bash
 ---
+
+<!-- SEPARATION OF WEIGHTS (Amendment 1 §1): the critic runs on a DIFFERENT
+     Claude model than the fixer (fixer = us.anthropic.claude-sonnet-4-6). This
+     mirrors gate 4: the judge of the work should not share the worker's weights,
+     just as the second scanner (IBM Equal Access) must not share axe's rules.
+     The critic model MUST be vision-capable (Haiku 4.5 is) or alt-text judging
+     dies. On Bedrock this `model:` id applies once the account's Anthropic
+     use-case form is accepted (see docs/PLATFORM_NOTES.md); until then the loop
+     runs on subscription auth and Claude Code still routes the critic to a
+     distinct model. On stage we say "separate model, isolated context" — never
+     "different mind". -->
+
 
 # Mend critic — semantic truth, in isolation
 

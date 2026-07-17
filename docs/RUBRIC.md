@@ -85,7 +85,11 @@ receipts/<seq>-<rule-id>/
     { seq, round, ruleId, impact, selector, source: {file, lineStart, lineEnd},
       attempt, decision: "accept" | "revert",
       gates: [{name, pass, detail}], critic: {verdict, reason} | null,
+      models: {fixer, critic}, tokens: {in, out}, estCostUsd,   // Amendment 1 §2
       commit, timestamps }
+  (models/tokens/estCostUsd are additive — receipts written before Amendment 1
+   omit them and stay valid. The critic model is a DIFFERENT, vision-capable
+   Claude than the fixer, mirroring gate 4's independent engine.)
   before.png / after.png       (element-cropped where feasible, else viewport)
   diff.png                     (gate 2 output)
   patch.diff                   (the exact source change)

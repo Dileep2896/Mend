@@ -17,6 +17,9 @@ Hard gates are decisions, not aspirations. Times are local (SF).
 - [x] Read Zero docs (zero.xyz): install prompt, how an agent invokes a deploy-site
       service, cost expectations. Note in PLATFORM_NOTES.md. Free static-site host
       verified live in registry; $5 welcome credit.
+- [x] (Amendment 1 §3) Verify from Zero's real docs whether an agent can SEND EMAIL
+      through Zero. RESULT: YES via registry (StableEmail $0.02 w/ attachments, or
+      AgentMail $0.01 attach-by-URL); pay-per-call, honest framing. In PLATFORM_NOTES.
 - [x] Confirm npm packages exist and note exact names/majors: @axe-core/playwright,
       accessibility-checker (IBM Equal Access), pixelmatch, pngjs, express, ws.
       All exist; pixelmatch v7 is ESM-only; express is v5.
@@ -88,13 +91,22 @@ to JOURNAL.md, move on. Do not spend the afternoon on the mapper.
 
 ## M4 — Pomerium (Sun morning) — TIMEBOX: 3 HOURS, THEN DECIDE
 
+NOTE (Amendment 1 §5, sequencing guard): the Gate 2 determinism acceptance test
+(3 consecutive zero-diff runs) must be DONE before the Pomerium slice begins — it
+is (M2, PASSED). Gate 2 is not polish; it IS the caught-and-reverted moment of
+Act 2. No sponsor integration ever sits on the critical path of Act 2.
+
 - [ ] docker compose: pomerium in front of the served target; one policy; agent
-      accesses through it (service identity per PLATFORM_NOTES.md). Pomerium access
-      log captured into the evidence trail (every page the agent touched, policy-
-      checked).
-- [ ] If not working by +3h: cut it. Fallback = deploy dashboard or healed site via
-      Akash (contained task, wallet-native crowd, Greg Osuri judging) and demote
-      Pomerium to one roadmap slide. Write the decision to JOURNAL.md. No sunk cost.
+      accesses through it (service identity = Pomerium Zero free-tier service
+      account per PLATFORM_NOTES Plan A). The 80/20 slice that counts as DONE
+      (Amendment 1 §5): the agent's Playwright traffic routes through Pomerium AND
+      one access-log line ("authorize check") lands in ONE receipt. Everything
+      beyond that is optional polish.
+- [ ] If Pomerium is not passing traffic at +3h: cut it to a roadmap slide.
+      Optional consolation ONLY if genuinely trivial: host the target or dashboard
+      on Akash compute, or deploy via Zero ONTO Akash if Zero supports it (verify
+      first). Akash is where things RUN; it is NOT an access layer and does NOT
+      replace Pomerium's role. Write the decision to JOURNAL.md. No sunk cost.
 
 ## M5 — Dashboard + Zero + demo (Sun afternoon)
 
@@ -108,6 +120,12 @@ to JOURNAL.md, move on. Do not spend the afternoon on the mapper.
       to receipts/naive-baseline/. This is act one of the pitch.
 - [ ] Zero: agent deploys the healed site to a shareable link as the loop's final
       act. Capture the link + the moment for the demo.
+- [ ] (Amendment 1 §3, verification-gated — Zero email = YES) Extended final act:
+      after the Zero deploy, the agent emails the receipt bundle (zip of receipts/
+      + dashboard link) to a stakeholder address via a Zero registry email service
+      (StableEmail $0.02 w/ zip attachment, or AgentMail attach-by-URL). Record a
+      backup video of this beat — external dependency, best-effort deliverability,
+      never trusted live-only. Never fake it, never claim delivery (only hand-off).
 - [ ] Independent second opinion on stage: run IBM Equal Access on the healed site
       live. (Lighthouse may be shown only as "the score you know," never as an
       independent engine.)

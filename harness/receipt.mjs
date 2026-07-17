@@ -94,6 +94,13 @@ const receipt = {
   gates,
   verifyPass,
   critic: arg("critic-verdict") ? { verdict: arg("critic-verdict"), reason: arg("critic-reason", null) } : null,
+  // Amendment 1 §2 — receipts carry cost. Additive; older receipts omit these.
+  models: {
+    fixer: arg("fixer-model", "us.anthropic.claude-sonnet-4-6"),
+    critic: arg("critic-model", "us.anthropic.claude-haiku-4-5-20251001-v1:0"),
+  },
+  tokens: { in: arg("tokens-in") ? Number(arg("tokens-in")) : null, out: arg("tokens-out") ? Number(arg("tokens-out")) : null },
+  estCostUsd: arg("cost-usd") ? Number(arg("cost-usd")) : null,
   commit,
   evidence: copies,
   timestamps: { written: new Date().toISOString() },

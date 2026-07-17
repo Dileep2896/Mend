@@ -79,9 +79,11 @@ line.
 ## Sponsor mapping (one per loop stage — say it this way)
 
 - Bedrock is the brain: fixer and critic both run Claude through it.
-- Pomerium is how the agent reaches the patient: identity-aware policy, no raw
-  credentials, access log joins the evidence trail. (If cut per M4 timebox: one
-  roadmap slide, spoken credibly via the Arbiter zero-trust background.)
+- Pomerium is how the agent safely touches a CUSTOMER'S live site: least-privilege,
+  time-boxed, fully audited access with no raw credentials — and the audit log
+  lands in the receipts. This is the production story (an agent operating on a site
+  it doesn't own), not "a proxy in front of our demo site." (If cut per M4 timebox:
+  one roadmap slide, spoken credibly via the Arbiter zero-trust background.)
 - Zero is how the cured patient ships: the agent deploys the healed site to a live
   link itself, no API keys.
 
@@ -98,6 +100,11 @@ rules cover ~30–40% of issues; we fix what we can verify and hand you receipts
 Overclaiming compliance is literally what the FTC fined accessiBe for.
 "Why not Lighthouse as your second opinion?" — Because Lighthouse's a11y audit IS
 axe. Our second engine is IBM Equal Access, a genuinely different ruleset.
+"Isn't the critic just the fixer grading itself?" — No. The critic runs on a
+separate model, in an isolated context, and sees the image itself. Say "separate
+model, isolated context" — never "different mind." It mirrors gate 4: the judge
+should not share the worker's weights any more than the second scanner should
+share axe's rules.
 
 ## After the weekend (one slide, max)
 
@@ -109,6 +116,9 @@ letter on his desk, and his lawyer.
 
 Cursor SWE (Lingxi Li): lead with harness architecture, revert semantics, critic
 isolation. Nick Taylor (Pomerium): the access-log-as-evidence angle. Michael Ludden
-(Zero): the agent self-deploying as the loop's final act. Nexla judges: if asked
-about scale, fleet-mode is roadmap (their data layer is the honest fit there, not
-a weekend bolt-on). Never bluff a judge whose product it is.
+(Zero): the agent self-deploying as the loop's final act. Nexla judges: name this exact
+insertion point, build nothing this weekend — at fleet scale, thousands of sites
+in CI emit receipts, and axe + IBM Equal Access speak DIFFERENT violation schemas;
+Nexla is the governance layer that normalizes both into one queryable
+violations-and-evidence data product. That is the honest fit, not a weekend
+bolt-on. Never bluff a judge whose product it is.
