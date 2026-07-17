@@ -83,3 +83,11 @@ for (const d of ["receipts", "runs"]) {
   const p = resolve(ROOT, d);
   if (existsSync(p)) { try { watch(p, { recursive: true }, nudge); } catch { watch(p, nudge); } }
 }
+// Cross-platform safety net: recursive fs.watch is unsupported on Linux, so poll a
+// cheap state signature every 2s and broadcast only when it actually changes.
+let lastSig = "";
+setInterval(() => {
+  const s = buildState();
+  const sig = `${s.receipts.length}|${s.fixed}|${s.accepts}|${s.reverts}|${s.receipts.map((r) => r.dir).join(",")}`;
+  if (sig !== lastSig) { lastSig = sig; broadcast(); }
+}, 2000);

@@ -17,7 +17,9 @@
     "verify": "node harness/verify.mjs",
     "dashboard": "node dashboard/server.mjs",
     "naive": "node harness/naive-baseline.mjs",
-    "critic": "node harness/critic-akash.mjs"
+    "critic": "node harness/critic-akash.mjs",
+    "rebaseline": "node harness/baseline.mjs --dir target",
+    "demo": "node harness/demo.mjs"
   },
   "keywords": [],
   "author": "",

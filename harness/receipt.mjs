@@ -18,7 +18,6 @@ import { execSync } from "node:child_process";
 import { resolve } from "node:path";
 import { arg, ROOT } from "./lib.mjs";
 
-const seq = arg("seq", "0").padStart?.(3, "0") ?? arg("seq", "0");
 const seqPad = String(arg("seq", "0")).padStart(3, "0");
 const round = arg("round", "latest");
 const rule = arg("rule", "unknown");

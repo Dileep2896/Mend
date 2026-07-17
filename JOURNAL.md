@@ -82,3 +82,21 @@ via critic). No Bedrock spend; Akash cost is fractions of a cent per verdict (<$
 Fixed a real overclaim: receipts had hardcoded Bedrock model IDs that never ran — now truthful
 (Claude fixer subscription + Akash critic). Key stored in .env.akash (gitignored, 600); NEVER
 committed. | next: audit everything, loop-fix, keep spend ~$0.
+
+2026-07-17 late | AUDIT + fix loop (subagent audit of 13 harness files) | fixed false-PASS bugs
+H1-H7, false-REJECT/robustness M1/M5-M10, and LOW items; deferred M2/M3/M4 (documented in
+RISKS R9); added demo mode + rebaseline; re-ran full suite | mapper 24/25, determinism 3x=0,
+gate3 self-test PASS, demo 4/4, Akash critic PASS | KEY FIXES: (false-PASS, worst class) H1 scan
+flake now hard-fails gate1; H2 gate2b counts DELETED boxes; H3 gate2b fails without a geometry
+baseline; H4 gate3 catches bare `alt`/entity-whitespace alt; H5 interactive-deleted no longer
+neutralized when the element lacks a stable attr (requires same-tag+text); H6 gate3 diffs HEAD
+(sees staged); H7 gate1 fails on per-rule node REGRESSIONS not just new rule classes. (false-
+REJECT) M1 link-name text-rewrite allowed (same element re-added); M7 lastJson is now a real
+brace-balance parser (was greedy single-match); M8 gate4 guards non-numeric baseline (was NaN →
+revert-every-round); M9 contrast skips semi-transparent backgrounds; M10 --contrast validates
+selector+route. (robustness) critic timeout (M5), image size cap (M6), pathToFileURL guard,
+last-verdict parse, quote-tolerant key load; dashboard 2s poll fallback (Linux recursive-watch).
+MONEY: only paid call is the Akash critic (bounded max_tokens + 90s timeout + 3MB image cap);
+no Zero/email/wallet code wired anywhere. Session Akash spend ~$0.001. Deferred M2/M4 (gate3
+element-context) need rendered-element inspection — out of weekend scope, our fixes don't trigger
+them. | next: commit, keep spend ~$0.

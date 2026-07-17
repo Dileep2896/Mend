@@ -53,10 +53,17 @@ const measure = await page.evaluate((sel) => {
   const el = document.querySelector(sel);
   if (!el) return { error: "selector not found" };
   const cs = getComputedStyle(el);
+  // M9: only accept a FULLY OPAQUE ancestor background. A semi-transparent layer
+  // (alpha < 1) would compute a wrong contrast ratio, so keep climbing past it.
   let bgEl = el, bg = null;
   while (bgEl) {
     const b = getComputedStyle(bgEl).backgroundColor;
-    if (b && !/rgba?\(0, 0, 0, 0\)|transparent/.test(b)) { bg = b; break; }
+    const m = b && b.match(/rgba?\(([^)]+)\)/);
+    if (m) {
+      const parts = m[1].split(",").map((x) => parseFloat(x.trim()));
+      const alpha = parts.length >= 4 ? parts[3] : 1;
+      if (alpha >= 1 && !(parts[0] === 0 && parts[1] === 0 && parts[2] === 0 && alpha === 0)) { bg = b; break; }
+    }
     bgEl = bgEl.parentElement;
   }
   const r = el.getBoundingClientRect();
@@ -96,24 +103,31 @@ if (!measure.error) {
   }
 }
 
-// (b) geometry-stability check vs baseline capture, if present.
-let geomPass = true, movedCount = 0, moved = [];
+// (b) geometry-stability check vs baseline capture. RUBRIC gate 2b requires BOTH
+// geometry stable AND ratio ok — so a MISSING baseline means we cannot verify
+// geometry and must NOT pass (H3). A deleted element (present before, gone after)
+// counts as a moved box (H2) — otherwise a "contrast fix" that deletes the low-
+// contrast element would slip the geometry sub-check.
+let geomPass, movedCount = 0, moved = [], geomNote = "";
 const beforePath = resolve(ROOT, arg("baseline-boxes", `runs/${round}/boxes-before.json`));
 if (existsSync(beforePath)) {
   const before = JSON.parse(readFileSync(beforePath, "utf8"));
   for (const k of Object.keys(before)) {
     const a = before[k], b = boxes[k];
-    if (!b) { moved.push(`${k}:gone`); continue; }
+    if (!b) { movedCount++; if (moved.length < 8) moved.push(`${k}:gone`); continue; } // H2
     if (a[0] !== b[0] || a[1] !== b[1] || a[2] !== b[2] || a[3] !== b[3]) { movedCount++; if (moved.length < 8) moved.push(k); }
   }
   geomPass = movedCount === 0;
+} else {
+  geomPass = false; // H3: cannot confirm layout stability without a baseline
+  geomNote = "no baseline-boxes — geometry unverifiable";
 }
 
 const pass = ratioPass && geomPass;
 const summary = {
   gate: "contrast-2b", route, selector, round,
   ratio: ratioVal != null ? Number(ratioVal.toFixed(2)) : null, ratioPass,
-  geometryStable: geomPass, movedBoxes: movedCount, movedSample: moved,
+  geometryStable: geomPass, movedBoxes: movedCount, movedSample: moved, geomNote,
   color: measure.color, background: measure.background, pass,
 };
 writeFileSync(resolve(ROOT, `runs/${round}/contrast-2b.json`), JSON.stringify(summary, null, 2));

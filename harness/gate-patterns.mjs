@@ -29,8 +29,11 @@ const FORBIDDEN_PATHS = [
 const ADDED_RULES = [
   { id: "aria-hidden-added", re: /aria-hidden\s*=\s*["']true["']/i,
     why: "aria-hidden=\"true\" hides content from assistive tech — suppression, not a fix" },
-  { id: "empty-alt-added", re: /\balt\s*=\s*["']\s*["']/i,
-    why: "alt=\"\" on an image the critic has not certified decorative = silencing image-alt" },
+  { id: "empty-alt-added",
+    // alt="", alt="  ", alt="&nbsp;"/"&#8203;"/zero-width (reads empty to a screen
+    // reader), AND bare boolean alt (<img ... alt>) which axe treats as alt="".
+    re: /\balt\s*=\s*["'](?:\s|&nbsp;|&#\d+;|&#x[0-9a-fA-F]+;|​|﻿)*["']|\balt(?!\s*=)(?=[\s/>])/i,
+    why: "empty/whitespace/bare alt on an image the critic has not certified decorative = silencing image-alt" },
   { id: "display-none-added", re: /(display\s*:\s*none|visibility\s*:\s*hidden|opacity\s*:\s*0(?!\.)|left\s*:\s*-9999)/i,
     why: "hiding/off-screening an element to remove it from the scanner's view" },
   { id: "negative-tabindex-added", re: /tabindex\s*=\s*["']-1["']/i,
@@ -61,18 +64,33 @@ function innerTexts(content) {
   return out.filter(Boolean);
 }
 // Is a removed line a real deletion, or the "before" side of an in-place edit?
-// interactive-deleted: only a modification if the SAME interactive tag reappears
-//   in an added line sharing a stable attribute (button→span must still FAIL).
-// text-element-deleted: a modification if the same visible text reappears.
+// interactive-deleted: a modification only if the SAME interactive tag reappears
+//   in an added line sharing a stable attr — OR, when the element has no stable
+//   attr, sharing its inner text (button→span must still FAIL: the <button> tag
+//   does not reappear).
+// text-element-deleted: a modification if the same element (tag + stable attr)
+//   reappears (text may legitimately change — the canonical link-name fix), or
+//   the same visible text reappears.
 function isModification(ruleId, removed, addedLines) {
-  if (ruleId === "interactive-deleted") {
-    const tag = (removed.match(INTERACTIVE_TAG) || [])[1];
-    if (!tag) return false;
-    const attrs = stableAttrValues(removed);
+  const tag = (removed.match(/<\s*([a-zA-Z][\w-]*)/) || [])[1];
+  const attrs = stableAttrValues(removed);
+  const sameElementReadded = () => {
+    if (!tag || !attrs.length) return false;
     const tagRe = new RegExp(`<\\s*${tag}\\b`, "i");
-    return addedLines.some((a) => tagRe.test(a) && (attrs.length === 0 || attrs.some((v) => a.includes(v))));
+    return addedLines.some((a) => tagRe.test(a) && attrs.some((v) => a.includes(v)));
+  };
+  if (ruleId === "interactive-deleted") {
+    const itag = (removed.match(INTERACTIVE_TAG) || [])[1];
+    if (!itag) return false;
+    if (attrs.length) return sameElementReadded();
+    // no stable attr (e.g. <button>Menu</button>): require the SAME tag AND the
+    // same inner text to reappear, not merely any element of that tag.
+    const itagRe = new RegExp(`<\\s*${itag}\\b`, "i");
+    const texts = innerTexts(removed);
+    return texts.length > 0 && addedLines.some((a) => itagRe.test(a) && texts.some((t) => a.includes(t)));
   }
   if (ruleId === "text-element-deleted") {
+    if (sameElementReadded()) return true; // link-name fix: same <a href> kept, text rewritten
     const texts = innerTexts(removed);
     return texts.length > 0 && texts.some((t) => addedLines.some((a) => a.includes(t)));
   }
@@ -180,8 +198,10 @@ if (!IS_MAIN) {
     diffText = readFileSync(diffFile, "utf8");
     changedPaths = [...diffText.matchAll(/^\+\+\+ b\/(.+)$/gm)].map((m) => m[1]);
   } else {
-    diffText = execSync("git diff --no-color -- target/", { cwd: ROOT, maxBuffer: 50 * 1024 * 1024 }).toString();
-    changedPaths = execSync("git diff --name-only", { cwd: ROOT }).toString().split("\n").filter(Boolean);
+    // Diff the working tree against HEAD so STAGED changes are seen too (a patch
+    // staged/committed before verify would otherwise blind gate 3 — H6).
+    diffText = execSync("git diff HEAD --no-color -- target/", { cwd: ROOT, maxBuffer: 50 * 1024 * 1024 }).toString();
+    changedPaths = execSync("git diff HEAD --name-only", { cwd: ROOT }).toString().split("\n").filter(Boolean);
   }
   const { violations } = scanDiff(diffText, changedPaths);
   const pass = violations.length === 0;

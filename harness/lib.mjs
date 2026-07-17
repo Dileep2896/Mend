@@ -16,7 +16,11 @@ export const VIEWPORT = { width: 1280, height: 800 };
 
 export function arg(name, fallback) {
   const i = process.argv.indexOf(`--${name}`);
-  return i > -1 ? process.argv[i + 1] : fallback;
+  if (i < 0) return fallback;
+  const next = process.argv[i + 1];
+  // a valueless flag must not swallow the following flag (--a --b => a has no value)
+  if (next === undefined || /^--[a-zA-Z]/.test(next)) return fallback;
+  return next;
 }
 
 // Kills all motion so screenshots are frame-stable.
@@ -78,7 +82,12 @@ export async function shoot(context, base, route, outPath, masks) {
   await page.addStyleTag({ content: FREEZE_CSS });
   await page.evaluate(() => document.fonts && document.fonts.ready);
   await page.waitForTimeout(150); // settle after freeze
-  const maskSelectors = (masks[route]?.selectors ?? []).map((s) => page.locator(s));
+  // Normalize the route key so masks match regardless of "/index.html" vs
+  // "index.html" vs "index" (a mismatch would silently unmask the Chart.js
+  // canvases and false-fail gate 2).
+  const norm = route.replace(/^\//, "");
+  const maskEntry = masks[route] ?? masks[norm] ?? masks[norm.replace(/\.html$/, "")] ?? masks[norm + ".html"];
+  const maskSelectors = (maskEntry?.selectors ?? []).map((s) => page.locator(s));
   await page.screenshot({
     path: outPath,
     fullPage: true,

@@ -75,6 +75,26 @@ c) Automated detection ceiling: axe-class tools catch roughly 30–40% of issues
    (Deque, GDS). Volunteer it before judges do; the critic layer is our answer to
    climbing past it, and the honesty buys credibility.
 
+## R9 — Gate 3 scope limits, known & documented (MEDIUM, honest)
+
+The banned-pattern gate operates on the diff, not on the rendered element, so a
+few RUBRIC-s4 patterns are enforced coarser than their spec:
+- aria-hidden / tabindex="-1" / role="presentation" are flagged on ANY added
+  occurrence, though the rubric scopes them to "previously-exposed content",
+  "natively-focusable", and "semantic elements" respectively. A legitimate
+  aria-hidden on a redundant decorative icon (paired with new sr-only text) would
+  be flagged. Mitigation: our in-scope fixes (aria-label, role=main, contrast)
+  never add these; the icon-button decorative path is out-of-scope this weekend.
+- alt="" is always flagged, so the critic-certified DECORATIVE path can't pass
+  gate 3 yet (gate 3 runs before the critic). Decorative images are declared
+  out-of-scope (RUBRIC s1) rather than mis-handled.
+- Multi-line pure-text deletions can slip the single-line text detector. Our
+  fixes never delete text; a fixer that did would still be caught by gate 1
+  (a deleted element usually changes axe counts) and gate 2 (layout shift).
+Tripwire: if the loop is extended to classes it can't currently fix cleanly
+(icon buttons, decorative images), upgrade gate 3 to inspect the rendered element
+(was it exposed? natively focusable? semantic?) BEFORE widening scope.
+
 ## R8 — Solo-builder fatigue (LOW, real)
 
 Mitigation: invisible-first fix ordering (RUBRIC s1) gives early wins; overnight

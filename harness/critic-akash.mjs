@@ -14,6 +14,7 @@
 
 import { readFileSync, existsSync } from "node:fs";
 import { resolve, extname } from "node:path";
+import { pathToFileURL } from "node:url";
 import { arg, ROOT } from "./lib.mjs";
 
 const BASE = process.env.AKASH_BASE_URL || "https://api.akashml.com/v1";
@@ -25,7 +26,7 @@ function loadKey() {
   const f = resolve(ROOT, ".env.akash");
   if (existsSync(f)) {
     const m = readFileSync(f, "utf8").match(/AKASH_API_KEY\s*=\s*(\S+)/);
-    if (m) return m[1];
+    if (m) return m[1].replace(/^["']|["']$/g, ""); // tolerate quoted values
   }
   throw new Error("no AKASH_API_KEY (env or .env.akash)");
 }
@@ -45,10 +46,13 @@ Never say "compliant"/"ADA"/"lawsuit-proof". When uncertain, FAIL.`;
 
 function parseVerdict(text) {
   if (!text) return null;
-  const v = text.match(/VERDICT:\s*(PASS|FAIL)/i);
-  const r = text.match(/REASON:\s*(.+?)(?:\n|$)/i);
-  if (!v) return null;
-  return { verdict: v[1].toUpperCase(), reason: r ? r[1].trim() : "" };
+  // Take the LAST verdict the model emits (it may discuss PASS/FAIL before its
+  // final line). Fail-safe either way, but this respects the model's conclusion.
+  const all = [...text.matchAll(/VERDICT:\s*(PASS|FAIL)/gi)];
+  if (!all.length) return null;
+  const v = all[all.length - 1][1].toUpperCase();
+  const rs = [...text.matchAll(/REASON:\s*(.+?)(?:\n|$)/gi)];
+  return { verdict: v, reason: rs.length ? rs[rs.length - 1][1].trim() : "" };
 }
 
 export async function critique({ rule, context, imagePath }) {
@@ -59,19 +63,36 @@ export async function critique({ rule, context, imagePath }) {
   const userContent = [{ type: "text", text: `Rule: ${rule}\n\n${context}` }];
   if (useVision) {
     const bytes = readFileSync(imagePath);
+    // M6: bound vision-token spend. Full-page screenshots can be several MB; the
+    // loop should pass an element-cropped image (RUBRIC s6). Refuse oversized
+    // images with a clear message rather than silently paying for a huge input.
+    const MAX = 3 * 1024 * 1024;
+    if (bytes.length > MAX) {
+      throw new Error(`critic image too large (${(bytes.length / 1e6).toFixed(1)}MB > 3MB) — pass an element-cropped image to bound vision cost`);
+    }
     const ext = extname(imagePath).slice(1).toLowerCase() || "png";
     const mime = ext === "jpg" ? "jpeg" : ext;
     userContent.push({ type: "image_url", image_url: { url: `data:image/${mime};base64,${bytes.toString("base64")}` } });
   }
 
-  const res = await fetch(`${BASE}/chat/completions`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model, temperature: 0, max_tokens: useVision ? 900 : 500,
-      messages: [{ role: "system", content: SYSTEM }, { role: "user", content: userContent }],
-    }),
-  });
+  // Bounded network call: abort after 90s so a hung Akash request can never stall
+  // the loop. Cost is bounded by max_tokens (fractions of a cent per verdict).
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), 90_000);
+  let res;
+  try {
+    res = await fetch(`${BASE}/chat/completions`, {
+      method: "POST",
+      signal: ac.signal,
+      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model, temperature: 0, max_tokens: useVision ? 900 : 500,
+        messages: [{ role: "system", content: SYSTEM }, { role: "user", content: userContent }],
+      }),
+    });
+  } finally {
+    clearTimeout(timer);
+  }
   if (!res.ok) throw new Error(`Akash ${res.status}: ${(await res.text()).slice(0, 200)}`);
   const data = await res.json();
   const msg = data.choices?.[0]?.message ?? {};
@@ -86,8 +107,8 @@ export async function critique({ rule, context, imagePath }) {
   };
 }
 
-// CLI
-if (process.argv[1] && import.meta.url === `file://${process.argv[1]}`) {
+// CLI (pathToFileURL handles paths needing percent-encoding — spaces/unicode)
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const rule = arg("rule", "label-title-only");
   const context = arg("context", "");
   const imagePath = arg("image") ? resolve(arg("image")) : null;

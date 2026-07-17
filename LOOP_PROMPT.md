@@ -20,6 +20,10 @@ Do these in order, every iteration:
    d. `npm run verify`. For alt text / labels / heading-structure fixes, request the
       critic subagent's verdict and include it.
    e. All gates pass → commit `round N: accept ...` and write the receipt.
+      If the accepted fix legitimately changed pixels (a contrast/gate-2b fix),
+      re-capture that route's baseline afterward (`npm run baseline -- --routes
+      <route>`) so the NEXT round's gate 2 diffs against the new accepted state,
+      not the pre-fix one. Invisible fixes (0 changed px) need no re-baseline.
       Any gate fails → revert the patch, commit `round N: revert ...`, write the
       FAILURE receipt with which gate caught it and why. A caught failure is good
       output. Never argue with a gate. Never weaken a gate to pass it.
