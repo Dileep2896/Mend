@@ -1,0 +1,27 @@
+{
+  "round": "r3",
+  "pass": false,
+  "gates": [
+    {
+      "name": "gate1-axe",
+      "pass": false,
+      "detail": "axe 5 → 6; newRules=[label]; target 'color-contrast' STILL PRESENT"
+    },
+    {
+      "name": "gate2-pixel",
+      "pass": false,
+      "detail": "skipped (prior gate failed)"
+    },
+    {
+      "name": "gate3-patterns",
+      "pass": false,
+      "detail": "skipped (prior gate failed)"
+    },
+    {
+      "name": "gate4-engine2",
+      "pass": false,
+      "detail": "skipped (prior gate failed)"
+    }
+  ],
+  "verifiedAt": "2026-07-17T19:12:13.009Z"
+}

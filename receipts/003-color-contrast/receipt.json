@@ -1,0 +1,45 @@
+{
+  "seq": 3,
+  "round": "r3",
+  "ruleId": "color-contrast",
+  "impact": "serious",
+  "selector": ".custom-control-label",
+  "source": {
+    "file": "target/login.html",
+    "lineStart": 59,
+    "lineEnd": 60
+  },
+  "attempt": 1,
+  "decision": "revert",
+  "gates": [
+    {
+      "name": "gate1-axe",
+      "pass": false,
+      "detail": "axe 5 → 6; newRules=[label]; target 'color-contrast' STILL PRESENT"
+    },
+    {
+      "name": "gate2-pixel",
+      "pass": false,
+      "detail": "skipped (prior gate failed)"
+    },
+    {
+      "name": "gate3-patterns",
+      "pass": false,
+      "detail": "skipped (prior gate failed)"
+    },
+    {
+      "name": "gate4-engine2",
+      "pass": false,
+      "detail": "skipped (prior gate failed)"
+    }
+  ],
+  "verifyPass": false,
+  "critic": null,
+  "commit": "5261b1f",
+  "evidence": [
+    "before.png"
+  ],
+  "timestamps": {
+    "written": "2026-07-17T19:13:29.275Z"
+  }
+}
